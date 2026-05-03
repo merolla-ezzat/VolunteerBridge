@@ -46,6 +46,8 @@ namespace VolunteerBridge.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         [Display(Name = "نشط")]
         public bool IsActive { get; set; } = true;
+        public bool IsEmailConfirmed { get; set; } = false;
+        public string? EmailConfirmationToken { get; set; }
         public ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
         public ICollection<Acceptance> Acceptances { get; set; } = new List<Acceptance>();
         public ICollection<Rating> RatingsGiven { get; set; } = new List<Rating>();

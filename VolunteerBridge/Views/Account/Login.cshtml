@@ -1,0 +1,154 @@
+﻿@model VolunteerBridge.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "تسجيل الدخول";
+    Layout = null;
+} 
+
+<!DOCTYPE html>
+<html class="light" dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>وصال - تسجيل الدخول</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    fontFamily: { arabic: ['Rubik', 'sans-serif'] },
+                    colors: {
+                        "surface-tint": "#006e2f",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#f3fcef",
+                        "surface-container-low": "#edf6ea",
+                        "outline": "#6d7b6c",
+                        "background": "#f3fcef",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#161d16",
+                        "secondary-container": "#316bf3",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#4ae176",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#161d16",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-container": "#22c55e",
+                        "outline-variant": "#bccbb9",
+                        "secondary": "#0051d5",
+                        "primary": "#006e2f",
+                        "on-primary-container": "#004b1e",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#3d4a3d",
+                        "surface-container": "#e8f0e4",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e2ebde",
+                        "surface-bright": "#f3fcef"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
+                    },
+                    spacing: {
+                        "lg": "24px", "xs": "4px", "md": "16px", "sm": "8px",
+                        "xxl": "48px", "xl": "32px"
+                    },
+                    fontSize: {
+                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "caption": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-md lg:p-xl font-arabic">
+    <div class="w-full max-w-[1000px] bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col lg:flex-row">
+
+        <!-- Form Section -->
+        <div class="w-full lg:w-1/2 p-xl lg:p-xxl flex flex-col justify-center">
+
+            <div class="mb-xl text-center lg:text-right">
+                <a class="text-h2 font-black text-primary inline-block mb-md" href="#">وصال</a>
+                <h1 class="text-h3 font-h3 text-on-surface mb-sm">مرحباً بعودتك</h1>
+                <p class="text-body-md text-on-surface-variant">سجّل دخولك للمتابعة والمساهمة.</p>
+            </div>
+
+            <form asp-action="Login" method="post" class="space-y-lg">
+                @Html.AntiForgeryToken()
+
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="text-error text-body-sm bg-error-container p-md rounded-lg hidden [&:not(:empty)]:block"></div>
+
+                <!-- Email -->
+                <div class="space-y-xs">
+                    <label asp-for="Email" class="block text-label-bold text-on-surface text-right">البريد الإلكتروني</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
+                            <span class="material-symbols-outlined text-outline">mail</span>
+                        </span>
+                        <input asp-for="Email" type="email"
+                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
+                               placeholder="example@domain.com" />
+                    </div>
+                    <span asp-validation-for="Email" class="text-error text-caption"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="space-y-xs">
+                    <div class="flex items-center justify-between mb-xs">
+                        <label asp-for="Password" class="block text-label-bold text-on-surface">كلمة المرور</label>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
+                            <span class="material-symbols-outlined text-outline">lock</span>
+                        </span>
+                        <input asp-for="Password" type="password"
+                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
+                               placeholder="••••••••" />
+                    </div>
+                    <span asp-validation-for="Password" class="text-error text-caption"></span>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit"
+                        class="w-full bg-primary-container text-on-primary py-md px-lg rounded-lg text-label-bold hover:bg-primary transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary-container outline-none flex items-center justify-center gap-sm">
+                    تسجيل الدخول
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </button>
+            </form>
+
+            <div class="mt-lg text-center">
+                <p class="text-body-sm text-on-surface-variant">
+                    ليس لديك حساب؟
+                    <a asp-action="Register" class="text-primary hover:text-surface-tint font-bold transition-colors">إنشاء حساب جديد</a>
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Image Section -->
+        <div class="hidden lg:block lg:w-1/2 relative bg-surface-container">
+            <img alt="Community volunteer image"
+                 class="absolute inset-0 w-full h-full object-cover rounded-l-xl"
+                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfRzb83zRZ1v4C7uBI-0mUf89rXDswPxr08282V_QSwVH48vdhGaPAojKI6uDgXZsLsov-Ufso9mr29TpSWehMEGZIDDLxjQTD7_HSKY3jz9zaxkM0TmRYG-PHbEr_9zZIH6OMzngHH8jabQtg0R2e3x37A-IlKVSHcTXhDCoH2k0NbdItuYa7Bj2jfNdVK-WHN7teru9wSrKATeKuQAXXiSOQbHwL6u7SWulIg9-q-d5jH1CvhxwxM8bARHIAogmJEWcrTD-8LBcf" />
+            <div class="absolute inset-0 bg-primary/20 mix-blend-multiply rounded-l-xl"></div>
+        </div>
+
+    </div>
+
+    @section Scripts {
+        @await Html.PartialAsync("_ValidationScriptsPartial")
+    }
+</body>
+</html>
