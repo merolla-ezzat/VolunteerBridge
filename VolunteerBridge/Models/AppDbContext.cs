@@ -15,9 +15,12 @@ namespace VolunteerBridge.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=. ;Initial Catalog=VolunteerBridge;Integrated Security=True;TrustServerCertificate=True;Encrypt=False;");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server=Maryam\SQLEXPRESS;Database=VolunteerBridge;Trusted_Connection=True;TrustServerCertificate=True;");
+            }
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -1,0 +1,143 @@
+﻿@model VolunteerBridge.ViewModels.CreateRequestViewModel
+@{
+    ViewBag.Title = "نشر طلب جديد";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div dir="rtl" lang="ar">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">📝 نشر طلب مساعدة جديد</h4>
+                </div>
+                <div class="card-body p-4">
+
+                    @* enctype مهم عشان الصور ترفع صح *@
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        @* Title *@
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold">
+                                عنوان الطلب <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Title" class="form-control"
+                                   placeholder="مثال: أحتاج مساعدة في نقل أثاث" />
+                            <span asp-validation-for="Title" class="text-danger small"></span>
+                        </div>
+
+                        @* Category *@
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold">
+                                الفئة <span class="text-danger">*</span>
+                            </label>
+                            <select asp-for="Category" class="form-select"
+                                    asp-items="Html.GetEnumSelectList(typeof(VolunteerBridge.Models.Enums.RequestCategory))">
+                                <option value="">-- اختر الفئة --</option>
+                            </select>
+                            <span asp-validation-for="Category" class="text-danger small"></span>
+                        </div>
+
+                        @* Description *@
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold">
+                                وصف الطلب <span class="text-danger">*</span>
+                            </label>
+                            <textarea asp-for="Description" class="form-control" rows="4"
+                                      placeholder="اشرح ما تحتاجه بالتفصيل..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small"></span>
+                        </div>
+
+                        @* Location *@
+                        <div class="mb-3">
+                            <label asp-for="Location" class="form-label fw-semibold">
+                                الموقع <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="Location" class="form-control"
+                                   placeholder="مثال: القاهرة، المعادي" />
+                            <span asp-validation-for="Location" class="text-danger small"></span>
+                        </div>
+
+                        @* Scheduled Date + Hours *@
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ScheduledDate" class="form-label fw-semibold">
+                                    التاريخ المقترح <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="ScheduledDate" type="date" class="form-control" />
+                                <span asp-validation-for="ScheduledDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EstimatedHours" class="form-label fw-semibold">
+                                    الساعات المتوقعة <span class="text-danger">*</span>
+                                </label>
+                                <input asp-for="EstimatedHours" type="number"
+                                       step="0.5" min="0.5" max="24"
+                                       class="form-control" placeholder="مثال: 2" />
+                                <span asp-validation-for="EstimatedHours" class="text-danger small"></span>
+                                <div class="form-text">النقاط = الساعات × 20 (بحد أدنى 10)</div>
+                            </div>
+                        </div>
+
+                        @* Image Upload - اختياري *@
+                        <div class="mb-3">
+                            <label asp-for="Image" class="form-label fw-semibold">
+                                صورة توضيحية
+                                <span class="text-muted fw-normal">(اختياري)</span>
+                            </label>
+                            <input asp-for="Image" type="file" class="form-control"
+                                   accept="image/*"
+                                   onchange="previewImage(this)" />
+                            <span asp-validation-for="Image" class="text-danger small"></span>
+                            <div class="form-text">صيغ مسموحة: jpg, png, gif, webp</div>
+
+                            @* معاينة الصورة قبل الرفع *@
+                            <div id="imagePreview" class="mt-2" style="display:none;">
+                                <img id="previewImg" src="" alt="معاينة"
+                                     style="max-height:200px; max-width:100%; border-radius:8px; border:1px solid #ddd;" />
+                            </div>
+                        </div>
+
+                        <hr />
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="MyRequests" class="btn btn-outline-secondary">إلغاء</a>
+                            <button type="submit" class="btn btn-primary px-4">نشر الطلب</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+    </script>
+}
