@@ -1,0 +1,106 @@
+﻿@model List<VolunteerBridge.Models.ServiceRequest>
+@{
+    ViewBag.Title = "طلباتي";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div dir="rtl" lang="ar">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>📋 طلباتي</h2>
+            <p class="text-muted mb-0">الطلبات التي نشرتها</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">➕ نشر طلب جديد</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h5>لم تنشر أي طلبات بعد</h5>
+            <p>انقر على "نشر طلب جديد" لطلب المساعدة من المتطوعين</p>
+            <a asp-action="Create" class="btn btn-primary mt-2">نشر طلب الآن</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>الصورة</th>
+                        <th>العنوان</th>
+                        <th>الفئة</th>
+                        <th>الساعات</th>
+                        <th>النقاط</th>
+                        <th>الحالة</th>
+                        <th>تاريخ النشر</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img src="@item.ImagePath" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" alt="صورة" />
+                                }
+                                else
+                                {
+                                    <span class="text-muted">—</span>
+                                }
+                            </td>
+                            <td><strong>@item.Title</strong></td>
+                            <td><span class="badge bg-secondary">@item.Category</span></td>
+                            <td>@item.EstimatedHours ساعة</td>
+                            <td>@item.PointsReward نقطة</td>
+                            <td>
+                                @switch (item.Status)
+                                {
+                                    case VolunteerBridge.Models.Enums.RequestStatus.Open:
+                                        <span class="badge bg-success">مفتوح</span>
+                                        break;
+                                    case VolunteerBridge.Models.Enums.RequestStatus.Accepted:
+                                        <span class="badge bg-primary">تم القبول</span>
+                                        break;
+                                    case VolunteerBridge.Models.Enums.RequestStatus.Completed:
+                                        <span class="badge bg-dark">مكتمل</span>
+                                        break;
+                                    case VolunteerBridge.Models.Enums.RequestStatus.Cancelled:
+                                        <span class="badge bg-danger">ملغى</span>
+                                        break;
+                                }
+                            </td>
+                            <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@item.RequestId"
+                                   class="btn btn-sm btn-outline-secondary ms-1">عرض</a>
+
+                                @if (item.Status == VolunteerBridge.Models.Enums.RequestStatus.Open)
+                                {
+                                    <form asp-action="Cancel" asp-route-id="@item.RequestId"
+                                          method="post" style="display:inline;"
+                                          onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm btn-danger">إلغاء</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+</div>

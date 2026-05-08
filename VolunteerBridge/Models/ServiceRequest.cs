@@ -10,7 +10,8 @@ namespace VolunteerBridge.Models
         [Display(Name = "مقدم الطلب")]
         [Required(ErrorMessage = "مقدم الطلب مطلوب")]
         public int RequesterId { get; set; }
-        public required User Requester { get; set; }
+        public virtual User? Requester { get; set; }
+        
         [Display(Name = "العنوان")]
         [Required(ErrorMessage = "العنوان مطلوب")]
         [StringLength(150)]
@@ -36,6 +37,7 @@ namespace VolunteerBridge.Models
         public int PointsReward { get; set; }
         [Display(Name = "تاريخ الإنشاء")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ImagePath { get; set; }
         public ICollection<Acceptance> Acceptances { get; set; } = new List<Acceptance>();
 
     }
