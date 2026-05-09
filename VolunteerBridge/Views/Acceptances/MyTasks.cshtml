@@ -1,0 +1,74 @@
+﻿@model IEnumerable<VolunteerBridge.Models.Acceptance>
+@{
+    ViewData["Title"] = "مهامي";
+    var currentUserId = Context.Session.GetInt32("UserId");
+}
+
+<h2 class="mb-4">📋 مهامي</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">لا توجد مهام حتى الآن.</div>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>الطلب</th>
+                <th>الحالة</th>
+                <th>تاريخ القبول</th>
+                <th>النقاط</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr>
+                    <td>@task.Request?.Title</td>
+                    <td>
+                        @if (task.Status == Enums.AcceptanceStatus.Done)
+                        {
+                            <span class="badge bg-success">مكتملة ✅</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">جارية 🔄</span>
+                        }
+                    </td>
+                    <td>@task.AcceptedAt.ToString("dd/MM/yyyy")</td>
+                    <td>@task.Request?.PointsReward نقطة</td>
+                    <td>
+                        @* زرار Mark Complete — بس لو الـ Requester هو اللي شايفه *@
+                        @if (task.Status != Enums.AcceptanceStatus.Done
+                                        && task.Request?.RequesterId == currentUserId)
+                        {
+                            <form method="post" asp-action="MarkComplete" style="display:inline">
+                                <input type="hidden" name="acceptanceId" value="@task.AcceptanceId" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    ✅ تم الإنجاز
+                                </button>
+                            </form>
+                        }
+
+                        @* زرار Rate — بس بعد ما المهمة تخلص *@
+                        @if (task.Status == Enums.AcceptanceStatus.Done)
+                        {
+                            @* الـ Requester يقيّم المتطوع *@
+                            @if (task.Request?.RequesterId == currentUserId)
+                            {
+                                <a asp-action="Rate"
+                                   asp-route-acceptanceId="@task.AcceptanceId"
+                                   asp-route-toUserId="@task.VolunteerId"
+                                   class="btn btn-primary btn-sm">
+                                    ⭐ قيّم المتطوع
+                                </a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

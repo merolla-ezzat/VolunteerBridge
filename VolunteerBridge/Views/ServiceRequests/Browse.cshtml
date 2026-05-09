@@ -1,0 +1,77 @@
+﻿@model List<VolunteerBridge.Models.ServiceRequest>
+@{
+    ViewBag.Title = "تصفح الطلبات";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div dir="rtl" lang="ar">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>🔍 تصفح الطلبات المفتوحة</h2>
+            <p class="text-muted mb-0">جميع الطلبات المتاحة للتطوع</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">➕ أضف طلبك</a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center py-5">
+            <h5>لا توجد طلبات مفتوحة حالياً</h5>
+            <p>تحقق لاحقاً أو <a asp-action="Create">أضف طلبك الخاص</a></p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+
+                        @* صورة الطلب لو موجودة *@
+                        @if (!string.IsNullOrEmpty(item.ImagePath))
+                        {
+                            <img src="@item.ImagePath" class="card-img-top"
+                                 style="height:180px; object-fit:cover;"
+                                 alt="صورة الطلب" />
+                        }
+
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@item.Title</h5>
+                            <span class="badge bg-success">مفتوح</span>
+                        </div>
+
+                        <span class="badge bg-secondary mb-2">@item.Category</span>
+
+                        <p class="card-text text-muted small">
+                            @(item.Description.Length > 100
+                                                    ? item.Description.Substring(0, 100) + "..."
+                                                    : item.Description)
+                    </p>
+
+                            <ul class="list-unstyled small text-muted mb-3">
+                                <li>📍 @item.Location</li>
+                                <li>⏱ @item.EstimatedHours ساعة</li>
+                                <li>🏅 @item.PointsReward نقطة</li>
+                                <li>📅 @item.ScheduledDate.ToString("dd/MM/yyyy")</li>
+                                <li>👤 @item.Requester?.FullName</li>
+                            </ul>
+
+                            <a asp-action="Details" asp-route-id="@item.RequestId"
+                               class="btn btn-outline-primary btn-sm w-100">
+                                عرض التفاصيل
+                            </a>
+                        </div>
+
+                        <div class="card-footer text-muted small text-center">
+                            نُشر في @item.CreatedAt.ToString("dd/MM/yyyy")
+                        </div>
+                    </div>
+                </div>
+                }
+        </div>
+    }
+
+</div>

@@ -13,11 +13,14 @@ namespace VolunteerBridge.Models
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<PointTransaction> pointTransactions { get; set; }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=MEROLLA;Initial Catalog=VolunteerBridge;Integrated Security=True;TrustServerCertificate=True");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=VolunteerBridge;Trusted_Connection=True;TrustServerCertificate=True;");
+            }
         }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

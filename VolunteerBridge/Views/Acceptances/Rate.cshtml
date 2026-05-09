@@ -1,0 +1,76 @@
+﻿@model VolunteerBridge.ViewModels.RatingViewModel
+@{
+    ViewData["Title"] = "تقييم";
+}
+
+<h2 class="mb-4">⭐ تقييم</h2>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @Html.ValidationSummary(false)
+    </div>
+}
+
+<div class="card shadow p-4" style="max-width: 500px; margin: auto;">
+    <form method="post" asp-action="Rate">
+        <input type="hidden" asp-for="AcceptanceId" />
+        <input type="hidden" asp-for="ToUserId" />
+
+        @* النجوم *@
+        <div class="mb-3">
+            <label class="form-label fw-bold">التقييم (1 إلى 5)</label>
+            <div class="d-flex gap-2 fs-2" id="stars">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <span class="star" data-value="@i" style="cursor:pointer; color: gray;">★</span>
+                }
+            </div>
+            <input type="hidden" asp-for="Rate" id="rateInput" />
+            <span asp-validation-for="Rate" class="text-danger small"></span>
+        </div>
+
+        @* التعليق *@
+        <div class="mb-3">
+            <label asp-for="Comment" class="form-label fw-bold">تعليق (اختياري)</label>
+            <textarea asp-for="Comment" class="form-control" rows="3"
+                      placeholder="اكتب تعليقك هنا..."></textarea>
+            <span asp-validation-for="Comment" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning w-100 fw-bold">
+            إرسال التقييم ⭐
+        </button>
+    </form>
+</div>
+
+@* JavaScript للنجوم *@
+@section Scripts {
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const rateInput = document.getElementById('rateInput');
+
+        stars.forEach(star => {
+            // لما تعدي بالماوس
+            star.addEventListener('mouseover', function () {
+                highlightStars(this.dataset.value);
+            });
+
+            // لما تضغط
+            star.addEventListener('click', function () {
+                rateInput.value = this.dataset.value;
+                highlightStars(this.dataset.value);
+            });
+
+            // لما الماوس يمشي
+            star.addEventListener('mouseout', function () {
+                highlightStars(rateInput.value);
+            });
+        });
+
+        function highlightStars(count) {
+            stars.forEach(s => {
+                s.style.color = s.dataset.value <= count ? 'gold' : 'gray';
+            });
+        }
+    </script>
+}
