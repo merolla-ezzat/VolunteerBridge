@@ -1,0 +1,69 @@
+@model List<VolunteerBridge.Models.User>
+@{
+    ViewData["Title"] = "لوحة الشرف";
+    var currentUserId = Context.Session.GetInt32("UserId");
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="h4 mb-1">لوحة الشرف</h2>
+                <p class="text-muted mb-0">أفضل المتطوعين حسب إجمالي النقاط والمهام المكتملة.</p>
+            </div>
+            <a asp-controller="ServiceRequests" asp-action="Browse" class="btn btn-outline-primary">تصفح الطلبات</a>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info mb-0">لا توجد بيانات كافية لعرض لوحة الشرف حالياً.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>الاسم</th>
+                            <th>المدينة</th>
+                            <th>المستوى</th>
+                            <th>النقاط</th>
+                            <th>المهام المكتملة</th>
+                            <th>التقييم</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            var user = Model[i];
+                            var isCurrentUser = currentUserId == user.UserId;
+
+                            <tr class="@(isCurrentUser ? "leaderboard-current-user" : string.Empty)">
+                                <td class="fw-bold">@(i + 1)</td>
+                                <td>
+                                    <div class="fw-semibold">@user.FullName</div>
+                                    @if (isCurrentUser)
+                                    {
+                                        <small class="text-primary">حسابك</small>
+                                    }
+                                </td>
+                                <td>@(string.IsNullOrWhiteSpace(user.City) ? "غير محددة" : user.City)</td>
+                                <td>
+                                    <span class="badge level-badge badge-@user.Level.ToString().ToLower()">
+                                        @user.Level.GetDisplayName()
+                                    </span>
+                                </td>
+                                <td class="fw-semibold">@user.TotalPoints</td>
+                                <td>@user.CompletedTasksCount</td>
+                                <td>
+                                    @(user.AverageRating > 0 ? user.AverageRating.ToString("0.0") : "بدون تقييم")
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

@@ -1,35 +1,71 @@
-﻿@model List<VolunteerBridge.Models.ServiceRequest>
+@model VolunteerBridge.ViewModels.BrowseFilterViewModel
 @{
-    ViewBag.Title = "تصفح الطلبات";
+    ViewData["Title"] = "تصفح الطلبات";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div dir="rtl" lang="ar">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div>
-            <h2>🔍 تصفح الطلبات المفتوحة</h2>
-            <p class="text-muted mb-0">جميع الطلبات المتاحة للتطوع</p>
+            <h2>تصفح الطلبات المفتوحة</h2>
+            <p class="text-muted mb-0">جميع الطلبات المتاحة للتطوع حالياً.</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary">➕ أضف طلبك</a>
+        <a asp-action="Create" class="btn btn-primary">أضف طلبك</a>
     </div>
 
-    @if (!Model.Any())
+    @* Modified by Yousef: add the planned GET filter form while keeping the original Bootstrap card listing. *@
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Browse" class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="SearchTerm" class="form-label">بحث</label>
+                    <input asp-for="SearchTerm" class="form-control" placeholder="ابحث في العنوان أو الوصف" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">الفئة</label>
+                    <select name="category" class="form-select">
+                        <option value="">كل الفئات</option>
+                        @foreach (var option in Html.GetEnumSelectList<RequestCategory>())
+                        {
+                            if (Model.Category.HasValue && option.Value == ((int)Model.Category.Value).ToString())
+                            {
+                                <option value="@option.Value" selected>@option.Text</option>
+                            }
+                            else
+                            {
+                                <option value="@option.Value">@option.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="City" class="form-label">المدينة</label>
+                    <input asp-for="City" class="form-control" placeholder="مثال: القاهرة" />
+                </div>
+                <div class="col-md-2 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-primary w-100">تطبيق</button>
+                    <a asp-action="Browse" class="btn btn-outline-secondary w-100">مسح</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="mb-3 text-muted">عدد النتائج: @Model.Requests.Count</div>
+
+    @if (!Model.Requests.Any())
     {
         <div class="alert alert-info text-center py-5">
-            <h5>لا توجد طلبات مفتوحة حالياً</h5>
-            <p>تحقق لاحقاً أو <a asp-action="Create">أضف طلبك الخاص</a></p>
+            <h5>لا توجد طلبات مطابقة حالياً</h5>
+            <p>جرّب تعديل البحث أو <a asp-action="Create">أضف طلبك الخاص</a>.</p>
         </div>
     }
     else
     {
         <div class="row">
-            @foreach (var item in Model)
+            @foreach (var item in Model.Requests)
             {
                 <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-
-                        @* صورة الطلب لو موجودة *@
+                    <div class="card h-100 shadow-sm border-0">
                         @if (!string.IsNullOrEmpty(item.ImagePath))
                         {
                             <img src="@item.ImagePath" class="card-img-top"
@@ -37,26 +73,26 @@
                                  alt="صورة الطلب" />
                         }
 
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <h5 class="card-title mb-0">@item.Title</h5>
-                            <span class="badge bg-success">مفتوح</span>
-                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">@item.Title</h5>
+                                <span class="badge bg-success">مفتوح</span>
+                            </div>
 
-                        <span class="badge bg-secondary mb-2">@item.Category</span>
+                            <span class="badge bg-secondary mb-2">@item.Category.GetDisplayName()</span>
 
-                        <p class="card-text text-muted small">
-                            @(item.Description.Length > 100
-                                                    ? item.Description.Substring(0, 100) + "..."
-                                                    : item.Description)
-                    </p>
+                            <p class="card-text text-muted small">
+                                @(item.Description.Length > 100
+                                    ? item.Description.Substring(0, 100) + "..."
+                                    : item.Description)
+                            </p>
 
                             <ul class="list-unstyled small text-muted mb-3">
-                                <li>📍 @item.Location</li>
-                                <li>⏱ @item.EstimatedHours ساعة</li>
-                                <li>🏅 @item.PointsReward نقطة</li>
-                                <li>📅 @item.ScheduledDate.ToString("dd/MM/yyyy")</li>
-                                <li>👤 @item.Requester?.FullName</li>
+                                <li><strong>الموقع:</strong> @item.Location</li>
+                                <li><strong>المدة:</strong> @item.EstimatedHours ساعة</li>
+                                <li><strong>النقاط:</strong> @item.PointsReward نقطة</li>
+                                <li><strong>الموعد:</strong> @item.ScheduledDate.ToString("dd/MM/yyyy")</li>
+                                <li><strong>صاحب الطلب:</strong> @item.Requester?.FullName</li>
                             </ul>
 
                             <a asp-action="Details" asp-route-id="@item.RequestId"
@@ -70,8 +106,7 @@
                         </div>
                     </div>
                 </div>
-                }
+            }
         </div>
     }
-
 </div>

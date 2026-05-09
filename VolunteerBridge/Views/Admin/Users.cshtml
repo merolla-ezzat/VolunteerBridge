@@ -1,0 +1,48 @@
+@model List<VolunteerBridge.Models.User>
+@{
+    ViewData["Title"] = "المستخدمون";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="h4 mb-1">المستخدمون</h2>
+        <p class="text-muted mb-0">قائمة المستخدمين المسجلين داخل المنصة.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">العودة للوحة الإدارة</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>الاسم</th>
+                        <th>البريد الإلكتروني</th>
+                        <th>المدينة</th>
+                        <th>النقاط</th>
+                        <th>المستوى</th>
+                        <th>تاريخ التسجيل</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                            <td>@(string.IsNullOrWhiteSpace(user.City) ? "غير محددة" : user.City)</td>
+                            <td>@user.TotalPoints</td>
+                            <td>
+                                <span class="badge level-badge badge-@user.Level.ToString().ToLower()">
+                                    @user.Level.GetDisplayName()
+                                </span>
+                            </td>
+                            <td>@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

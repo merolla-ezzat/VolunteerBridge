@@ -8,19 +8,11 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2>📋 طلباتي</h2>
+            <h2>طلباتي</h2>
             <p class="text-muted mb-0">الطلبات التي نشرتها</p>
         </div>
-        <a asp-action="Create" class="btn btn-primary">➕ نشر طلب جديد</a>
+        <a asp-action="Create" class="btn btn-primary">نشر طلب جديد</a>
     </div>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
 
     @if (!Model.Any())
     {
@@ -61,7 +53,7 @@
                                 }
                             </td>
                             <td><strong>@item.Title</strong></td>
-                            <td><span class="badge bg-secondary">@item.Category</span></td>
+                            <td><span class="badge bg-secondary">@item.Category.GetDisplayName()</span></td>
                             <td>@item.EstimatedHours ساعة</td>
                             <td>@item.PointsReward نقطة</td>
                             <td>

@@ -9,7 +9,14 @@
     <link rel="stylesheet" href="~/VolunteerBridge.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var sessionUserId = Context.Session.GetInt32("UserId");
+        var sessionUserName = Context.Session.GetString("UserName");
+        var sessionUserEmail = Context.Session.GetString("UserEmail");
+        var isAdminUser = sessionUserEmail == "admin@volunteerbridge.com";
+    }
     <header>
+        @* Modified by Yousef: simplify the shared navbar so the RTL ordering and auth links stay aligned. *@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">جسرالتطوع</a>
@@ -17,34 +24,90 @@
                         aria-expanded="false" aria-label="تبديل القائمة">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">الرئيسية</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">الخصوصية</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="MyRequests">طلباتي</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Create">انشاء طلب</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Acceptances" asp-action="MyTasks">مهامي</a>
-                        </li>
+                <div class="navbar-collapse collapse">
+                    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between w-100 gap-2">
+                        <ul class="navbar-nav flex-sm-row gap-sm mb-2 mb-sm-0">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">الرئيسية</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Statistics" asp-action="Index">الإحصائيات</a>
+                            </li>
+                            @if (sessionUserId != null)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Create">إنشاء طلب</a>
+                                </li>
+                            }
+                        </ul>
 
-                    </ul>
+                        <ul class="navbar-nav flex-sm-row gap-sm align-items-sm-center">
+                            @if (sessionUserId != null)
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link text-muted">مرحباً، @sessionUserName</span>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="MyRequests">طلباتي</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Acceptances" asp-action="MyTasks">مهامي</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">الملف الشخصي</a>
+                                </li>
+                                @if (isAdminUser)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">لوحة الإدارة</a>
+                                    </li>
+                                }
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">تسجيل الخروج</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">إنشاء حساب</a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
     <div class="container">
+        @* Modified by Yousef: display shared TempData messages once in the layout for the new pages and security flows. *@
+        <div class="site-alerts">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
+                </div>
+            }
+        </div>
+
         <main role="main" class="pb-3 text-end">
             @RenderBody()
         </main>

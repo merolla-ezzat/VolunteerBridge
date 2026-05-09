@@ -1,0 +1,69 @@
+@model List<VolunteerBridge.Models.PointTransaction>
+@{
+    ViewData["Title"] = "سجل النقاط";
+    var totalPoints = Model.Sum(t => t.Points);
+}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <h2 class="h5 mb-1">سجل النقاط</h2>
+                <p class="text-muted mb-0">كل النقاط التي حصلت عليها من إنجاز الطلبات.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">إجمالي النقاط</div>
+                <div class="fs-4 fw-bold">@totalPoints</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">عدد العمليات</div>
+                <div class="fs-4 fw-bold">@Model.Count</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+        @if (!Model.Any())
+        {
+            <div class="alert alert-info mb-0">لا توجد عمليات نقاط مسجلة حتى الآن.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>السبب</th>
+                            <th>الطلب المرتبط</th>
+                            <th>النقاط</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@(string.IsNullOrWhiteSpace(item.Reason) ? "بدون وصف" : item.Reason)</td>
+                                <td>@(item.Acceptance?.Request?.Title ?? "غير متوفر")</td>
+                                <td>
+                                    <span class="badge bg-success">+@item.Points</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>

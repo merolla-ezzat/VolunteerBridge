@@ -161,10 +161,10 @@
                         <div>
                             <p class="text-caption text-on-surface-variant">التقييم</p>
                             <p class="text-body-md text-on-surface font-medium">
-                                @* ✅ كده صح — بيعرض AverageRating *@
+                                @* Modified by Yousef: keep the profile values simple and add a shortcut to the points history page. *@
                                 @if (Model.AverageRating > 0)
                                 {
-                                    @Model.AverageRating.ToString("0.0") <span>⭐</span>
+                                    @Model.AverageRating.ToString("0.0") <span>من 5</span>
                                 }
                                 else
                                 {
@@ -185,20 +185,31 @@
                                 @switch (Model.Level)
                                 {
                                     case UserLevel.Newcomer:
-                                        <span>🌱 مبتدئ</span>
+                                        <span>مبتدئ الخير</span>
                                         break;
                                     case UserLevel.Helper:
-                                        <span>🤝 مساعد</span>
+                                        <span>صانع الفرق</span>
                                         break;
                                     case UserLevel.Trusted:
-                                        <span>⭐ موثوق</span>
+                                        <span>موثوق العطاء</span>
                                         break;
                                     case UserLevel.Champion:
-                                        <span>🏆 بطل</span>
+                                        <span>بطل المجتمع</span>
                                         break;
                                 }
                             </p>
                         </div>
+                    </div>
+
+                    <div class="mt-lg flex flex-col sm:flex-row gap-md">
+                        <a asp-controller="Points" asp-action="History"
+                           class="flex-1 bg-surface-container px-md py-sm rounded-lg text-label-bold text-primary hover:bg-surface-container-high transition-colors text-center">
+                            سجل النقاط
+                        </a>
+                        <a asp-controller="ServiceRequests" asp-action="MyRequests"
+                           class="flex-1 bg-surface-container px-md py-sm rounded-lg text-label-bold text-primary hover:bg-surface-container-high transition-colors text-center">
+                            طلباتي
+                        </a>
                     </div>
 
                 </div>
