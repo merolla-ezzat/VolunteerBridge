@@ -120,6 +120,10 @@ namespace VolunteerBridge.Controllers
         {
             var request = _db.ServiceRequests
                 .Include(r => r.Requester)
+                .Include(r => r.Acceptances)
+                   .ThenInclude(a => a.Volunteer)
+                .Include(r => r.Acceptances)
+                  .ThenInclude(a => a.Ratings)
                 .FirstOrDefault(r => r.RequestId == id);
 
             if (request == null) return NotFound();

@@ -4,40 +4,37 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var userId = Context.Session.GetInt32("UserId");
     var isOwner = userId != null && Model.RequesterId == userId;
+    var acceptance = Model.Acceptances?.FirstOrDefault();
 }
 
 <div dir="rtl" lang="ar">
-
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
-
             <div class="card shadow-sm">
 
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">@Model.Title</h5>
                     @switch (Model.Status)
                     {
-                        case VolunteerBridge.Models.Enums.RequestStatus.Open:
+                        case RequestStatus.Open:
                             <span class="badge bg-success fs-6">مفتوح</span>
                             break;
-                        case VolunteerBridge.Models.Enums.RequestStatus.Accepted:
+                        case RequestStatus.Accepted:
                             <span class="badge bg-primary fs-6">تم القبول</span>
                             break;
-                        case VolunteerBridge.Models.Enums.RequestStatus.Completed:
+                        case RequestStatus.Completed:
                             <span class="badge bg-dark fs-6">مكتمل</span>
                             break;
-                        case VolunteerBridge.Models.Enums.RequestStatus.Cancelled:
+                        case RequestStatus.Cancelled:
                             <span class="badge bg-danger fs-6">ملغى</span>
                             break;
                     }
                 </div>
 
-                @* صورة الطلب لو موجودة *@
                 @if (!string.IsNullOrEmpty(Model.ImagePath))
                 {
                     <img src="@Model.ImagePath" class="card-img-top"
-                         style="max-height:350px; object-fit:cover;"
-                         alt="صورة الطلب" />
+                         style="max-height:350px; object-fit:cover;" alt="صورة الطلب" />
                 }
 
                 <div class="card-body p-4">
@@ -86,38 +83,95 @@
                             <span class="text-muted">🕐 تاريخ النشر</span>
                             <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
                         </li>
+
+                        @* ← الدخول لصفحة المتطوع لو الطلب اتقبل  student 4 *@
+                        @if (acceptance != null && acceptance.Volunteer != null)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">🙋 المتطوع</span>
+                                <a asp-controller="Account"
+                                   asp-action="ViewProfile"
+                                   asp-route-id="@acceptance.VolunteerId"
+                                   class="text-decoration-none fw-bold text-success">
+                                    @acceptance.Volunteer?.FullName
+                                </a>
+                            </li>
+                        }
                     </ul>
 
-                    <div class="d-flex gap-2 justify-content-between">
+                    <div class="d-flex gap-2 justify-content-between flex-wrap">
                         <a asp-action="Browse" class="btn btn-outline-secondary">← العودة للطلبات</a>
 
-                        @* زر القبول للمتطوع — Student 4 هيربطه *@
-                        @if (Model.Status == VolunteerBridge.Models.Enums.RequestStatus.Open && !isOwner)
-                        {
-                            <form asp-controller="Acceptances" asp-action="Accept" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="requestId" value="@Model.RequestId" />
-                                <button type="submit" class="btn btn-success px-4">
-                                    ✅ قبول الطلب والتطوع
-                                </button>
-                            </form>
-                        }
+                        <div class="d-flex gap-2">
 
-                        @* زر الإلغاء لصاحب الطلب فقط *@
-                        @if (isOwner && Model.Status == VolunteerBridge.Models.Enums.RequestStatus.Open)
-                        {
-                            <form asp-action="Cancel" asp-route-id="@Model.RequestId" method="post"
-                                  onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-danger">إلغاء الطلب</button>
-                            </form>
-                        }
+                            @* زرار Accept — للمتطوع فقط *@
+                            @if (Model.Status == RequestStatus.Open && !isOwner)
+                            {
+                                <form asp-controller="Acceptances" asp-action="Accept" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="requestId" value="@Model.RequestId" />
+                                    <button type="submit" class="btn btn-success px-4">
+                                        ✅ قبول الطلب والتطوع
+                                    </button>
+                                </form>
+                            }
+
+                            @* زرار MarkComplete — لصاحب الطلب فقط *@
+                            @if (isOwner && Model.Status == RequestStatus.Accepted
+                                                        && acceptance != null)
+                            {
+                                <form asp-controller="Acceptances" asp-action="MarkComplete"
+                                      method="post"
+                                      onsubmit="return confirm('هل تأكدت إن المهمة اتنجزت؟')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="acceptanceId"
+                                           value="@acceptance.AcceptanceId" />
+                                    <button type="submit" class="btn btn-success px-4">
+                                        ✅ تم الإنجاز
+                                    </button>
+                                </form>
+                            }
+
+                            @* زرار Rate — لصاحب الطلب بعد الإنجاز *@
+                            @if (isOwner && Model.Status == RequestStatus.Completed
+                                                        && acceptance != null)
+                            {
+                                bool alreadyRated = acceptance.Ratings != null &&
+                                acceptance.Ratings.Any(r => r.FromUserId == userId);
+
+                                @if (alreadyRated)
+                                {
+                                    <span class="btn btn-secondary px-4 disabled">
+                                        ✅ تم التقييم
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Acceptances" asp-action="Rate"
+                                       asp-route-acceptanceId="@acceptance.AcceptanceId"
+                                       asp-route-toUserId="@acceptance.VolunteerId"
+                                       class="btn btn-warning px-4">
+                                        ⭐ قيّم المتطوع
+                                    </a>
+                                }
+                            }
+
+                            @* زرار Cancel — لصاحب الطلب فقط *@
+                            @if (isOwner && Model.Status == RequestStatus.Open)
+                            {
+                                <form asp-action="Cancel" asp-route-id="@Model.RequestId"
+                                      method="post"
+                                      onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger">إلغاء الطلب</button>
+                                </form>
+                            }
+
+                        </div>
                     </div>
 
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>

@@ -1,0 +1,89 @@
+﻿@model VolunteerBridge.Models.User
+@{
+    ViewData["Title"] = "بروفايل المتطوع";
+}
+
+<div dir="rtl" lang="ar">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">👤 @Model.FullName</h5>
+                </div>
+
+                <div class="card-body p-4">
+                    <ul class="list-group list-group-flush">
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">📧 البريد الإلكتروني</span>
+                            <span>@Model.Email</span>
+                        </li>
+
+                        @if (!string.IsNullOrEmpty(Model.City))
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span class="text-muted">📍 المدينة</span>
+                                <span>@Model.City</span>
+                            </li>
+                        }
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">🏅 النقاط</span>
+                            <span>@Model.TotalPoints نقطة</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">✅ المهام المكتملة</span>
+                            <span>@Model.CompletedTasksCount مهمة</span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">⭐ التقييم</span>
+                            <span>
+                                @if (Model.AverageRating > 0)
+                                {
+                                    @Model.AverageRating.ToString("0.0") <text>⭐</text>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">لا يوجد تقييم بعد</span>
+                                }
+                            </span>
+                        </li>
+
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span class="text-muted">🎖️ المستوى</span>
+                            <span>
+                                @switch (Model.Level)
+                                {
+                                    case UserLevel.Newcomer:
+                                        <text>🌱 مبتدئ</text>
+                                        break;
+                                    case UserLevel.Helper:
+                                        <text>🤝 مساعد</text>
+                                        break;
+                                    case UserLevel.Trusted:
+                                        <text>⭐ موثوق</text>
+                                        break;
+                                    case UserLevel.Champion:
+                                        <text>🏆 بطل</text>
+                                        break;
+                                }
+                            </span>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="card-footer">
+                    <a asp-action="Browse" asp-controller="ServiceRequests"
+                       class="btn btn-outline-secondary btn-sm">
+                        ← العودة للطلبات
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
