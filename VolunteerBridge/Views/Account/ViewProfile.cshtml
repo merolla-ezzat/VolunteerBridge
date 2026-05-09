@@ -9,41 +9,41 @@
             <div class="card shadow-sm">
 
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">👤 @Model.FullName</h5>
+                    <h5 class="mb-0">@Model.FullName</h5>
                 </div>
 
                 <div class="card-body p-4">
                     <ul class="list-group list-group-flush">
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">📧 البريد الإلكتروني</span>
+                            <span class="text-muted">البريد الإلكتروني</span>
                             <span>@Model.Email</span>
                         </li>
 
                         @if (!string.IsNullOrEmpty(Model.City))
                         {
                             <li class="list-group-item d-flex justify-content-between">
-                                <span class="text-muted">📍 المدينة</span>
+                                <span class="text-muted">المدينة</span>
                                 <span>@Model.City</span>
                             </li>
                         }
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">🏅 النقاط</span>
+                            <span class="text-muted">النقاط</span>
                             <span>@Model.TotalPoints نقطة</span>
                         </li>
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">✅ المهام المكتملة</span>
+                            <span class="text-muted">المهام المكتملة</span>
                             <span>@Model.CompletedTasksCount مهمة</span>
                         </li>
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">⭐ التقييم</span>
+                            <span class="text-muted">التقييم</span>
                             <span>
                                 @if (Model.AverageRating > 0)
                                 {
-                                    @Model.AverageRating.ToString("0.0") <text>⭐</text>
+                                    @Model.AverageRating.ToString("0.0") <text>من 5</text>
                                 }
                                 else
                                 {
@@ -53,21 +53,21 @@
                         </li>
 
                         <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">🎖️ المستوى</span>
+                            <span class="text-muted">المستوى</span>
                             <span>
                                 @switch (Model.Level)
                                 {
                                     case UserLevel.Newcomer:
-                                        <text>🌱 مبتدئ</text>
+                                        <text>مبتدئ الخير</text>
                                         break;
                                     case UserLevel.Helper:
-                                        <text>🤝 مساعد</text>
+                                        <text>صانع الفرق</text>
                                         break;
                                     case UserLevel.Trusted:
-                                        <text>⭐ موثوق</text>
+                                        <text>موثوق العطاء</text>
                                         break;
                                     case UserLevel.Champion:
-                                        <text>🏆 بطل</text>
+                                        <text>بطل المجتمع</text>
                                         break;
                                 }
                             </span>
@@ -79,7 +79,7 @@
                 <div class="card-footer">
                     <a asp-action="Browse" asp-controller="ServiceRequests"
                        class="btn btn-outline-secondary btn-sm">
-                        ← العودة للطلبات
+                        العودة للطلبات
                     </a>
                 </div>
 

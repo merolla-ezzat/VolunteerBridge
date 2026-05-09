@@ -4,7 +4,7 @@
     var currentUserId = Context.Session.GetInt32("UserId");
 }
 
-<h2 class="mb-4">📋 مهامي</h2>
+<h2 class="mb-4">مهامي</h2>
 
 @if (!Model.Any())
 {
@@ -30,11 +30,11 @@ else
                     <td>
                         @if (task.Status == Enums.AcceptanceStatus.Done)
                         {
-                            <span class="badge bg-success">مكتملة ✅</span>
+                            <span class="badge bg-success">مكتملة</span>
                         }
                         else
                         {
-                            <span class="badge bg-warning text-dark">جارية 🔄</span>
+                            <span class="badge bg-warning text-dark">جارية</span>
                         }
                     </td>
                     <td>@task.AcceptedAt.ToString("dd/MM/yyyy")</td>
@@ -47,7 +47,7 @@ else
                             <form method="post" asp-action="MarkComplete" style="display:inline">
                                 <input type="hidden" name="acceptanceId" value="@task.AcceptanceId" />
                                 <button type="submit" class="btn btn-success btn-sm">
-                                    ✅ تم الإنجاز
+                                    تم الإنجاز
                                 </button>
                             </form>
                         }
@@ -62,7 +62,7 @@ else
                                    asp-route-acceptanceId="@task.AcceptanceId"
                                    asp-route-toUserId="@task.VolunteerId"
                                    class="btn btn-primary btn-sm">
-                                    ⭐ قيّم المتطوع
+                                    قيّم المتطوع
                                 </a>
                             }
                         }

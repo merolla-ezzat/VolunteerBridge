@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace VolunteerBridge.Models
 {
@@ -30,6 +30,10 @@ namespace VolunteerBridge.Models
             modelBuilder.Entity<User>()
                 .Property(u => u.AverageRating)
                 .HasPrecision(3, 2);  
+            // Modified by Yousef: enforce unique user emails at the database level to match the controller validation.
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
             modelBuilder.Entity<ServiceRequest>()
                 .HasOne(r => r.Requester)
                 .WithMany(u => u.ServiceRequests)

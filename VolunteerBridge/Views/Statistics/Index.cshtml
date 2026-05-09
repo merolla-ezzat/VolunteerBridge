@@ -1,0 +1,71 @@
+@model VolunteerBridge.ViewModels.StatisticsViewModel
+@{
+    ViewData["Title"] = "الإحصائيات";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="h4 mb-1">إحصائيات المنصة</h2>
+        <p class="text-muted mb-0">ملخص سريع عن النشاط الحالي داخل وصال.</p>
+    </div>
+    <a asp-controller="Leaderboard" asp-action="Index" class="btn btn-outline-primary">عرض لوحة الشرف</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">المستخدمون النشطون</div>
+                <div class="fs-4 fw-bold">@Model.TotalUsers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">إجمالي الطلبات</div>
+                <div class="fs-4 fw-bold">@Model.TotalRequests</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">الطلبات المفتوحة</div>
+                <div class="fs-4 fw-bold">@Model.TotalOpenRequests</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">الطلبات المكتملة</div>
+                <div class="fs-4 fw-bold">@Model.TotalCompletedRequests</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">عدد المتطوعين</div>
+                <div class="fs-4 fw-bold">@Model.TotalVolunteers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">إجمالي النقاط الممنوحة</div>
+                <div class="fs-4 fw-bold">@Model.TotalPointsAwarded</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small mb-1">المدينة الأكثر نشاطاً</div>
+                <div class="fs-5 fw-bold">@(string.IsNullOrWhiteSpace(Model.TopCity) ? "غير محددة" : Model.TopCity)</div>
+            </div>
+        </div>
+    </div>
+</div>

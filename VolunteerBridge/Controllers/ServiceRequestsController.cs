@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolunteerBridge.Models;
 using VolunteerBridge.ViewModels;
@@ -20,15 +20,42 @@ namespace VolunteerBridge.Controllers
         private int? GetUserId() => HttpContext.Session.GetInt32("UserId");
 
        // GET: /ServiceRequests/Browse
-            public IActionResult Browse()
+            public IActionResult Browse(string? searchTerm, int? category, string? city)
         {
-            var requests = _db.ServiceRequests
-                .Include(r => r.Requester)
-                .Where(r => r.Status == Enums.RequestStatus.Open)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToList();
+            // Modified by Yousef: add simple browse filters without changing the existing request listing flow.
+            searchTerm = string.IsNullOrWhiteSpace(searchTerm) ? null : searchTerm.Trim();
+            city = string.IsNullOrWhiteSpace(city) ? null : city.Trim();
 
-            return View(requests);
+            var query = _db.ServiceRequests
+                .Include(r => r.Requester)
+                .Where(r => r.Status == Enums.RequestStatus.Open);
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(r => r.Title.Contains(searchTerm) || r.Description.Contains(searchTerm));
+            }
+
+            if (category.HasValue)
+            {
+                query = query.Where(r => (int)r.Category == category.Value);
+            }
+
+            if (!string.IsNullOrEmpty(city))
+            {
+                query = query.Where(r => r.Location.Contains(city));
+            }
+
+            var vm = new BrowseFilterViewModel
+            {
+                Requests = query
+                    .OrderByDescending(r => r.CreatedAt)
+                    .ToList(),
+                SearchTerm = searchTerm,
+                Category = category.HasValue ? (Enums.RequestCategory)category.Value : null,
+                City = city
+            };
+
+            return View(vm);
         }
 
         // GET: /ServiceRequests/MyRequests

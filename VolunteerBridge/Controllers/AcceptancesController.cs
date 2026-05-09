@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,6 +23,7 @@ namespace VolunteerBridge.Controllers
         private int? GetUserId() => HttpContext.Session.GetInt32("UserId");
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Accept(int requestId)
         {
             var userId = GetUserId();
@@ -36,7 +37,21 @@ namespace VolunteerBridge.Controllers
                 return BadRequest("الطلب غير متاح");
             }
 
-            // Create the acceptance record
+            // Modified by Yousef: prevent unsafe acceptance cases before creating the volunteer record.
+            if (request.RequesterId == userId.Value)
+            {
+                TempData["Error"] = "لا يمكنك قبول طلبك الخاص.";
+                return RedirectToAction("Details", "ServiceRequests", new { id = requestId });
+            }
+
+            bool alreadyAccepted = _db.Acceptances
+                .Any(a => a.RequestId == requestId && a.VolunteerId == userId.Value);
+            if (alreadyAccepted)
+            {
+                TempData["Error"] = "لقد قبلت هذا الطلب بالفعل.";
+                return RedirectToAction("Details", "ServiceRequests", new { id = requestId });
+            }
+
             var acceptance = new Acceptance()
             {
                 RequestId = requestId,
@@ -46,9 +61,10 @@ namespace VolunteerBridge.Controllers
                 Volunteer = _db.Users.Find(userId.Value)
             };
             _db.Acceptances.Add(acceptance);
-            // Update request status to Accepted
+            // Modified by Yousef: keep the request status synchronized after a successful acceptance.
             request.Status = Enums.RequestStatus.Accepted;
             _db.SaveChanges();
+            TempData["Success"] = "تم قبول الطلب بنجاح.";
             return RedirectToAction("MyTasks");
         }
 
@@ -69,9 +85,15 @@ namespace VolunteerBridge.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult MarkComplete(int acceptanceId)
         {
             var userId = GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var acceptance = _db.Acceptances
                 .Include(a => a.Request)
                 .FirstOrDefault(a => a.AcceptanceId == acceptanceId);
@@ -116,12 +138,36 @@ namespace VolunteerBridge.Controllers
                 });
             }
             _db.SaveChanges();
+            TempData["Success"] = "تم تسجيل إنجاز المهمة وإضافة النقاط للمتطوع.";
             return RedirectToAction("Details", "ServiceRequests",
             new { id = acceptance.RequestId });
         }
 
         public IActionResult Rate(int acceptanceId, int toUserId)
         {
+            var userId = GetUserId();
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Modified by Yousef: only allow the requester of the completed task to open the rating form.
+            var acceptance = _db.Acceptances
+                .Include(a => a.Request)
+                .FirstOrDefault(a => a.AcceptanceId == acceptanceId);
+
+            if (acceptance == null)
+            {
+                return NotFound();
+            }
+
+            if (acceptance.Request?.RequesterId != userId.Value ||
+                acceptance.VolunteerId != toUserId ||
+                acceptance.Status != AcceptanceStatus.Done)
+            {
+                return Forbid();
+            }
+
             return View(new RatingViewModel
             {
                 AcceptanceId = acceptanceId,
@@ -130,6 +176,7 @@ namespace VolunteerBridge.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Rate(RatingViewModel model)
         {
             if (!ModelState.IsValid)
@@ -156,6 +203,7 @@ namespace VolunteerBridge.Controllers
             {
                 return Forbid();
             }
+            model.ToUserId = acceptance.VolunteerId;
             // Prevent duplicate ratings
             //حماية اضافية عشان لو حد بعت post request مباشرة من غير ال view
             //هو كدا كدا مش هيوصل عشان بعمل disable button rating from Details View
@@ -188,7 +236,8 @@ namespace VolunteerBridge.Controllers
                 ratedUser.AverageRating = (decimal)avg;
                 _db.SaveChanges();
             }
-            return RedirectToAction("MyTasks");
+            TempData["Success"] = "تم إرسال التقييم بنجاح.";
+            return RedirectToAction("Details", "ServiceRequests", new { id = acceptance.RequestId });
         }
     }
 }

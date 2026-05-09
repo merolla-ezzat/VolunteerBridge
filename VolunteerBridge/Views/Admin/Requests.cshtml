@@ -1,0 +1,42 @@
+@model List<VolunteerBridge.Models.ServiceRequest>
+@{
+    ViewData["Title"] = "الطلبات";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+    <div>
+        <h2 class="h4 mb-1">الطلبات</h2>
+        <p class="text-muted mb-0">عرض كل الطلبات المنشورة وحالتها الحالية.</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">العودة للوحة الإدارة</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>العنوان</th>
+                        <th>الفئة</th>
+                        <th>صاحب الطلب</th>
+                        <th>الحالة</th>
+                        <th>تاريخ النشر</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var request in Model)
+                    {
+                        <tr>
+                            <td>@request.Title</td>
+                            <td>@request.Category.GetDisplayName()</td>
+                            <td>@request.Requester?.FullName</td>
+                            <td>@request.Status.GetDisplayName()</td>
+                            <td>@request.CreatedAt.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -24,3 +24,38 @@ html, body {
     direction: rtl;
     text-align: right;
 }
+
+/* Modified by Yousef: add shared navbar and level badge helpers for the new Bootstrap pages. */
+.badge-newcomer {
+    background-color: #6c757d;
+}
+
+.badge-helper {
+    background-color: #0d6efd;
+}
+
+.badge-trusted {
+    background-color: #198754;
+}
+
+.badge-champion {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.level-badge {
+    font-weight: 600;
+}
+
+.leaderboard-current-user {
+    background-color: #f0f7ff;
+}
+
+.site-alerts {
+    margin-bottom: 1rem;
+}
+
+.navbar-nav .nav-link,
+.navbar-nav .btn {
+    white-space: nowrap;
+}
