@@ -149,5 +149,13 @@ namespace VolunteerBridge.Controllers
             return View();
         }
 
+        // student 4 to enable requester to show Volunteer's Profile
+        public IActionResult ViewProfile(int id)
+        {
+            var user = _db.Users.Find(id);
+            if (user == null) return NotFound();
+            return View(user);
+        }
+
     }
 }

@@ -17,7 +17,7 @@ namespace VolunteerBridge.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(@"Server=Maryam\SQLEXPRESS;Database=VolunteerBridge;Trusted_Connection=True;TrustServerCertificate=True;");
+                optionsBuilder.UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=VolunteerBridge;Trusted_Connection=True;TrustServerCertificate=True;");
             }
         }
         
