@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using static VolunteerBridge.Models.Enums;
 
 namespace VolunteerBridge.Models
@@ -46,6 +46,14 @@ namespace VolunteerBridge.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         [Display(Name = "نشط")]
         public bool IsActive { get; set; } = true;
+        
+        [Display(Name = "محظور")]
+        public bool IsBanned { get; set; } = false;
+        
+        [Display(Name = "سبب الحظر")]
+        [StringLength(500)]
+        public string? BanReason { get; set; }
+
         public bool IsEmailConfirmed { get; set; } = false;
         public string? EmailConfirmationToken { get; set; }
         public ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();

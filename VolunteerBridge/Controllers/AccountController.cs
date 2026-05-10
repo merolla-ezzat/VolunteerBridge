@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using VolunteerBridge.Models;
 using VolunteerBridge.ViewModels;
 using VolunteerBridge.Services;
@@ -75,10 +75,18 @@ namespace VolunteerBridge.Controllers
             var user = _db.Users.FirstOrDefault(u => u.Email == model.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
             {
-                ModelState.AddModelError("", "Invalid email or password");
+                ModelState.AddModelError("", "البريد الإلكتروني أو كلمة المرور غير صحيحة");
                 return View(model);
             }
-            //  no confirmation no login
+            
+            // Check if user is banned
+            if (user.IsBanned)
+            {
+                ModelState.AddModelError("", $"تم إيقاف حسابك. {(string.IsNullOrEmpty(user.BanReason) ? "" : "السبب: " + user.BanReason)}");
+                return View(model);
+            }
+
+            // no confirmation no login
             if (!user.IsEmailConfirmed)
             {
                 ModelState.AddModelError("", "من فضلك أكّد بريدك الإلكتروني الأول قبل تسجيل الدخول.");

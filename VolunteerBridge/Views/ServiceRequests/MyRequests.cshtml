@@ -1,98 +1,194 @@
-﻿@model List<VolunteerBridge.Models.ServiceRequest>
+@model List<VolunteerBridge.Models.ServiceRequest>
 @{
     ViewBag.Title = "طلباتي";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div dir="rtl" lang="ar">
+<div class="w-container py-5" dir="rtl" lang="ar">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2>طلباتي</h2>
-            <p class="text-muted mb-0">الطلبات التي نشرتها</p>
+    @* --- Background Glows --- *@
+    <div class="position-fixed top-0 start-50 translate-middle-x w-100 h-100 overflow-hidden" style="z-index: -1; pointer-events: none;">
+        <div class="position-absolute" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%); top: -100px; right: -150px; filter: blur(80px);"></div>
+        <div class="position-absolute" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%); bottom: -50px; left: -100px; filter: blur(60px);"></div>
+    </div>
+
+    @* ── Page Header ── *@
+    <div class="w-glass-premium mb-5 w-animate-fadeIn" style="border-radius: var(--w-radius-xl); overflow: hidden;">
+        <div class="p-5">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-4">
+                <div>
+                    <h1 class="w-h1 mb-2 w-aurora-text">طلباتي</h1>
+                    <p class="w-body-lg text-secondary mb-0 opacity-75">إدارة ومتابعة طلبات التطوع التي قمت بنشرها.</p>
+                </div>
+                <a asp-action="Create" class="w-btn w-btn-primary shadow-lg w-btn-lg">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>نشر طلب جديد</span>
+                </a>
+            </div>
         </div>
-        <a asp-action="Create" class="btn btn-primary">نشر طلب جديد</a>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center py-5">
-            <h5>لم تنشر أي طلبات بعد</h5>
-            <p>انقر على "نشر طلب جديد" لطلب المساعدة من المتطوعين</p>
-            <a asp-action="Create" class="btn btn-primary mt-2">نشر طلب الآن</a>
+        <div class="w-glass-premium text-center py-5 w-animate-fadeInUp" style="border: 2px dashed rgba(99, 102, 241, 0.1); background: rgba(255, 255, 255, 0.02); border-radius: var(--w-radius-2xl);">
+            <div class="p-5">
+                <div class="w-avatar w-avatar-xl w-mx-auto w-mb-xl" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                    <span class="material-symbols-outlined" style="font-size: 48px;">post_add</span>
+                </div>
+                <h3 class="w-h2 mb-3 w-aurora-text">لم تنشر أي طلبات بعد</h3>
+                <p class="w-body-lg text-secondary mb-5 mx-auto opacity-75" style="max-width: 520px;">
+                    ابدأ بطلب المساعدة من المتطوعين في مجتمعك. كل طلب تنشره هو فرصة لشخص آخر لتقديم العون!
+                </p>
+                <a asp-action="Create" class="w-btn w-btn-primary w-btn-lg px-5">
+                    <span>ابدأ الآن</span>
+                    <span class="material-symbols-outlined">arrow_back</span>
+                </a>
+            </div>
         </div>
     }
     else
     {
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>الصورة</th>
-                        <th>العنوان</th>
-                        <th>الفئة</th>
-                        <th>الساعات</th>
-                        <th>النقاط</th>
-                        <th>الحالة</th>
-                        <th>تاريخ النشر</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6">
+                    @if (item.IsRemovedByAdmin && !item.RemovalAcknowledged)
                     {
-                        <tr>
-                            <td>
-                                @if (!string.IsNullOrEmpty(item.ImagePath))
-                                {
-                                    <img src="@item.ImagePath" style="width:50px;height:50px;object-fit:cover;border-radius:6px;" alt="صورة" />
-                                }
-                                else
-                                {
-                                    <span class="text-muted">—</span>
-                                }
-                            </td>
-                            <td><strong>@item.Title</strong></td>
-                            <td><span class="badge bg-secondary">@item.Category.GetDisplayName()</span></td>
-                            <td>@item.EstimatedHours ساعة</td>
-                            <td>@item.PointsReward نقطة</td>
-                            <td>
-                                @switch (item.Status)
-                                {
-                                    case VolunteerBridge.Models.Enums.RequestStatus.Open:
-                                        <span class="badge bg-success">مفتوح</span>
-                                        break;
-                                    case VolunteerBridge.Models.Enums.RequestStatus.Accepted:
-                                        <span class="badge bg-primary">تم القبول</span>
-                                        break;
-                                    case VolunteerBridge.Models.Enums.RequestStatus.Completed:
-                                        <span class="badge bg-dark">مكتمل</span>
-                                        break;
-                                    case VolunteerBridge.Models.Enums.RequestStatus.Cancelled:
-                                        <span class="badge bg-danger">ملغى</span>
-                                        break;
-                                }
-                            </td>
-                            <td>@item.CreatedAt.ToString("dd/MM/yyyy")</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@item.RequestId"
-                                   class="btn btn-sm btn-outline-secondary ms-1">عرض</a>
-
-                                @if (item.Status == VolunteerBridge.Models.Enums.RequestStatus.Open)
-                                {
-                                    <form asp-action="Cancel" asp-route-id="@item.RequestId"
-                                          method="post" style="display:inline;"
-                                          onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-sm btn-danger">إلغاء</button>
-                                    </form>
-                                }
-                            </td>
-                        </tr>
+                        <div class="w-card h-100" style="background-color: var(--w-error-container); border: 1px solid var(--w-error);">
+                            <div class="p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="material-symbols-outlined text-error">warning</span>
+                                        <h6 class="w-h6 mb-0 text-error">تمت إزالة طلبك "@item.Title"</h6>
+                                    </div>
+                                </div>
+                                <p class="w-body-sm mb-3 text-secondary">
+                                    <strong>السبب:</strong> @(string.IsNullOrEmpty(item.AdminRemovalReason) ? "لم يتم تحديد سبب" : item.AdminRemovalReason)
+                                </p>
+                                <form asp-action="AcknowledgeRemoval" asp-route-id="@item.RequestId" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="w-btn w-btn-outline-error w-btn-sm">
+                                        <span>مفهوم (إخفاء)</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     }
-                </tbody>
-            </table>
+                    else
+                    {
+                        <div class="w-glass-premium h-100 d-flex flex-column w-animate-fadeInUp" style="transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: var(--w-radius-xl); overflow: hidden;"
+                             onmouseover="this.style.transform='translateY(-8px) scale(1.02)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)';" 
+                             onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='none';">
+                            @* Card Header: Category + Status *@
+                            <div class="p-4 pb-0">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="w-chip w-glass-premium py-1 px-3" style="background: rgba(99, 102, 241, 0.05);">
+                                        <span class="material-symbols-outlined fs-6 text-primary">category</span>
+                                        <span class="w-body-xs fw-bold text-primary">@item.Category.GetDisplayName()</span>
+                                    </div>
+                                    
+                                    @switch (item.Status)
+                                    {
+                                        case VolunteerBridge.Models.Enums.RequestStatus.Open:
+                                            <div class="w-chip w-chip-green w-glass-premium shadow-sm border-0">
+                                                <span class="material-symbols-outlined fs-6">lock_open</span>
+                                                <span class="w-body-xs fw-bold">مفتوح</span>
+                                            </div>
+                                            break;
+                                        case VolunteerBridge.Models.Enums.RequestStatus.Accepted:
+                                            <div class="w-chip w-chip-blue w-glass-premium shadow-sm border-0">
+                                                <span class="material-symbols-outlined fs-6">engineering</span>
+                                                <span class="w-body-xs fw-bold">قيد التنفيذ</span>
+                                            </div>
+                                            break;
+                                        case VolunteerBridge.Models.Enums.RequestStatus.Completed:
+                                            <div class="w-chip w-chip-green w-glass-premium shadow-sm border-0">
+                                                <span class="material-symbols-outlined fs-6">check_circle</span>
+                                                <span class="w-body-xs fw-bold">مكتمل</span>
+                                            </div>
+                                            break;
+                                        case VolunteerBridge.Models.Enums.RequestStatus.Cancelled:
+                                            <div class="w-chip w-chip-red w-glass-premium shadow-sm border-0">
+                                                <span class="material-symbols-outlined fs-6">cancel</span>
+                                                <span class="w-body-xs fw-bold">ملغى</span>
+                                            </div>
+                                            break;
+                                    }
+                                </div>
+
+                                @* Card Body: Image + Title + Date *@
+                                <div class="d-flex gap-4 align-items-center mb-4">
+                                    @if (!string.IsNullOrEmpty(item.ImagePath))
+                                    {
+                                        <div class="position-relative">
+                                            <img src="@item.ImagePath" style="width: 80px; height: 80px; object-fit: cover; border-radius: var(--w-radius-lg); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="صورة الطلب" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="w-avatar w-avatar-lg" style="background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(16,185,129,0.1)); border-radius: var(--w-radius-lg); flex-shrink: 0;">
+                                            <span class="material-symbols-outlined text-primary opacity-50" style="font-size: 32px;">image</span>
+                                        </div>
+                                    }
+                                    <div class="flex-grow-1 min-w-0">
+                                        <h5 class="w-h5 mb-2 text-truncate w-aurora-text" title="@item.Title">@item.Title</h5>
+                                        <div class="d-flex align-items-center gap-2 text-secondary w-body-xs opacity-75">
+                                            <span class="material-symbols-outlined" style="font-size: 16px;">calendar_today</span>
+                                            <span>نُشر في @item.CreatedAt.ToString("dd MMMM yyyy")</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @* Card Stats *@
+                                <div class="row g-3 mb-4">
+                                    <div class="col-6">
+                                        <div class="p-3 w-glass-premium d-flex align-items-center gap-2" style="background: rgba(99,102,241,0.02); border-radius: var(--w-radius-lg);">
+                                            <div class="w-avatar w-avatar-xs" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                                            </div>
+                                            <div class="lh-1">
+                                                <span class="d-block w-body-xs text-secondary opacity-75">المدة</span>
+                                                <span class="w-body-sm fw-bold">@item.EstimatedHours س</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 w-glass-premium d-flex align-items-center gap-2" style="background: rgba(16,185,129,0.02); border-radius: var(--w-radius-lg);">
+                                            <div class="w-avatar w-avatar-xs" style="background: rgba(16, 185, 129, 0.1); color: var(--w-secondary);">
+                                                <span class="material-symbols-outlined" style="font-size: 16px;">stars</span>
+                                            </div>
+                                            <div class="lh-1">
+                                                <span class="d-block w-body-xs text-secondary opacity-75">النقاط</span>
+                                                <span class="w-body-sm fw-bold">@item.PointsReward</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @* Card Footer: Actions *@
+                            <div class="mt-auto p-4 pt-0">
+                                <div class="d-flex gap-2 pt-4" style="border-top: 1px solid rgba(255,255,255,0.05);">
+                                    <a asp-action="Details" asp-route-id="@item.RequestId" class="w-btn w-btn-secondary flex-grow-1 justify-content-center w-glass-premium">
+                                        <span class="material-symbols-outlined">visibility</span>
+                                        <span>التفاصيل</span>
+                                    </a>
+
+                                    @if (item.Status == VolunteerBridge.Models.Enums.RequestStatus.Open)
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@item.RequestId" method="post" onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')" class="d-contents">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="w-btn w-btn-outline-error px-3 w-glass-premium" title="إلغاء الطلب">
+                                                <span class="material-symbols-outlined">delete</span>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     }
-
 </div>

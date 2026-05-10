@@ -1,75 +1,128 @@
-﻿@model VolunteerBridge.ViewModels.RatingViewModel
+@model VolunteerBridge.ViewModels.RatingViewModel
 @{
-    ViewData["Title"] = "تقييم";
+    ViewData["Title"] = "تقييم المتطوع";
 }
 
-<h2 class="mb-4">تقييم</h2>
-@if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        @Html.ValidationSummary(false)
+<div class="w-container w-py-xl w-animate-fadeIn" style="max-width: 560px;">
+
+    @* ── Header ── *@
+    <div class="text-center w-mb-xl">
+        <div class="w-avatar w-avatar-xl w-mx-auto w-mb-md" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+            <span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">star</span>
+        </div>
+        <h2 class="w-h3 fw-bold mb-1">تقييم المتطوع</h2>
+        <p class="w-text-muted w-body-sm">شاركنا رأيك في أداء المتطوع لتحسين تجربة المجتمع.</p>
     </div>
-}
 
-<div class="card shadow p-4" style="max-width: 500px; margin: auto;">
-    <form method="post" asp-action="Rate">
-        <input type="hidden" asp-for="AcceptanceId" />
-        <input type="hidden" asp-for="ToUserId" />
+    @* ── Validation ── *@
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="w-alert w-alert-error w-mb-lg">
+            @Html.ValidationSummary(false)
+        </div>
+    }
 
-        @* النجوم *@
-        <div class="mb-3">
-            <label class="form-label fw-bold">التقييم (1 إلى 5)</label>
-            <div class="d-flex gap-2 fs-2" id="stars">
-                @for (int i = 1; i <= 5; i++)
-                {
-                    <span class="star" data-value="@i" style="cursor:pointer; color: gray;">★</span>
-                }
+    @* ── Rating Card ── *@
+    <div class="w-card" style="border-top: 4px solid #f59e0b;">
+        <form method="post" asp-action="Rate">
+            <input type="hidden" asp-for="AcceptanceId" />
+            <input type="hidden" asp-for="ToUserId" />
+
+            @* ── Star Rating ── *@
+            <div class="w-mb-xl">
+                <label class="w-label w-mb-sm d-block">التقييم</label>
+                <div class="d-flex w-gap-sm w-justify-center w-py-md" id="stars" style="direction: ltr;">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="star-btn" data-value="@i" tabindex="0" role="button"
+                              aria-label="تقييم @i من 5"
+                              style="cursor: pointer; font-size: 40px; color: var(--w-outline-variant); transition: color 0.2s ease, transform 0.2s ease; line-height: 1; user-select: none;">
+                            <span class="material-symbols-outlined" style="font-size: 40px; font-variation-settings: 'FILL' 1;">star</span>
+                        </span>
+                    }
+                </div>
+                <input type="hidden" asp-for="Rate" id="rateInput" />
+                <div class="w-text-center w-mt-xs">
+                    <span id="rateLabel" class="w-caption w-text-muted">اختر تقييمك</span>
+                </div>
+                <span asp-validation-for="Rate" class="w-caption" style="color: var(--w-error); display: block; text-align: center; margin-top: 4px;"></span>
             </div>
-            <input type="hidden" asp-for="Rate" id="rateInput" />
-            <span asp-validation-for="Rate" class="text-danger small"></span>
-        </div>
 
-        @* التعليق *@
-        <div class="mb-3">
-            <label asp-for="Comment" class="form-label fw-bold">تعليق (اختياري)</label>
-            <textarea asp-for="Comment" class="form-control" rows="3"
-                      placeholder="اكتب تعليقك هنا..."></textarea>
-            <span asp-validation-for="Comment" class="text-danger small"></span>
-        </div>
+            @* ── Comment ── *@
+            <div class="w-input-group w-mb-xl">
+                <label asp-for="Comment" class="w-label">تعليق <span class="w-text-muted fw-normal">(اختياري)</span></label>
+                <textarea asp-for="Comment" class="w-input" rows="3"
+                          placeholder="اكتب تعليقك هنا..." style="resize: vertical; min-height: 100px;"></textarea>
+                <span asp-validation-for="Comment" class="w-caption" style="color: var(--w-error);"></span>
+            </div>
 
-        <button type="submit" class="btn btn-warning w-100 fw-bold">
-            إرسال التقييم
-        </button>
-    </form>
+            @* ── Submit ── *@
+            <button type="submit" class="w-btn w-btn-primary w-100" style="background: #f59e0b; border-color: #f59e0b; font-weight: 700;">
+                <span class="material-symbols-outlined">send</span>
+                إرسال التقييم
+            </button>
+        </form>
+    </div>
+
+    @* ── Back Link ── *@
+    <div class="w-text-center w-mt-lg">
+        <a asp-controller="Acceptances" asp-action="MyTasks" class="w-btn w-btn-ghost w-btn-sm">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            العودة لمهامي
+        </a>
+    </div>
 </div>
 
-@* JavaScript للنجوم *@
 @section Scripts {
     <script>
-        const stars = document.querySelectorAll('.star');
+        const stars = document.querySelectorAll('.star-btn');
         const rateInput = document.getElementById('rateInput');
+        const rateLabel = document.getElementById('rateLabel');
+        const labels = ['', 'ضعيف', 'مقبول', 'جيد', 'ممتاز', 'استثنائي'];
 
         stars.forEach(star => {
-            // لما تعدي بالماوس
             star.addEventListener('mouseover', function () {
                 highlightStars(this.dataset.value);
+                rateLabel.textContent = labels[this.dataset.value];
             });
 
-            // لما تضغط
             star.addEventListener('click', function () {
                 rateInput.value = this.dataset.value;
                 highlightStars(this.dataset.value);
+                rateLabel.textContent = labels[this.dataset.value];
+                rateLabel.style.color = '#f59e0b';
+                rateLabel.style.fontWeight = '600';
             });
 
-            // لما الماوس يمشي
             star.addEventListener('mouseout', function () {
-                highlightStars(rateInput.value);
+                highlightStars(rateInput.value || 0);
+                if (!rateInput.value) {
+                    rateLabel.textContent = 'اختر تقييمك';
+                    rateLabel.style.color = '';
+                    rateLabel.style.fontWeight = '';
+                } else {
+                    rateLabel.textContent = labels[rateInput.value];
+                }
+            });
+
+            star.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    this.click();
+                }
             });
         });
 
         function highlightStars(count) {
             stars.forEach(s => {
-                s.style.color = s.dataset.value <= count ? 'gold' : 'gray';
+                const icon = s.querySelector('.material-symbols-outlined');
+                if (s.dataset.value <= count) {
+                    s.style.color = '#f59e0b';
+                    s.style.transform = 'scale(1.15)';
+                } else {
+                    s.style.color = 'var(--w-outline-variant)';
+                    s.style.transform = 'scale(1)';
+                }
             });
         }
     </script>

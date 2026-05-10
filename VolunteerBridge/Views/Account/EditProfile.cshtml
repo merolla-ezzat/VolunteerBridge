@@ -1,184 +1,95 @@
-﻿@model VolunteerBridge.Models.User
+@model VolunteerBridge.Models.User
 @{
-    ViewBag.Title = "تعديل الملف الشخصي";
-    Layout = null;
+    ViewData["Title"] = "تعديل الملف الشخصي";
 }
 
-<!DOCTYPE html>
-<html class="light" dir="rtl" lang="ar">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>وصال - تعديل الملف الشخصي</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: { arabic: ['Rubik', 'sans-serif'] },
-                    colors: {
-                        "surface-tint": "#006e2f",
-                        "surface": "#f3fcef",
-                        "surface-container-low": "#edf6ea",
-                        "outline": "#6d7b6c",
-                        "background": "#f3fcef",
-                        "on-primary": "#ffffff",
-                        "on-surface": "#161d16",
-                        "surface-container-lowest": "#ffffff",
-                        "on-secondary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "on-background": "#161d16",
-                        "primary-container": "#22c55e",
-                        "outline-variant": "#bccbb9",
-                        "secondary": "#0051d5",
-                        "primary": "#006e2f",
-                        "on-primary-container": "#004b1e",
-                        "on-surface-variant": "#3d4a3d",
-                        "surface-container": "#e8f0e4",
-                        "error-container": "#ffdad6",
-                        "surface-container-high": "#e2ebde",
-                        "secondary-fixed": "#dbe1ff",
-                        "surface-bright": "#f3fcef"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-                    },
-                    spacing: {
-                        "lg": "24px", "xs": "4px", "md": "16px", "sm": "8px",
-                        "xxl": "48px", "xl": "32px"
-                    },
-                    fontSize: {
-                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "caption": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            font-family: 'Rubik', sans-serif;
-        }
-    </style>
-</head>
-<body class="bg-background text-on-background min-h-screen p-md lg:p-xl font-arabic">
+<div class="w-container w-py-xl w-animate-fadeIn" style="max-width: 640px;">
 
-    <div class="max-w-[600px] mx-auto space-y-lg">
-
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-            <a href="/" class="text-h2 font-black text-primary">وصال</a>
-            <a asp-action="Profile" asp-controller="Account"
-               class="flex items-center gap-sm text-label-bold text-on-surface-variant hover:text-primary transition-colors">
-                <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
-                العودة للملف
-            </a>
+    @* ── Header ── *@
+    <div class="d-flex align-items-center justify-content-between w-mb-xl">
+        <div>
+            <h1 class="w-h3 fw-bold mb-1">تعديل الملف الشخصي</h1>
+            <p class="w-body-sm w-text-muted mb-0">عدّل بياناتك الشخصية واحفظ التغييرات.</p>
         </div>
-
-        <!-- Card -->
-        <div class="bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-xl lg:p-xxl">
-
-            <!-- Title -->
-            <div class="mb-xl text-right">
-                <h1 class="text-h3 font-semibold text-on-surface mb-sm">تعديل الملف الشخصي</h1>
-                <p class="text-body-md text-on-surface-variant">عدّل بياناتك الشخصية واحفظ التغييرات.</p>
-            </div>
-
-            <form asp-action="EditProfile" asp-controller="Account" method="post" class="space-y-lg">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="UserId" />
-
-                <!-- Validation Summary -->
-                <div asp-validation-summary="ModelOnly" class="text-error text-body-sm bg-error-container p-md rounded-lg hidden [&:not(:empty)]:block"></div>
-
-                <!-- Full Name -->
-                <div class="space-y-xs">
-                    <label asp-for="FullName" class="block text-label-bold text-on-surface text-right">الاسم الكامل</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">person</span>
-                        </span>
-                        <input asp-for="FullName"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="أدخل اسمك الكامل" />
-                    </div>
-                    <span asp-validation-for="FullName" class="text-error text-caption"></span>
-                </div>
-
-                <!-- Email -->
-                <div class="space-y-xs">
-                    <label asp-for="Email" class="block text-label-bold text-on-surface text-right">البريد الإلكتروني</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">mail</span>
-                        </span>
-                        <input asp-for="Email" type="email"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="example@domain.com" />
-                    </div>
-                    <span asp-validation-for="Email" class="text-error text-caption"></span>
-                </div>
-
-                <!-- City -->
-                <div class="space-y-xs">
-                    <label asp-for="City" class="block text-label-bold text-on-surface text-right">
-                        المدينة <span class="text-on-surface-variant font-normal">(اختياري)</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">location_city</span>
-                        </span>
-                        <input asp-for="City"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="مدينتك" />
-                    </div>
-                </div>
-
-                <!-- Phone -->
-                <div class="space-y-xs">
-                    <label asp-for="PhoneNumber" class="block text-label-bold text-on-surface text-right">
-                        رقم الهاتف <span class="text-on-surface-variant font-normal">(اختياري)</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">phone</span>
-                        </span>
-                        <input asp-for="PhoneNumber"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="05xxxxxxxx" />
-                    </div>
-                </div>
-
-                <!-- Divider -->
-                <div class="border-t border-outline-variant"></div>
-
-                <!-- Buttons -->
-                <div class="flex gap-md flex-col sm:flex-row">
-                    <button type="submit"
-                            class="flex-1 bg-primary-container text-on-primary py-md px-lg rounded-lg text-label-bold hover:bg-primary transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary-container outline-none flex items-center justify-center gap-sm">
-                        <span class="material-symbols-outlined text-[18px]">save</span>
-                        حفظ التغييرات
-                    </button>
-                    <a asp-action="Profile" asp-controller="Account"
-                       class="flex-1 bg-surface-container text-on-surface py-md px-lg rounded-lg text-label-bold hover:bg-surface-container-high transition-colors flex items-center justify-center gap-sm text-center">
-                        <span class="material-symbols-outlined text-[18px]">close</span>
-                        إلغاء
-                    </a>
-                </div>
-
-            </form>
-        </div>
+        <a asp-action="Profile" asp-controller="Account" class="w-btn w-btn-ghost w-btn-sm">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            العودة للملف
+        </a>
     </div>
 
-    @section Scripts {
-        @await Html.PartialAsync("_ValidationScriptsPartial")
-    }
-</body>
-</html>
+    @* ── Form Card ── *@
+    <div class="w-card" style="border-top: 4px solid var(--w-primary);">
+        <form asp-action="EditProfile" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserId" />
+
+            @* ── Validation Summary ── *@
+            <div asp-validation-summary="ModelOnly" class="w-alert w-alert-error w-mb-lg"></div>
+
+            @* ── Full Name ── *@
+            <div class="w-input-group">
+                <label asp-for="FullName" class="w-label w-mb-sm d-block">الاسم الكامل</label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute" 
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">person</span>
+                    <input asp-for="FullName" class="w-input" style="padding-right: 44px;" placeholder="أدخل اسمك الكامل" />
+                </div>
+                <span asp-validation-for="FullName" class="w-caption" style="color: var(--w-error); margin-top: 4px; display: block;"></span>
+            </div>
+
+            @* ── Email ── *@
+            <div class="w-input-group">
+                <label asp-for="Email" class="w-label w-mb-sm d-block">البريد الإلكتروني</label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute" 
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">mail</span>
+                    <input asp-for="Email" type="email" class="w-input" style="padding-right: 44px;" placeholder="example@domain.com" />
+                </div>
+                <span asp-validation-for="Email" class="w-caption" style="color: var(--w-error); margin-top: 4px; display: block;"></span>
+            </div>
+
+            @* ── City ── *@
+            <div class="w-input-group">
+                <label asp-for="City" class="w-label w-mb-sm d-block">
+                    المدينة <span class="w-text-muted fw-normal">(اختياري)</span>
+                </label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute" 
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">location_city</span>
+                    <input asp-for="City" class="w-input" style="padding-right: 44px;" placeholder="مدينتك" />
+                </div>
+            </div>
+
+            @* ── Phone ── *@
+            <div class="w-input-group">
+                <label asp-for="PhoneNumber" class="w-label w-mb-sm d-block">
+                    رقم الهاتف <span class="w-text-muted fw-normal">(اختياري)</span>
+                </label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute" 
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">phone</span>
+                    <input asp-for="PhoneNumber" class="w-input" style="padding-right: 44px;" placeholder="05xxxxxxxx" />
+                </div>
+            </div>
+
+            @* ── Divider ── *@
+            <hr class="w-divider" />
+
+            @* ── Buttons ── *@
+            <div class="d-flex gap-3 flex-column flex-sm-row">
+                <button type="submit" class="w-btn w-btn-primary flex-grow-1">
+                    <span class="material-symbols-outlined">save</span>
+                    حفظ التغييرات
+                </button>
+                <a asp-action="Profile" asp-controller="Account" class="w-btn w-btn-ghost flex-grow-1">
+                    <span class="material-symbols-outlined">close</span>
+                    إلغاء
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

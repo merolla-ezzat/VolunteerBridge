@@ -13,9 +13,15 @@ namespace VolunteerBridge.Controllers
             _db = db;
         }
 
-        // Coded by Yousef: provide a small public statistics page using direct aggregate queries.
+        // Coded by Yousef: provide a statistics page for Admins only.
         public IActionResult Index()
         {
+            var isAdmin = HttpContext.Session.GetString("IsAdmin");
+            var adminLoggedIn = HttpContext.Session.GetString("AdminLoggedIn");
+
+            if (isAdmin != "true" || adminLoggedIn != "true")
+                return RedirectToAction("Login", "Admin");
+
             var vm = new StatisticsViewModel
             {
                 TotalUsers = _db.Users.Count(u => u.IsActive),

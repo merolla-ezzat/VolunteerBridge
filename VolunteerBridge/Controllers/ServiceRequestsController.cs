@@ -28,7 +28,7 @@ namespace VolunteerBridge.Controllers
 
             var query = _db.ServiceRequests
                 .Include(r => r.Requester)
-                .Where(r => r.Status == Enums.RequestStatus.Open);
+                .Where(r => r.Status == Enums.RequestStatus.Open && !r.IsRemovedByAdmin);
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
@@ -65,7 +65,7 @@ namespace VolunteerBridge.Controllers
             if (userId == null) return RedirectToAction("Login", "Account");
 
             var requests = _db.ServiceRequests
-                .Where(r => r.RequesterId == userId)
+                .Where(r => r.RequesterId == userId && (!r.IsRemovedByAdmin || !r.RemovalAcknowledged))
                 .OrderByDescending(r => r.CreatedAt)
                 .ToList();
 
@@ -175,6 +175,27 @@ namespace VolunteerBridge.Controllers
                 request.Status = Enums.RequestStatus.Cancelled;
                 _db.SaveChanges();
                 TempData["Success"] = "تم إلغاء الطلب.";
+            }
+
+            return RedirectToAction("MyRequests");
+        }
+        // POST: /ServiceRequests/AcknowledgeRemoval/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AcknowledgeRemoval(int id)
+        {
+            var userId = GetUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var request = _db.ServiceRequests.Find(id);
+            if (request == null) return NotFound();
+
+            if (request.RequesterId != userId) return Forbid();
+
+            if (request.IsRemovedByAdmin && !request.RemovalAcknowledged)
+            {
+                request.RemovalAcknowledged = true;
+                _db.SaveChanges();
             }
 
             return RedirectToAction("MyRequests");

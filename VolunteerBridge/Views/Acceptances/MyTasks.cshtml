@@ -1,74 +1,103 @@
-﻿@model IEnumerable<VolunteerBridge.Models.Acceptance>
+@model IEnumerable<VolunteerBridge.Models.Acceptance>
 @{
     ViewData["Title"] = "مهامي";
     var currentUserId = Context.Session.GetInt32("UserId");
 }
 
-<h2 class="mb-4">مهامي</h2>
+<div class="w-container w-py-xl w-animate-fadeIn">
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info">لا توجد مهام حتى الآن.</div>
-}
-else
-{
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>الطلب</th>
-                <th>الحالة</th>
-                <th>تاريخ القبول</th>
-                <th>النقاط</th>
-                <th>إجراءات</th>
-            </tr>
-        </thead>
-        <tbody>
+    @* ── Page Header ── *@
+    <div class="w-card w-mb-xl w-border-accent-primary">
+        <h2 class="w-h2 mb-1">مهامي</h2>
+        <p class="w-body-md w-text-muted mb-0">تتبع المهام التي قبلتها أو المهام التي ينتظر أصحابها إنجازها.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="w-card w-text-center w-py-3xl w-animate-fadeInUp">
+            <span class="material-symbols-outlined w-text-faint d-block w-mb-md" style="font-size: 64px;">assignment_late</span>
+            <h3 class="w-h4 mb-2">لا توجد مهام حالياً</h3>
+            <p class="w-body-md w-text-muted mb-4 w-mx-auto" style="max-width: 450px;">
+                لم تقبل أي مهام تطوعية بعد، أو لا توجد مهام تنتظر إجراءك.
+            </p>
+            <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-primary">
+                <span class="material-symbols-outlined">explore</span>
+                تصفح الطلبات
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4 w-stagger">
             @foreach (var task in Model)
             {
-                <tr>
-                    <td>@task.Request?.Title</td>
-                    <td>
-                        @if (task.Status == Enums.AcceptanceStatus.Done)
-                        {
-                            <span class="badge bg-success">مكتملة</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning text-dark">جارية</span>
-                        }
-                    </td>
-                    <td>@task.AcceptedAt.ToString("dd/MM/yyyy")</td>
-                    <td>@task.Request?.PointsReward نقطة</td>
-                    <td>
-                        @* زرار Mark Complete — بس لو الـ Requester هو اللي شايفه *@
-                        @if (task.Status != Enums.AcceptanceStatus.Done
-                                        && task.Request?.RequesterId == currentUserId)
-                        {
-                            <form method="post" asp-action="MarkComplete" style="display:inline">
-                                <input type="hidden" name="acceptanceId" value="@task.AcceptanceId" />
-                                <button type="submit" class="btn btn-success btn-sm">
-                                    تم الإنجاز
-                                </button>
-                            </form>
-                        }
+                <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
+                    <div class="w-card w-card-interactive h-100 d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center w-mb-md">
+                                @if (task.Status == VolunteerBridge.Models.Enums.AcceptanceStatus.Done)
+                                {
+                                    <div class="w-chip w-chip-success">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
+                                        <span>مكتملة</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="w-chip w-chip-warning">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">pending</span>
+                                        <span>جارية</span>
+                                    </div>
+                                }
 
-                        @* زرار Rate — بس بعد ما المهمة تخلص *@
-                        @if (task.Status == Enums.AcceptanceStatus.Done)
-                        {
-                            @* الـ Requester يقيّم المتطوع *@
-                            @if (task.Request?.RequesterId == currentUserId)
-                            {
-                                <a asp-action="Rate"
-                                   asp-route-acceptanceId="@task.AcceptanceId"
-                                   asp-route-toUserId="@task.VolunteerId"
-                                   class="btn btn-primary btn-sm">
-                                    قيّم المتطوع
+                                <div class="w-body-sm w-text-muted">
+                                    @task.AcceptedAt.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+
+                            <h5 class="w-h5 mb-3 text-truncate" title="@task.Request?.Title">@task.Request?.Title</h5>
+
+                            <div class="d-flex align-items-center gap-2 w-mb-md">
+                                <div class="w-chip w-chip-secondary">
+                                    <span class="material-symbols-outlined" style="font-size: 14px;">stars</span>
+                                    <span>@task.Request?.PointsReward نقطة</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-border-t" style="padding-top: var(--w-space-md); margin-top: var(--w-space-sm);">
+                            <div class="d-flex gap-2">
+                                <a asp-controller="ServiceRequests" asp-action="Details" asp-route-id="@task.RequestId" class="w-btn w-btn-outline w-btn-sm flex-grow-1">
+                                    <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span>
+                                    التفاصيل
                                 </a>
-                            }
-                        }
-                    </td>
-                </tr>
+
+                                @if (task.Status != VolunteerBridge.Models.Enums.AcceptanceStatus.Done && task.Request?.RequesterId == currentUserId)
+                                {
+                                    <form method="post" asp-action="MarkComplete" class="flex-grow-1">
+                                        <input type="hidden" name="acceptanceId" value="@task.AcceptanceId" />
+                                        <button type="submit" class="w-btn w-btn-success w-btn-sm w-w-full">
+                                            <span class="material-symbols-outlined" style="font-size: 18px;">check</span>
+                                            تم الإنجاز
+                                        </button>
+                                    </form>
+                                }
+
+                                @if (task.Status == VolunteerBridge.Models.Enums.AcceptanceStatus.Done && task.Request?.RequesterId == currentUserId)
+                                {
+                                    <a asp-action="Rate"
+                                       asp-route-acceptanceId="@task.AcceptanceId"
+                                       asp-route-toUserId="@task.VolunteerId"
+                                       class="w-btn w-btn-primary w-btn-sm flex-grow-1">
+                                        <span class="material-symbols-outlined" style="font-size: 18px;">star</span>
+                                        قيّم المتطوع
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+        </div>
+    }
+</div>

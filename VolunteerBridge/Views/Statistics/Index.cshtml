@@ -1,70 +1,132 @@
 @model VolunteerBridge.ViewModels.StatisticsViewModel
 @{
     ViewData["Title"] = "الإحصائيات";
+    if (Context.Session.GetString("IsAdmin") == "true")
+    {
+        Layout = "_AdminLayout";
+    }
 }
 
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-    <div>
-        <h2 class="h4 mb-1">إحصائيات المنصة</h2>
-        <p class="text-muted mb-0">ملخص سريع عن النشاط الحالي داخل وصال.</p>
+<div class="@(Context.Session.GetString("IsAdmin") == "true" ? "" : "w-container") w-py-xl w-animate-fadeIn">
+    
+    @* ── Header Section ── *@
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+        <div>
+            <h2 class="w-h3 fw-bold mb-1 w-aurora-text">إحصائيات المنصة</h2>
+            <p class="w-body-sm w-text-muted">نظرة عامة على نشاط وتفاعل مجتمع وصال المتنامي.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="Leaderboard" asp-action="Index" class="w-btn w-btn-primary w-btn-sm">
+                <span class="material-symbols-outlined">military_tech</span>
+                لوحة الشرف
+            </a>
+            @if (Context.Session.GetString("IsAdmin") == "true")
+            {
+                <a asp-controller="Admin" asp-action="Dashboard" class="w-btn w-btn-outline w-btn-sm">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    اللوحة الإدارية
+                </a>
+            }
+        </div>
     </div>
-    <a asp-controller="Leaderboard" asp-action="Index" class="btn btn-outline-primary">عرض لوحة الشرف</a>
-</div>
 
-<div class="row g-3">
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">المستخدمون النشطون</div>
-                <div class="fs-4 fw-bold">@Model.TotalUsers</div>
+    @* ── Main Stats Grid ── *@
+    <div class="row g-4 mb-5 w-stagger">
+        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
+            <div class="w-card w-card-interactive h-100 w-border-accent-primary w-glass-premium">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-primary">
+                        <span class="material-symbols-outlined">group</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">المستخدمون النشطون</div>
+                        <div class="w-h4 mb-0 fw-bold">@Model.TotalUsers</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">إجمالي الطلبات</div>
-                <div class="fs-4 fw-bold">@Model.TotalRequests</div>
+
+        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
+            <div class="w-card w-card-interactive h-100 w-border-accent-secondary w-glass-premium">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-secondary">
+                        <span class="material-symbols-outlined">list_alt</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">إجمالي الطلبات</div>
+                        <div class="w-h4 mb-0 fw-bold">@Model.TotalRequests</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">الطلبات المفتوحة</div>
-                <div class="fs-4 fw-bold">@Model.TotalOpenRequests</div>
+
+        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
+            <div class="w-card w-card-interactive h-100 w-border-accent-warning w-glass-premium">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-warning">
+                        <span class="material-symbols-outlined">pending_actions</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">الطلبات المفتوحة</div>
+                        <div class="w-h4 mb-0 fw-bold">@Model.TotalOpenRequests</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">الطلبات المكتملة</div>
-                <div class="fs-4 fw-bold">@Model.TotalCompletedRequests</div>
+
+        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
+            <div class="w-card w-card-interactive h-100 w-border-accent-cyan w-glass-premium">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-cyan">
+                        <span class="material-symbols-outlined">task_alt</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">الطلبات المكتملة</div>
+                        <div class="w-h4 mb-0 fw-bold">@Model.TotalCompletedRequests</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">عدد المتطوعين</div>
-                <div class="fs-4 fw-bold">@Model.TotalVolunteers</div>
+
+        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
+            <div class="w-card h-100 w-border-accent-violet">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-violet">
+                        <span class="material-symbols-outlined">volunteer_activism</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">عدد المتطوعين</div>
+                        <div class="w-h4 mb-0">@Model.TotalVolunteers</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">إجمالي النقاط الممنوحة</div>
-                <div class="fs-4 fw-bold">@Model.TotalPointsAwarded</div>
+
+        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
+            <div class="w-card w-card-interactive h-100" style="background: linear-gradient(135deg, var(--w-primary) 0%, var(--w-primary-hover) 100%); color: white; border: none; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-inverse">
+                        <span class="material-symbols-outlined">stars</span>
+                    </div>
+                    <div>
+                        <div class="w-caption" style="opacity: 0.8; font-weight: 600;">إجمالي النقاط الممنوحة</div>
+                        <div class="w-h3 mb-0 fw-bold">@Model.TotalPointsAwarded.ToString("N0")</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-6 col-lg-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">المدينة الأكثر نشاطاً</div>
-                <div class="fs-5 fw-bold">@(string.IsNullOrWhiteSpace(Model.TopCity) ? "غير محددة" : Model.TopCity)</div>
+
+        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
+            <div class="w-card h-100 w-border-accent-rose">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-rose">
+                        <span class="material-symbols-outlined">location_on</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">المدينة الأكثر نشاطاً</div>
+                        <div class="w-h5 mb-0 fw-bold">@(string.IsNullOrWhiteSpace(Model.TopCity) ? "غير محددة" : Model.TopCity)</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

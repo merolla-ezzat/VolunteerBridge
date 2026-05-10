@@ -133,6 +133,9 @@ namespace VolunteerBridge.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RequestId"));
 
+                    b.Property<string>("AdminRemovalReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
@@ -150,6 +153,9 @@ namespace VolunteerBridge.Migrations
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsRemovedByAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -157,6 +163,9 @@ namespace VolunteerBridge.Migrations
 
                     b.Property<int>("PointsReward")
                         .HasColumnType("int");
+
+                    b.Property<bool>("RemovalAcknowledged")
+                        .HasColumnType("bit");
 
                     b.Property<int>("RequesterId")
                         .HasColumnType("int");
@@ -191,6 +200,10 @@ namespace VolunteerBridge.Migrations
                         .HasPrecision(3, 2)
                         .HasColumnType("decimal(3,2)");
 
+                    b.Property<string>("BanReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Bio")
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
@@ -221,6 +234,9 @@ namespace VolunteerBridge.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsBanned")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsEmailConfirmed")
                         .HasColumnType("bit");
 
@@ -245,6 +261,9 @@ namespace VolunteerBridge.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -1,42 +1,161 @@
 @model List<VolunteerBridge.Models.ServiceRequest>
 @{
-    ViewData["Title"] = "الطلبات";
+    ViewData["Title"] = "إدارة الطلبات";
+    Layout = "_AdminLayout";
 }
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
-        <h2 class="h4 mb-1">الطلبات</h2>
-        <p class="text-muted mb-0">عرض كل الطلبات المنشورة وحالتها الحالية.</p>
+        <h2 class="w-h4 mb-1">إدارة الطلبات</h2>
+        <p class="w-text-muted mb-0">مراقبة وإدارة كافة طلبات التطوع المنشورة في المنصة.</p>
     </div>
-    <a asp-action="Index" class="btn btn-outline-secondary">العودة للوحة الإدارة</a>
+    <a asp-action="Index" class="w-btn w-btn-outline w-btn-sm">
+        <span class="material-symbols-outlined">dashboard</span>
+        العودة للوحة الإدارة
+    </a>
 </div>
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>العنوان</th>
-                        <th>الفئة</th>
-                        <th>صاحب الطلب</th>
-                        <th>الحالة</th>
-                        <th>تاريخ النشر</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var request in Model)
+<div class="w-card p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="w-table">
+            <thead>
+                <tr>
+                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">subject</span> العنوان</span></th>
+                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">category</span> الفئة</span></th>
+                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">person</span> صاحب الطلب</span></th>
+                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">info</span> الحالة</span></th>
+                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">calendar_today</span> تاريخ النشر</span></th>
+                    <th class="w-text-left">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var request in Model)
                     {
                         <tr>
-                            <td>@request.Title</td>
-                            <td>@request.Category.GetDisplayName()</td>
-                            <td>@request.Requester?.FullName</td>
-                            <td>@request.Status.GetDisplayName()</td>
-                            <td>@request.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td class="fw-medium">@request.Title</td>
+                            <td>
+                                <span class="w-caption w-text-muted">@request.Category.GetDisplayName()</span>
+                            </td>
+                            <td>
+                                <div class="w-flex w-items-center w-gap-sm">
+                                    <div class="w-avatar w-avatar-sm">
+                                        @(request.Requester?.FullName?.Substring(0, 1) ?? "?")
+                                    </div>
+                                    <span class="w-body-sm">@request.Requester?.FullName</span>
+                                </div>
+                            </td>
+                            <td>
+                                @if(request.IsRemovedByAdmin)
+                                {
+                                    <span class="w-chip w-chip-red">
+                                        <span class="material-symbols-outlined fs-6">block</span>
+                                        محذوف إدارياً
+                                    </span>
+                                }
+                                else
+                                {
+                                    var statusClass = request.Status switch {
+                                        //RequestStatus.Pending => "w-chip-gray",
+                                        //RequestStatus.Active => "w-chip-blue",
+                                        RequestStatus.Completed => "w-chip-green",
+                                        RequestStatus.Cancelled => "w-chip-gray",
+                                        _ => "w-chip-gray"
+                                    };
+                                    <span class="w-chip @statusClass">
+                                        @request.Status.GetDisplayName()
+                                    </span>
+                                }
+                            </td>
+                            <td class="w-caption w-text-muted">@request.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td class="w-text-left">
+                                <div class="w-flex w-justify-end w-gap-sm">
+                                    @if(!request.IsRemovedByAdmin)
+                                    {
+                                        if (request.Acceptances != null && request.Acceptances.Any())
+                                        {
+                                            <span class="w-caption w-text-muted">تم البدء (محمي)</span>
+                                        }
+                                        else
+                                        {
+                                            <form asp-action="RemoveRequest" method="post" class="d-inline" onsubmit="return confirmRemove(this);">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@request.RequestId" />
+                                                <input type="hidden" name="reason" class="remove-reason-input" />
+                                                <button type="submit" class="w-btn w-btn-outline-danger w-btn-sm" title="إزالة الطلب">
+                                                    <span class="material-symbols-outlined">delete_forever</span>
+                                                    إزالة
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="w-btn w-btn-ghost w-btn-sm" 
+                                                title="@request.AdminRemovalReason" 
+                                                onclick="alert('سبب الحذف: @request.AdminRemovalReason')">
+                                            <span class="material-symbols-outlined">info</span>
+                                            السبب
+                                        </button>
+                                    }
+                                </div>
+                            </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="w-py-3xl w-text-center">
+                            <div class="w-flex w-flex-col w-items-center w-gap-sm">
+                                <span class="material-symbols-outlined w-text-faint" style="font-size: 48px;">inbox</span>
+                                <span class="w-text-muted">لا توجد طلبات في المنصة حالياً.</span>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 </div>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Page navigation" class="w-mt-xl">
+        <ul class="pagination w-justify-center w-gap-sm border-0">
+            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0" 
+                   asp-action="Requests" asp-route-page="@(ViewBag.CurrentPage - 1)" style="width: 40px; height: 40px; background: var(--w-surface-container-low); color: var(--w-on-surface);">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                </a>
+            </li>
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0 @(i == ViewBag.CurrentPage ? "w-bg-primary text-white" : "w-text-primary")" 
+                       asp-action="Requests" asp-route-page="@i" style="width: 40px; height: 40px; @(i != ViewBag.CurrentPage ? "background: var(--w-surface-container-low);" : "")">@i</a>
+                </li>
+            }
+            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0" 
+                   asp-action="Requests" asp-route-page="@(ViewBag.CurrentPage + 1)" style="width: 40px; height: 40px; background: var(--w-surface-container-low); color: var(--w-on-surface);">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+@section Scripts {
+    <script>
+        function confirmRemove(form) {
+            const reason = prompt("يرجى كتابة سبب الإزالة (اختياري):");
+            if (reason === null) {
+                return false; // User cancelled
+            }
+            form.querySelector('.remove-reason-input').value = reason || "لم يتم تحديد سبب";
+            return true;
+        }
+    </script>
+}

@@ -4,105 +4,166 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div dir="rtl" lang="ar">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <div>
-            <h2>تصفح الطلبات المفتوحة</h2>
-            <p class="text-muted mb-0">جميع الطلبات المتاحة للتطوع حالياً.</p>
-        </div>
-        <a asp-action="Create" class="btn btn-primary">أضف طلبك</a>
+<div dir="rtl" lang="ar" class="position-relative">
+    @* --- Background Glows --- *@
+    <div class="position-absolute top-0 start-50 translate-middle-x w-100 h-100 overflow-hidden" style="z-index: -1; pointer-events: none;">
+        <div class="position-absolute" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%); top: -200px; left: -100px; filter: blur(60px);"></div>
+        <div class="position-absolute" style="width: 300px; height: 300px; background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%); top: 100px; right: -50px; filter: blur(50px);"></div>
     </div>
 
-    @* Modified by Yousef: add the planned GET filter form while keeping the original Bootstrap card listing. *@
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <form method="get" asp-action="Browse" class="row g-3">
+    <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3 w-animate-fadeIn">
+        <div>
+            <h2 class="w-h1 mb-2 w-aurora-text">تصفح الطلبات المفتوحة</h2>
+            <p class="w-body-lg text-secondary mb-0 opacity-75">اكتشف الفرص المتاحة للمساهمة في مجتمعك وإحداث فرق حقيقي.</p>
+        </div>
+        <a asp-action="Create" class="w-btn w-btn-primary shadow-lg px-4 py-3">
+            <span class="material-symbols-outlined">add_circle</span>
+            <span>أضف طلبك</span>
+        </a>
+    </div>
+
+    @* Search Filter Form - Aurora Glass Style *@
+    <div class="w-glass-premium mb-5 w-animate-fadeInUp w-delay-100" style="border-radius: var(--w-radius-xl); overflow: hidden; border: 1px solid rgba(255,255,255,0.4) !important;">
+        <div class="p-4 p-lg-5">
+            <form method="get" asp-action="Browse" class="row g-4">
                 <div class="col-md-4">
-                    <label asp-for="SearchTerm" class="form-label">بحث</label>
-                    <input asp-for="SearchTerm" class="form-control" placeholder="ابحث في العنوان أو الوصف" />
+                    <label asp-for="SearchTerm" class="w-label text-dark opacity-75 mb-3 d-block">ما الذي تبحث عنه؟</label>
+                    <div class="position-relative">
+                        <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-primary opacity-50" style="font-size: 20px;">search</span>
+                        <input asp-for="SearchTerm" class="w-input ps-5" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5);" placeholder="العنوان، الوصف، أو المتطلبات..." />
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">الفئة</label>
-                    <select name="category" class="form-select">
-                        <option value="">كل الفئات</option>
-                        @foreach (var option in Html.GetEnumSelectList<RequestCategory>())
-                        {
-                            if (Model.Category.HasValue && option.Value == ((int)Model.Category.Value).ToString())
+                    <label class="w-label text-dark opacity-75 mb-3 d-block">تصنيف الطلب</label>
+                    <div class="position-relative">
+                        <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-primary opacity-50" style="font-size: 20px;">category</span>
+                        <select name="category" class="w-input ps-5" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); appearance: none;">
+                            <option value="">جميع الفئات</option>
+                            @foreach (var option in Html.GetEnumSelectList<RequestCategory>())
                             {
-                                <option value="@option.Value" selected>@option.Text</option>
+                                if (Model.Category.HasValue && option.Value == ((int)Model.Category.Value).ToString())
+                                {
+                                    <option value="@option.Value" selected>@option.Text</option>
+                                }
+                                else
+                                {
+                                    <option value="@option.Value">@option.Text</option>
+                                }
                             }
-                            else
-                            {
-                                <option value="@option.Value">@option.Text</option>
-                            }
-                        }
-                    </select>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <label asp-for="City" class="form-label">المدينة</label>
-                    <input asp-for="City" class="form-control" placeholder="مثال: القاهرة" />
+                    <label asp-for="City" class="w-label text-dark opacity-75 mb-3 d-block">المدينة أو المنطقة</label>
+                    <div class="position-relative">
+                        <span class="material-symbols-outlined position-absolute top-50 start-0 translate-middle-y ms-3 text-primary opacity-50" style="font-size: 20px;">location_on</span>
+                        <input asp-for="City" class="w-input ps-5" style="background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5);" placeholder="مثال: القاهرة" />
+                    </div>
                 </div>
                 <div class="col-md-2 d-flex align-items-end gap-2">
-                    <button type="submit" class="btn btn-primary w-100">تطبيق</button>
-                    <a asp-action="Browse" class="btn btn-outline-secondary w-100">مسح</a>
+                    <button type="submit" class="w-btn w-btn-primary w-100 justify-content-center py-3">
+                        <span class="material-symbols-outlined">search</span>
+                    </button>
+                    <a asp-action="Browse" class="w-btn w-btn-outline justify-content-center px-3 py-3" title="إعادة ضبط" style="background: rgba(255,255,255,0.3);">
+                        <span class="material-symbols-outlined">restart_alt</span>
+                    </a>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="mb-3 text-muted">عدد النتائج: @Model.Requests.Count</div>
+    <div class="mb-3 text-secondary fw-semibold">عدد النتائج: @Model.Requests.Count</div>
 
     @if (!Model.Requests.Any())
     {
-        <div class="alert alert-info text-center py-5">
-            <h5>لا توجد طلبات مطابقة حالياً</h5>
-            <p>جرّب تعديل البحث أو <a asp-action="Create">أضف طلبك الخاص</a>.</p>
+        <div class="w-glass-premium text-center py-5 w-animate-fadeInUp" style="border-radius: var(--w-radius-xl);">
+            <div class="d-inline-flex align-items-center justify-content-center mb-4" style="width: 80px; height: 80px; background: rgba(99, 102, 241, 0.1); border-radius: 50%;">
+                <span class="material-symbols-outlined fs-1 text-primary">search_off</span>
+            </div>
+            <h4 class="w-h4 mb-3">لا توجد طلبات مطابقة حالياً</h4>
+            <p class="w-body-md text-secondary mb-4 opacity-75">جرّب تعديل البحث أو استخدام كلمات مفتاحية أخرى.</p>
+            <a asp-action="Create" class="w-btn w-btn-primary">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span>أضف طلبك الأول</span>
+            </a>
         </div>
     }
     else
     {
-        <div class="row">
+        <div class="row g-4">
             @foreach (var item in Model.Requests)
             {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm border-0">
-                        @if (!string.IsNullOrEmpty(item.ImagePath))
-                        {
-                            <img src="@item.ImagePath" class="card-img-top"
-                                 style="height:180px; object-fit:cover;"
-                                 alt="صورة الطلب" />
-                        }
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-0">@item.Title</h5>
-                                <span class="badge bg-success">مفتوح</span>
+                <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
+                    <div class="w-glass-premium h-100 d-flex flex-column overflow-hidden" style="transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); border: 1px solid rgba(255,255,255,0.4) !important; border-radius: var(--w-radius-lg);" 
+                         onmouseover="this.style.transform='translateY(-12px)'; this.style.boxShadow='0 20px 40px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        
+                        <div class="position-relative overflow-hidden">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <img src="@item.ImagePath" class="card-img-top"
+                                     style="height:220px; object-fit:cover; transition: transform 0.5s ease;"
+                                     onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"
+                                     alt="صورة الطلب" />
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center" style="height:220px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.4) 0%, rgba(168, 85, 247, 0.4) 100%);">
+                                    <span class="material-symbols-outlined text-white opacity-50" style="font-size: 64px;">volunteer_activism</span>
+                                </div>
+                            }
+                            
+                            @* Floating Chip *@
+                            <div class="position-absolute top-0 end-0 m-3">
+                                <div class="w-chip w-glass shadow-sm fw-bold px-3 py-2" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); color: #065f46;">
+                                    <span class="material-symbols-outlined fs-6" style="color: #10b981;">check_circle</span>
+                                    <span>مفتوح</span>
+                                </div>
                             </div>
-
-                            <span class="badge bg-secondary mb-2">@item.Category.GetDisplayName()</span>
-
-                            <p class="card-text text-muted small">
-                                @(item.Description.Length > 100
-                                    ? item.Description.Substring(0, 100) + "..."
-                                    : item.Description)
-                            </p>
-
-                            <ul class="list-unstyled small text-muted mb-3">
-                                <li><strong>الموقع:</strong> @item.Location</li>
-                                <li><strong>المدة:</strong> @item.EstimatedHours ساعة</li>
-                                <li><strong>النقاط:</strong> @item.PointsReward نقطة</li>
-                                <li><strong>الموعد:</strong> @item.ScheduledDate.ToString("dd/MM/yyyy")</li>
-                                <li><strong>صاحب الطلب:</strong> @item.Requester?.FullName</li>
-                            </ul>
-
-                            <a asp-action="Details" asp-route-id="@item.RequestId"
-                               class="btn btn-outline-primary btn-sm w-100">
-                                عرض التفاصيل
-                            </a>
                         </div>
 
-                        <div class="card-footer text-muted small text-center">
-                            نُشر في @item.CreatedAt.ToString("dd/MM/yyyy")
+                        <div class="p-4 d-flex flex-column flex-grow-1">
+                            <div class="w-chip mb-3 align-self-start py-1 px-3 fw-bold" style="font-size: 0.75rem; background: rgba(99, 102, 241, 0.1); color: var(--w-primary); border: 1px solid rgba(99, 102, 241, 0.15);">
+                                <span class="material-symbols-outlined" style="font-size: 14px;">category</span>
+                                <span>@item.Category.GetDisplayName()</span>
+                            </div>
+
+                            <h5 class="w-h5 mb-2 text-truncate fw-bold" title="@item.Title">@item.Title</h5>
+
+                            <p class="w-body-sm text-secondary mb-4 flex-grow-1 opacity-75" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                @item.Description
+                            </p>
+
+                            <div class="row g-2 mb-4">
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.08);">
+                                        <span class="material-symbols-outlined text-primary" style="font-size: 18px;">location_on</span>
+                                        <span class="w-body-sm text-dark text-truncate fw-semibold">@item.Location</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="d-flex align-items-center gap-2 p-2 rounded-3" style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.08);">
+                                        <span class="material-symbols-outlined" style="font-size: 18px; color: #10b981;">stars</span>
+                                        <span class="w-body-sm text-dark fw-semibold">@item.PointsReward نقطة</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto" style="border-top: 1px solid rgba(0,0,0,0.05) !important;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--w-primary), var(--w-secondary)); font-size: 14px; font-weight: bold; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);">
+                                        @(item.Requester?.FullName?.Substring(0, 1) ?? "U")
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <span class="w-body-xs text-dark fw-bold" style="font-size: 13px;">@item.Requester?.FullName</span>
+                                        <span class="w-body-xs text-secondary opacity-75" style="font-size: 11px;">صاحب الطلب</span>
+                                    </div>
+                                </div>
+                                <a asp-action="Details" asp-route-id="@item.RequestId"
+                                   class="w-btn w-btn-sm w-btn-primary px-4 fw-bold">
+                                    <span>التفاصيل</span>
+                                    <span class="material-symbols-outlined fs-6">chevron_left</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
