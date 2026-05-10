@@ -1,154 +1,305 @@
-﻿@model VolunteerBridge.ViewModels.LoginViewModel
+@model VolunteerBridge.ViewModels.LoginViewModel
 @{
     ViewBag.Title = "تسجيل الدخول";
     Layout = null;
-} 
+}
 
 <!DOCTYPE html>
-<html class="light" dir="rtl" lang="ar">
+<html dir="rtl" lang="ar">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>وصال - تسجيل الدخول</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <meta name="description" content="سجّل دخولك إلى منصة وصال للتطوع والمساهمة في مجتمعك." />
+    <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: { arabic: ['Rubik', 'sans-serif'] },
-                    colors: {
-                        "surface-tint": "#006e2f",
-                        "on-tertiary": "#ffffff",
-                        "surface": "#f3fcef",
-                        "surface-container-low": "#edf6ea",
-                        "outline": "#6d7b6c",
-                        "background": "#f3fcef",
-                        "on-primary": "#ffffff",
-                        "on-surface": "#161d16",
-                        "secondary-container": "#316bf3",
-                        "surface-container-lowest": "#ffffff",
-                        "inverse-primary": "#4ae176",
-                        "on-secondary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "on-background": "#161d16",
-                        "secondary-fixed": "#dbe1ff",
-                        "primary-container": "#22c55e",
-                        "outline-variant": "#bccbb9",
-                        "secondary": "#0051d5",
-                        "primary": "#006e2f",
-                        "on-primary-container": "#004b1e",
-                        "on-error": "#ffffff",
-                        "on-surface-variant": "#3d4a3d",
-                        "surface-container": "#e8f0e4",
-                        "error-container": "#ffdad6",
-                        "surface-container-high": "#e2ebde",
-                        "surface-bright": "#f3fcef"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-                    },
-                    spacing: {
-                        "lg": "24px", "xs": "4px", "md": "16px", "sm": "8px",
-                        "xxl": "48px", "xl": "32px"
-                    },
-                    fontSize: {
-                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "caption": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body {
-            font-family: 'Rubik', sans-serif;
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--w-surface);
+            padding: var(--w-space-md);
+        }
+
+        .login-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 960px;
+            width: 100%;
+            background: var(--w-surface-container-lowest);
+            border-radius: var(--w-radius-lg);
+            box-shadow: var(--w-shadow-md);
+            overflow: hidden;
+            min-height: 560px;
+        }
+
+        /* ── Form Side ── */
+        .login-form-side {
+            padding: var(--w-space-2xl) var(--w-space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .login-brand {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--w-primary);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: var(--w-space-lg);
+        }
+
+        .login-brand:hover { opacity: 0.9; }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--w-on-surface);
+            margin-bottom: var(--w-space-sm);
+        }
+
+        .login-subtitle {
+            font-size: 15px;
+            color: var(--w-on-surface-variant);
+            line-height: 1.5;
+        }
+
+        /* ── Input with icon ── */
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon .input-icon {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            color: var(--w-outline);
+            pointer-events: none;
+            font-size: 20px;
+        }
+
+        .input-with-icon .w-input {
+            padding-right: 46px;
+        }
+
+        /* ── Validation ── */
+        .validation-summary {
+            padding: 12px 16px;
+            background: var(--w-error-container);
+            color: var(--w-on-error-container);
+            border-radius: var(--w-radius);
+            font-size: 14px;
+            margin-bottom: var(--w-space-lg);
+            display: none;
+        }
+
+        .validation-summary:not(:empty) {
+            display: block;
+        }
+
+        .field-validation-error {
+            color: var(--w-error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* ── Visual Side ── */
+        .login-visual-side {
+            background: linear-gradient(135deg, var(--w-primary) 0%, #003ea8 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--w-space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-visual-side::before {
+            content: '';
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            top: -40px;
+            left: -60px;
+        }
+
+        .login-visual-side::after {
+            content: '';
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            bottom: -30px;
+            right: -40px;
+        }
+
+        .visual-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--w-radius-md);
+            background: rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .visual-icon .material-symbols-outlined {
+            font-size: 40px;
+            color: white;
+            font-variation-settings: 'FILL' 1;
+        }
+
+        .visual-heading {
+            font-size: 28px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: var(--w-space-md);
+            line-height: 1.4;
+        }
+
+        .visual-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            line-height: 1.7;
+            max-width: 280px;
+        }
+
+        /* ── Register link ── */
+        .login-register-link {
+            margin-top: var(--w-space-xl);
+            text-align: center;
+            font-size: 14px;
+            color: var(--w-on-surface-variant);
+        }
+
+        .login-register-link a {
+            color: var(--w-primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color var(--w-transition);
+        }
+
+        .login-register-link a:hover {
+            color: #003ea8;
+            text-decoration: underline;
+        }
+
+        /* ── Back to home ── */
+        .back-home {
+            position: absolute;
+            top: var(--w-space-lg);
+            right: var(--w-space-lg);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--w-on-surface-variant);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--w-transition);
+            z-index: 10;
+        }
+
+        .back-home:hover { color: var(--w-primary); }
+        .back-home .material-symbols-outlined { font-size: 18px; }
+
+        @@media (max-width: 768px) {
+            .login-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+            }
+            .login-visual-side { display: none; }
+            .login-form-side { padding: var(--w-space-xl) var(--w-space-lg); }
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-md lg:p-xl font-arabic">
-    <div class="w-full max-w-[1000px] bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col lg:flex-row">
+<body>
+    <div class="login-page">
+        <!-- Back to home link -->
+        <a asp-controller="Home" asp-action="Index" class="back-home">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            الرئيسية
+        </a>
 
-        <!-- Form Section -->
-        <div class="w-full lg:w-1/2 p-xl lg:p-xxl flex flex-col justify-center">
+        <div class="login-wrapper w-animate-fadeInUp">
+            <!-- ═══ Form Side ═══ -->
+            <div class="login-form-side">
+                <div class="login-header">
+                    <a asp-controller="Home" asp-action="Index" class="login-brand">وصال</a>
+                    <h1 class="login-title">مرحباً بعودتك</h1>
+                    <p class="login-subtitle">سجّل دخولك للمتابعة والمساهمة في مجتمعك.</p>
+                </div>
 
-            <div class="mb-xl text-center lg:text-right">
-                <a class="text-h2 font-black text-primary inline-block mb-md" href="#">وصال</a>
-                <h1 class="text-h3 font-h3 text-on-surface mb-sm">مرحباً بعودتك</h1>
-                <p class="text-body-md text-on-surface-variant">سجّل دخولك للمتابعة والمساهمة.</p>
+                <form asp-action="Login" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <!-- Email -->
+                    <div class="w-input-group">
+                        <label asp-for="Email" class="w-input-label">البريد الإلكتروني</label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">mail</span>
+                            <input asp-for="Email" type="email" class="w-input" placeholder="example@domain.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="w-input-group">
+                        <label asp-for="Password" class="w-input-label">كلمة المرور</label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">lock</span>
+                            <input asp-for="Password" type="password" class="w-input" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-btn w-btn-primary w-btn-lg w-btn-full" style="margin-top: var(--w-space-sm);">
+                        تسجيل الدخول
+                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                    </button>
+                </form>
+
+                <div class="login-register-link">
+                    ليس لديك حساب؟
+                    <a asp-action="Register" asp-controller="Account">إنشاء حساب جديد</a>
+                </div>
             </div>
 
-            <form asp-action="Login" method="post" class="space-y-lg">
-                @Html.AntiForgeryToken()
-
-                <!-- Validation Summary -->
-                <div asp-validation-summary="ModelOnly" class="text-error text-body-sm bg-error-container p-md rounded-lg hidden [&:not(:empty)]:block"></div>
-
-                <!-- Email -->
-                <div class="space-y-xs">
-                    <label asp-for="Email" class="block text-label-bold text-on-surface text-right">البريد الإلكتروني</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">mail</span>
-                        </span>
-                        <input asp-for="Email" type="email"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="example@domain.com" />
-                    </div>
-                    <span asp-validation-for="Email" class="text-error text-caption"></span>
+            <!-- ═══ Visual Side ═══ -->
+            <div class="login-visual-side">
+                <div class="visual-icon">
+                    <span class="material-symbols-outlined">handshake</span>
                 </div>
-
-                <!-- Password -->
-                <div class="space-y-xs">
-                    <div class="flex items-center justify-between mb-xs">
-                        <label asp-for="Password" class="block text-label-bold text-on-surface">كلمة المرور</label>
-                    </div>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">lock</span>
-                        </span>
-                        <input asp-for="Password" type="password"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="••••••••" />
-                    </div>
-                    <span asp-validation-for="Password" class="text-error text-caption"></span>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit"
-                        class="w-full bg-primary-container text-on-primary py-md px-lg rounded-lg text-label-bold hover:bg-primary transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary-container outline-none flex items-center justify-center gap-sm">
-                    تسجيل الدخول
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-            </form>
-
-            <div class="mt-lg text-center">
-                <p class="text-body-sm text-on-surface-variant">
-                    ليس لديك حساب؟
-                    <a asp-action="Register" class="text-primary hover:text-surface-tint font-bold transition-colors">إنشاء حساب جديد</a>
+                <h2 class="visual-heading">ساهم في<br/>بناء مجتمعك</h2>
+                <p class="visual-text">
+                    من خلال وصال، يمكنك تقديم المساعدة لمن يحتاجها أو طلب الدعم من متطوعين في منطقتك.
                 </p>
             </div>
-
         </div>
-
-        <!-- Image Section -->
-        <div class="hidden lg:block lg:w-1/2 relative bg-surface-container">
-            <img alt="Community volunteer image"
-                 class="absolute inset-0 w-full h-full object-cover rounded-l-xl"
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfRzb83zRZ1v4C7uBI-0mUf89rXDswPxr08282V_QSwVH48vdhGaPAojKI6uDgXZsLsov-Ufso9mr29TpSWehMEGZIDDLxjQTD7_HSKY3jz9zaxkM0TmRYG-PHbEr_9zZIH6OMzngHH8jabQtg0R2e3x37A-IlKVSHcTXhDCoH2k0NbdItuYa7Bj2jfNdVK-WHN7teru9wSrKATeKuQAXXiSOQbHwL6u7SWulIg9-q-d5jH1CvhxwxM8bARHIAogmJEWcrTD-8LBcf" />
-            <div class="absolute inset-0 bg-primary/20 mix-blend-multiply rounded-l-xl"></div>
-        </div>
-
     </div>
 
-    @section Scripts {
-        @await Html.PartialAsync("_ValidationScriptsPartial")
-    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

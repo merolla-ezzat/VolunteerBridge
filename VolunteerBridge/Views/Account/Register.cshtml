@@ -1,219 +1,379 @@
-﻿@model VolunteerBridge.ViewModels.RegisterViewModel
+@model VolunteerBridge.ViewModels.RegisterViewModel
 @{
     ViewBag.Title = "إنشاء حساب";
     Layout = null;
 }
 
 <!DOCTYPE html>
-<html class="light" dir="rtl" lang="ar">
+<html dir="rtl" lang="ar">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>وصال - إنشاء حساب</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <title>وصال - إنشاء حساب جديد</title>
+    <meta name="description" content="انضم إلى مجتمعنا وساهم في صنع التغيير عبر منصة وصال." />
+    
+    <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: { arabic: ['Rubik', 'sans-serif'] },
-                    colors: {
-                        "surface-tint": "#006e2f",
-                        "on-error-container": "#93000a",
-                        "on-tertiary": "#ffffff",
-                        "surface": "#f3fcef",
-                        "surface-container-low": "#edf6ea",
-                        "outline": "#6d7b6c",
-                        "on-secondary-container": "#fefcff",
-                        "background": "#f3fcef",
-                        "on-primary": "#ffffff",
-                        "on-surface": "#161d16",
-                        "secondary-container": "#316bf3",
-                        "on-primary-fixed": "#002109",
-                        "surface-dim": "#d4ddd0",
-                        "inverse-on-surface": "#ebf3e7",
-                        "surface-variant": "#dce5d9",
-                        "surface-container-highest": "#dce5d9",
-                        "primary-fixed": "#6bff8f",
-                        "surface-container-lowest": "#ffffff",
-                        "inverse-primary": "#4ae176",
-                        "on-secondary-fixed": "#00174b",
-                        "on-secondary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "on-background": "#161d16",
-                        "secondary-fixed": "#dbe1ff",
-                        "primary-container": "#22c55e",
-                        "outline-variant": "#bccbb9",
-                        "secondary": "#0051d5",
-                        "primary": "#006e2f",
-                        "on-primary-container": "#004b1e",
-                        "on-error": "#ffffff",
-                        "secondary-fixed-dim": "#b4c5ff",
-                        "on-surface-variant": "#3d4a3d",
-                        "surface-container": "#e8f0e4",
-                        "inverse-surface": "#2a322a",
-                        "error-container": "#ffdad6",
-                        "surface-container-high": "#e2ebde",
-                        "surface-bright": "#f3fcef"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-                    },
-                    spacing: {
-                        "lg": "24px", "container-max": "1200px", "xs": "4px",
-                        "md": "16px", "sm": "8px", "base": "8px", "gutter": "16px",
-                        "xxl": "48px", "xl": "32px"
-                    },
-                    fontSize: {
-                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "caption": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
+    
     <style>
-        body {
-            font-family: 'Rubik', sans-serif;
+        .register-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--w-surface);
+            padding: var(--w-space-md);
+        }
+
+        .register-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            width: 100%;
+            background: var(--w-surface-container-lowest);
+            border-radius: var(--w-radius-lg);
+            box-shadow: var(--w-shadow-md);
+            overflow: hidden;
+            /* Allow the wrapper to grow naturally based on content */
+        }
+
+        /* ── Form Side ── */
+        .register-form-side {
+            padding: var(--w-space-xl) var(--w-space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto; /* Just in case */
+        }
+
+        .register-header {
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .register-brand {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--w-primary);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: var(--w-space-md);
+        }
+
+        .register-brand:hover { opacity: 0.9; }
+
+        .register-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--w-on-surface);
+            margin-bottom: var(--w-space-sm);
+        }
+
+        .register-subtitle {
+            font-size: 15px;
+            color: var(--w-on-surface-variant);
+            line-height: 1.5;
+        }
+
+        /* ── Input with icon ── */
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon .input-icon {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            color: var(--w-outline);
+            pointer-events: none;
+            font-size: 20px;
+        }
+
+        .input-with-icon .w-input {
+            padding-right: 46px;
+        }
+
+        /* ── Form Grid for shorter inputs ── */
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--w-space-md);
+        }
+
+        /* ── Validation ── */
+        .validation-summary {
+            padding: 12px 16px;
+            background: var(--w-error-container);
+            color: var(--w-on-error-container);
+            border-radius: var(--w-radius);
+            font-size: 14px;
+            margin-bottom: var(--w-space-lg);
+            display: none;
+        }
+
+        .validation-summary:not(:empty) {
+            display: block;
+        }
+
+        .field-validation-error {
+            color: var(--w-error);
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .input-hint {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: var(--w-on-surface-variant);
+            margin-top: 6px;
+        }
+        .input-hint .material-symbols-outlined { font-size: 14px; }
+
+        /* ── Visual Side ── */
+        .register-visual-side {
+            background: linear-gradient(135deg, var(--w-primary) 0%, #003ea8 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--w-space-2xl);
+            position: relative;
+            overflow: hidden;
+            /* Make sure it spans full height if the form gets tall */
+            height: 100%;
+        }
+
+        .register-visual-side::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            top: -50px;
+            right: -80px; /* Right for RTL mirroring */
+        }
+
+        .register-visual-side::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.04);
+            bottom: -40px;
+            left: -50px;
+        }
+
+        .visual-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--w-radius-md);
+            background: rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--w-space-xl);
+            z-index: 1;
+        }
+
+        .visual-icon .material-symbols-outlined {
+            font-size: 40px;
+            color: white;
+            font-variation-settings: 'FILL' 1;
+        }
+
+        .visual-heading {
+            font-size: 28px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: var(--w-space-md);
+            line-height: 1.4;
+            z-index: 1;
+        }
+
+        .visual-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            line-height: 1.7;
+            max-width: 280px;
+            z-index: 1;
+        }
+
+        /* ── Login link ── */
+        .register-login-link {
+            margin-top: var(--w-space-xl);
+            text-align: center;
+            font-size: 14px;
+            color: var(--w-on-surface-variant);
+        }
+
+        .register-login-link a {
+            color: var(--w-primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color var(--w-transition);
+        }
+
+        .register-login-link a:hover {
+            color: #003ea8;
+            text-decoration: underline;
+        }
+
+        /* ── Back to home ── */
+        .back-home {
+            position: absolute;
+            top: var(--w-space-lg);
+            right: var(--w-space-lg);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: var(--w-on-surface-variant);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color var(--w-transition);
+            z-index: 10;
+        }
+
+        .back-home:hover { color: var(--w-primary); }
+        .back-home .material-symbols-outlined { font-size: 18px; }
+
+        @@media (max-width: 900px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+            .register-visual-side { display: none; }
+            .form-grid-2 { grid-template-columns: 1fr; gap: 0; }
+            .register-form-side { padding: var(--w-space-xl) var(--w-space-lg); }
         }
     </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-md lg:p-xl font-arabic">
-    <div class="w-full max-w-[1000px] bg-surface-container-lowest rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden flex flex-col lg:flex-row">
+<body>
+    <div class="register-page">
+        <!-- Back to home link -->
+        <a asp-controller="Home" asp-action="Index" class="back-home">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            الرئيسية
+        </a>
 
-        <!-- Form Section -->
-        <div class="w-full lg:w-1/2 p-xl lg:p-xxl flex flex-col justify-center">
-            <div class="mb-xl text-center lg:text-right">
-                <a class="text-h2 font-black text-primary inline-block mb-md" href="#">وصال</a>
-                <h1 class="text-h3 text-on-surface mb-sm">إنشاء حساب جديد</h1>
-                <p class="text-body-md text-on-surface-variant">انضم إلى مجتمعنا وساهم في صنع التغيير.</p>
+        <div class="register-wrapper w-animate-fadeInUp">
+            <!-- ═══ Form Side ═══ -->
+            <div class="register-form-side">
+                <div class="register-header">
+                    <a asp-controller="Home" asp-action="Index" class="register-brand">وصال</a>
+                    <h1 class="register-title">إنشاء حساب جديد</h1>
+                    <p class="register-subtitle">انضم إلى مجتمعنا وساهم في صنع التغيير.</p>
+                </div>
+
+                <form asp-action="Register" method="post" novalidate>
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                    <!-- Full Name -->
+                    <div class="w-input-group">
+                        <label asp-for="FullName" class="w-input-label">الاسم الكامل</label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">person</span>
+                            <input asp-for="FullName" type="text" class="w-input" placeholder="أدخل اسمك الكامل" />
+                        </div>
+                        <span asp-validation-for="FullName" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="w-input-group">
+                        <label asp-for="Email" class="w-input-label">البريد الإلكتروني</label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">mail</span>
+                            <input asp-for="Email" type="email" class="w-input" placeholder="example@domain.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+
+                    <!-- Passwords Grid -->
+                    <div class="form-grid-2">
+                        <!-- Password -->
+                        <div class="w-input-group">
+                            <label asp-for="Password" class="w-input-label">كلمة المرور</label>
+                            <div class="input-with-icon">
+                                <span class="material-symbols-outlined input-icon">lock</span>
+                                <input asp-for="Password" type="password" class="w-input" placeholder="••••••••" />
+                            </div>
+                            <div class="input-hint">
+                                <span class="material-symbols-outlined">info</span>
+                                6 أحرف على الأقل
+                            </div>
+                            <span asp-validation-for="Password" class="field-validation-error"></span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="w-input-group">
+                            <label asp-for="ConfirmPassword" class="w-input-label">تأكيد كلمة المرور</label>
+                            <div class="input-with-icon">
+                                <span class="material-symbols-outlined input-icon">lock_reset</span>
+                                <input asp-for="ConfirmPassword" type="password" class="w-input" placeholder="••••••••" />
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Optional Fields Grid -->
+                    <div class="form-grid-2">
+                        <!-- City -->
+                        <div class="w-input-group">
+                            <label asp-for="City" class="w-input-label">المدينة <span style="font-weight:400; color:var(--w-on-surface-variant);">(اختياري)</span></label>
+                            <div class="input-with-icon">
+                                <span class="material-symbols-outlined input-icon">location_city</span>
+                                <input asp-for="City" type="text" class="w-input" placeholder="مدينتك" />
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="w-input-group">
+                            <label asp-for="PhoneNumber" class="w-input-label">رقم الهاتف <span style="font-weight:400; color:var(--w-on-surface-variant);">(اختياري)</span></label>
+                            <div class="input-with-icon">
+                                <span class="material-symbols-outlined input-icon">phone</span>
+                                <input asp-for="PhoneNumber" type="tel" class="w-input" placeholder="01xxxxxxxx" dir="ltr" style="text-align:right" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="w-btn w-btn-primary w-btn-lg w-btn-full" style="margin-top: var(--w-space-md);">
+                        إنشاء الحساب
+                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                    </button>
+                </form>
+
+                <div class="register-login-link">
+                    لديك حساب بالفعل؟
+                    <a asp-action="Login" asp-controller="Account">تسجيل الدخول</a>
+                </div>
             </div>
 
-            <form asp-action="Register" method="post" class="space-y-lg">
-                @Html.AntiForgeryToken()
-
-                <!-- Validation Summary -->
-                <div asp-validation-summary="ModelOnly" class="text-error text-body-sm bg-error-container p-md rounded-lg hidden [&:not(:empty)]:block"></div>
-
-                <!-- Full Name -->
-                <div class="space-y-xs">
-                    <label asp-for="FullName" class="block text-label-bold text-on-surface text-right">الاسم الكامل</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">person</span>
-                        </span>
-                        <input asp-for="FullName"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="أدخل اسمك الكامل" />
-                    </div>
-                    <span asp-validation-for="FullName" class="text-error text-caption"></span>
+            <!-- ═══ Visual Side ═══ -->
+            <div class="register-visual-side">
+                <div class="visual-icon">
+                    <span class="material-symbols-outlined">group_add</span>
                 </div>
-
-                <!-- Email -->
-                <div class="space-y-xs">
-                    <label asp-for="Email" class="block text-label-bold text-on-surface text-right">البريد الإلكتروني</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">mail</span>
-                        </span>
-                        <input asp-for="Email" type="email"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="example@domain.com" />
-                    </div>
-                    <span asp-validation-for="Email" class="text-error text-caption"></span>
-                </div>
-
-                <!-- Password -->
-                <div class="space-y-xs">
-                    <label asp-for="Password" class="block text-label-bold text-on-surface text-right">كلمة المرور</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">lock</span>
-                        </span>
-                        <input asp-for="Password" type="password"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="••••••••" />
-                    </div>
-                    <p class="text-caption text-on-surface-variant flex items-center gap-xs mt-sm">
-                        <span class="material-symbols-outlined text-[16px]">info</span>
-                        يجب أن تتكون من 6 أحرف على الأقل.
-                    </p>
-                    <span asp-validation-for="Password" class="text-error text-caption"></span>
-                </div>
-
-                <!-- Confirm Password -->
-                <div class="space-y-xs">
-                    <label asp-for="ConfirmPassword" class="block text-label-bold text-on-surface text-right">تأكيد كلمة المرور</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">lock_reset</span>
-                        </span>
-                        <input asp-for="ConfirmPassword" type="password"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="••••••••" />
-                    </div>
-                    <span asp-validation-for="ConfirmPassword" class="text-error text-caption"></span>
-                </div>
-
-                <!-- City -->
-                <div class="space-y-xs">
-                    <label asp-for="City" class="block text-label-bold text-on-surface text-right">المدينة <span class="text-on-surface-variant font-normal">(اختياري)</span></label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">location_city</span>
-                        </span>
-                        <input asp-for="City"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="مدينتك" />
-                    </div>
-                </div>
-
-                <!-- Phone -->
-                <div class="space-y-xs">
-                    <label asp-for="PhoneNumber" class="block text-label-bold text-on-surface text-right">رقم الهاتف <span class="text-on-surface-variant font-normal">(اختياري)</span></label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 right-0 flex items-center pr-md pointer-events-none">
-                            <span class="material-symbols-outlined text-outline">phone</span>
-                        </span>
-                        <input asp-for="PhoneNumber"
-                               class="block w-full pl-md pr-[48px] py-md border border-outline-variant rounded-lg bg-surface-container-lowest text-body-md text-on-surface focus:ring-2 focus:ring-secondary focus:border-secondary transition-shadow text-right"
-                               placeholder="05xxxxxxxx" />
-                    </div>
-                </div>
-
-                <!-- Submit -->
-                <button type="submit"
-                        class="w-full bg-primary-container text-on-primary py-md px-lg rounded-lg text-label-bold hover:bg-primary transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-primary-container outline-none flex items-center justify-center gap-sm">
-                    إنشاء حساب
-                    <span class="material-symbols-outlined">arrow_back</span>
-                </button>
-            </form>
-
-            <div class="mt-lg text-center">
-                <p class="text-body-sm text-on-surface-variant">
-                    لديك حساب بالفعل؟
-                    <a asp-action="Login" class="text-primary hover:text-surface-tint font-bold transition-colors">تسجيل الدخول</a>
+                <h2 class="visual-heading">انضم إلى<br/>مجتمع العطاء</h2>
+                <p class="visual-text">
+                    التطوع ليس مجرد مساعدة، بل هو استثمار في بناء مجتمع أقوى وأكثر تماسكاً. ابدأ رحلتك معنا اليوم.
                 </p>
             </div>
         </div>
-
-        <div class="hidden lg:block lg:w-1/2 relative bg-surface-container">
-            <img alt="Community volunteer image"
-                 class="absolute inset-0 w-full h-full object-cover rounded-l-xl"
-                 src="/images/Register.jpg" />  
-            <div class="absolute inset-0 bg-primary/20 mix-blend-multiply rounded-l-xl"></div>
-        </div>
-
     </div>
 
-    @section Scripts {
-        @await Html.PartialAsync("_ValidationScriptsPartial")
-    }
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using static VolunteerBridge.Models.Enums;
 
 namespace VolunteerBridge.Models
@@ -40,5 +40,9 @@ namespace VolunteerBridge.Models
         public string? ImagePath { get; set; }
         public ICollection<Acceptance> Acceptances { get; set; } = new List<Acceptance>();
 
+        // Admin Removal / Moderation fields (Modified by Yousef)
+        public bool IsRemovedByAdmin { get; set; }
+        public string? AdminRemovalReason { get; set; }
+        public bool RemovalAcknowledged { get; set; }
     }
 }

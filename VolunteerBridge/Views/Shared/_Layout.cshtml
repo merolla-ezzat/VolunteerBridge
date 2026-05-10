@@ -1,121 +1,175 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - VolunteerBridge</title>
+    <title>@ViewData["Title"] - وصال</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/VolunteerBridge.styles.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
 </head>
-<body>
+<body class="position-relative">
+    @* --- Global Background Glows --- *@
+    <div class="position-fixed top-0 start-0 w-100 h-100 overflow-hidden" style="z-index: -2; pointer-events: none;">
+        <div class="position-absolute" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%); top: -200px; left: -200px; filter: blur(80px); animation: aurora-pulse 15s infinite alternate;"></div>
+        <div class="position-absolute" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%); bottom: -100px; right: -100px; filter: blur(70px); animation: aurora-pulse 12s infinite alternate-reverse;"></div>
+    </div>
+
+    <style>
+        @@keyframes aurora-pulse {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+        .w-navbar {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
+        }
+        .w-navbar.scrolled {
+            background: rgba(255, 255, 255, 0.85) !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06) !important;
+        }
+    </style>
     @{
         var sessionUserId = Context.Session.GetInt32("UserId");
         var sessionUserName = Context.Session.GetString("UserName");
         var sessionUserEmail = Context.Session.GetString("UserEmail");
-        var isAdminUser = sessionUserEmail == "admin@volunteerbridge.com";
     }
-    <header>
-        @* Modified by Yousef: simplify the shared navbar so the RTL ordering and auth links stay aligned. *@
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">جسرالتطوع</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="تبديل القائمة">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse">
-                    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between w-100 gap-2">
-                        <ul class="navbar-nav flex-sm-row gap-sm mb-2 mb-sm-0">
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">الرئيسية</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Statistics" asp-action="Index">الإحصائيات</a>
-                            </li>
-                            @if (sessionUserId != null)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="Create">إنشاء طلب</a>
-                                </li>
-                            }
-                        </ul>
+    <header class="w-navbar">
+        <div class="w-navbar-inner">
+            <!-- Logo -->
+            <a class="w-brand" asp-area="" asp-controller="Home" asp-action="Index">وصال</a>
+            
+            <!-- Main Nav (Desktop) -->
+            @{
+                var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+                var action = ViewContext.RouteData.Values["action"]?.ToString();
+            }
+            <ul class="w-nav-links mb-0 p-0">
+                <li><a class="@(controller == "Home" && action == "Index" ? "w-active" : "")" asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+                <li><a class="@(controller == "ServiceRequests" && action == "Browse" ? "w-active" : "")" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
+                <li><a class="@(controller == "Leaderboard" ? "w-active" : "")" asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
+            </ul>
 
-                        <ul class="navbar-nav flex-sm-row gap-sm align-items-sm-center">
-                            @if (sessionUserId != null)
-                            {
-                                <li class="nav-item">
-                                    <span class="nav-link text-muted">مرحباً، @sessionUserName</span>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="ServiceRequests" asp-action="MyRequests">طلباتي</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Acceptances" asp-action="MyTasks">مهامي</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Account" asp-action="Profile">الملف الشخصي</a>
-                                </li>
-                                @if (isAdminUser)
-                                {
-                                    <li class="nav-item">
-                                        <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">لوحة الإدارة</a>
-                                    </li>
-                                }
-                                <li class="nav-item">
-                                    <a class="btn btn-outline-danger btn-sm" asp-controller="Account" asp-action="Logout">تسجيل الخروج</a>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="btn btn-outline-primary btn-sm" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Register">إنشاء حساب</a>
-                                </li>
-                            }
-                        </ul>
+            <!-- User Actions -->
+            <div class="w-nav-actions">
+                @if (sessionUserId != null)
+                {
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="w-greeting-text d-none d-md-inline-block text-dark">مرحباً يا @sessionUserName</span>
+                        <a asp-controller="Account" asp-action="Profile" class="w-btn w-btn-outline w-btn-sm">الملف الشخصي</a>
+                        <a class="w-btn w-btn-primary w-btn-sm" asp-controller="ServiceRequests" asp-action="Create">
+                            <span class="material-symbols-outlined">add</span>
+                            إنشاء طلب
+                        </a>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <a class="w-btn w-btn-ghost w-btn-sm d-none d-sm-inline-flex" asp-controller="Account" asp-action="Login">تسجيل الدخول</a>
+                    <a class="w-btn w-btn-primary w-btn-sm" asp-controller="Account" asp-action="Register">إنشاء حساب</a>
+                }
             </div>
-        </nav>
+        </div>
     </header>
 
-    <div class="container">
+    <div class="container" style="padding-top: 100px; padding-bottom: 80px;">
         @* Modified by Yousef: display shared TempData messages once in the layout for the new pages and security flows. *@
         <div class="site-alerts">
             @if (TempData["Success"] != null)
             {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["Success"]
+                <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 w-rounded-md" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined">check_circle</span>
+                        @TempData["Success"]
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
                 </div>
             }
 
             @if (TempData["Error"] != null)
             {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["Error"]
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 w-rounded-md" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="material-symbols-outlined">error</span>
+                        @TempData["Error"]
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
                 </div>
             }
         </div>
 
-        <main role="main" class="pb-3 text-end">
+        <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - VolunteerBridge - <a asp-area="" asp-controller="Home" asp-action="Privacy">الخصوصية</a>
+    <nav class="w-bottom-nav">
+        <a asp-controller="Home" asp-action="Index" class="w-bottom-nav-item @(controller == "Home" && action == "Index" ? "active" : "")">
+            <span class="material-symbols-outlined">home</span>
+            الرئيسية
+        </a>
+        <a asp-controller="ServiceRequests" asp-action="Browse" class="w-bottom-nav-item @(controller == "ServiceRequests" && action == "Browse" ? "active" : "")">
+            <span class="material-symbols-outlined">search</span>
+            الطلبات
+        </a>
+        <a asp-controller="Leaderboard" asp-action="Index" class="w-bottom-nav-item @(controller == "Leaderboard" ? "active" : "")">
+            <span class="material-symbols-outlined">social_leaderboard</span>
+            الشرف
+        </a>
+        @if (sessionUserId != null)
+        {
+            <a asp-controller="Account" asp-action="Profile" class="w-bottom-nav-item @(controller == "Account" && action == "Profile" ? "active" : "")">
+                <span class="material-symbols-outlined">person</span>
+                حسابي
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="w-bottom-nav-item @(controller == "Account" ? "active" : "")">
+                <span class="material-symbols-outlined">login</span>
+                دخول
+            </a>
+        }
+    </nav>
+
+    <footer class="w-footer w-hide-mobile">
+        <div class="w-container">
+            <div class="w-footer-grid">
+                <div class="w-footer-brand">
+                    <a class="w-footer-logo" asp-controller="Home" asp-action="Index">وصال</a>
+                    <p class="w-footer-desc">
+                        منصة وصال هي جسر يربط بين المتطوعين الراغبين في العطاء وبين من يحتاجون للمساعدة في مجتمعنا. نسعى لبناء مجتمع أكثر تلاحماً وتعاوناً من خلال تسهيل العمل التطوعي.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="w-footer-title">روابط سريعة</h4>
+                    <ul class="w-footer-links">
+                        <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
+                        <li><a asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
+                        <li><a asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="w-footer-title">المساعدة</h4>
+                    <ul class="w-footer-links">
+                        <li><a asp-controller="Home" asp-action="Privacy">سياسة الخصوصية</a></li>
+                        <li><a href="#">الأسئلة الشائعة</a></li>
+                        <li><a href="#">اتصل بنا</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="w-footer-bottom">
+                <p class="mb-0">جميع الحقوق محفوظة &copy; 2026 - وصال</p>
+                <div class="d-flex gap-3">
+                    <span class="w-body-sm text-secondary fw-bold">صنع بكل حب للمجتمع</span>
+                </div>
+            </div>
         </div>
     </footer>
 

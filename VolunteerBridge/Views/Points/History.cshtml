@@ -4,60 +4,96 @@
     var totalPoints = Model.Sum(t => t.Points);
 }
 
-<div class="row g-3 mb-4">
-    <div class="col-md-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <h2 class="h5 mb-1">سجل النقاط</h2>
-                <p class="text-muted mb-0">كل النقاط التي حصلت عليها من إنجاز الطلبات.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">إجمالي النقاط</div>
-                <div class="fs-4 fw-bold">@totalPoints</div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="text-muted small mb-1">عدد العمليات</div>
-                <div class="fs-4 fw-bold">@Model.Count</div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="w-container w-py-xl w-animate-fadeIn">
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
+    @* ── Page Header Stats ── *@
+    <div class="row g-3 mb-4 w-stagger">
+        <div class="col-md-6 w-animate-fadeInUp">
+            <div class="w-card h-100 w-border-accent-primary">
+                <h2 class="w-h2 mb-1">سجل النقاط</h2>
+                <p class="w-body-md w-text-muted mb-0">كل النقاط التي حصلت عليها من إنجاز الطلبات والمساهمات.</p>
+            </div>
+        </div>
+        <div class="col-md-3 w-animate-fadeInUp">
+            <div class="w-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-secondary">
+                        <span class="material-symbols-outlined">stars</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">إجمالي النقاط</div>
+                        <div class="w-h4 mb-0" style="color: var(--w-secondary);">@totalPoints</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 w-animate-fadeInUp">
+            <div class="w-card h-100">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-icon-container w-icon-container-primary">
+                        <span class="material-symbols-outlined">receipt_long</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">عدد العمليات</div>
+                        <div class="w-h4 mb-0">@Model.Count</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Transactions Table ── *@
+    <div class="w-card w-p-0 w-overflow-hidden w-animate-fadeInUp" style="animation-delay: 200ms;">
         @if (!Model.Any())
         {
-            <div class="alert alert-info mb-0">لا توجد عمليات نقاط مسجلة حتى الآن.</div>
+            <div class="w-text-center w-py-3xl">
+                <span class="material-symbols-outlined w-text-faint d-block w-mb-md" style="font-size: 48px;">history_edu</span>
+                <p class="w-body-md w-text-muted mb-0">لا توجد عمليات نقاط مسجلة حتى الآن.</p>
+            </div>
         }
         else
         {
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                <table class="w-table">
+                    <thead>
                         <tr>
-                            <th>التاريخ</th>
+                            <th style="padding-right: 28px;">التاريخ</th>
                             <th>السبب</th>
                             <th>الطلب المرتبط</th>
-                            <th>النقاط</th>
+                            <th class="text-left" style="padding-left: 28px;">النقاط</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
-                                <td>@(string.IsNullOrWhiteSpace(item.Reason) ? "بدون وصف" : item.Reason)</td>
-                                <td>@(item.Acceptance?.Request?.Title ?? "غير متوفر")</td>
+                                <td style="padding-right: 28px;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="material-symbols-outlined w-text-faint" style="font-size: 16px;">calendar_today</span>
+                                        <span class="w-body-sm">@item.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </div>
+                                </td>
                                 <td>
-                                    <span class="badge bg-success">+@item.Points</span>
+                                    <span class="w-body-sm">@(string.IsNullOrWhiteSpace(item.Reason) ? "بدون وصف" : item.Reason)</span>
+                                </td>
+                                <td>
+                                    @if (item.Acceptance?.Request != null)
+                                    {
+                                        <a asp-controller="ServiceRequests" asp-action="Details" asp-route-id="@item.Acceptance.RequestId" 
+                                           class="w-text-primary w-text-decoration-none w-body-sm fw-bold">
+                                            @item.Acceptance.Request.Title
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <span class="w-text-muted w-body-sm">غير متوفر</span>
+                                    }
+                                </td>
+                                <td class="text-left" style="padding-left: 28px;">
+                                    <div class="w-chip w-chip-success">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">add</span>
+                                        <span>@item.Points</span>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -65,5 +101,13 @@
                 </table>
             </div>
         }
+    </div>
+
+    @* ── Back Navigation ── *@
+    <div class="w-text-center w-mt-xl">
+        <a asp-controller="Account" asp-action="Profile" class="w-btn w-btn-ghost w-btn-sm">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            العودة للملف الشخصي
+        </a>
     </div>
 </div>

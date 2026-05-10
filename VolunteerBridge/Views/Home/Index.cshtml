@@ -1,288 +1,310 @@
-﻿@{
-    ViewBag.Title = "وصال - اعمل فرق";
-    Layout = null;
+@{
+    ViewBag.Title = "وصال - نبني جسور الخير والعطاء";
 }
 
-<!DOCTYPE html>
-<html dir="rtl" lang="ar">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>وصال - اعمل فرق</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: { arabic: ["Rubik", "sans-serif"] },
-                    colors: {
-                        "surface-tint": "#006e2f",
-                        "on-error-container": "#93000a",
-                        "on-tertiary": "#ffffff",
-                        "surface": "#f3fcef",
-                        "surface-container-low": "#edf6ea",
-                        "outline": "#6d7b6c",
-                        "on-secondary-container": "#fefcff",
-                        "background": "#f3fcef",
-                        "on-primary": "#ffffff",
-                        "secondary-container": "#316bf3",
-                        "on-primary-fixed": "#002109",
-                        "on-surface": "#161d16",
-                        "primary-fixed-dim": "#4ae176",
-                        "inverse-on-surface": "#ebf3e7",
-                        "surface-dim": "#d4ddd0",
-                        "surface-variant": "#dce5d9",
-                        "surface-container-highest": "#dce5d9",
-                        "primary-fixed": "#6bff8f",
-                        "surface-container-lowest": "#ffffff",
-                        "inverse-primary": "#4ae176",
-                        "on-secondary-fixed": "#00174b",
-                        "on-secondary": "#ffffff",
-                        "error": "#ba1a1a",
-                        "on-background": "#161d16",
-                        "secondary-fixed": "#dbe1ff",
-                        "primary-container": "#22c55e",
-                        "outline-variant": "#bccbb9",
-                        "secondary": "#0051d5",
-                        "primary": "#006e2f",
-                        "on-primary-container": "#004b1e",
-                        "on-error": "#ffffff",
-                        "secondary-fixed-dim": "#b4c5ff",
-                        "on-surface-variant": "#3d4a3d",
-                        "surface-container": "#e8f0e4",
-                        "inverse-surface": "#2a322a",
-                        "error-container": "#ffdad6",
-                        "surface-container-high": "#e2ebde",
-                        "surface-bright": "#f3fcef"
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"
-                    },
-                    spacing: {
-                        "lg": "24px", "container-max": "1200px", "xs": "4px",
-                        "md": "16px", "sm": "8px", "base": "8px", "gutter": "16px",
-                        "xxl": "48px", "xl": "32px"
-                    },
-                    fontSize: {
-                        "h2": ["32px", { "lineHeight": "1.3", "fontWeight": "700" }],
-                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
-                        "h1": ["40px", { "lineHeight": "1.2", "fontWeight": "700" }],
-                        "h3": ["24px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "label-bold": ["14px", { "lineHeight": "1.2", "fontWeight": "600" }],
-                        "caption": ["12px", { "lineHeight": "1.2", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
+@section Styles {
     <style>
-        body {
-            font-family: 'Rubik', sans-serif;
-            background-color: #f3fcef;
-            color: #161d16;
+        .hero-section {
+            min-height: 85vh;
+            display: flex;
+            align-items: center;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        .hero-inner {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 80px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .hero-title {
+            font-family: var(--w-font-display);
+            font-size: 68px;
+            font-weight: 900;
+            line-height: 1.1;
+            color: var(--w-on-surface);
+            letter-spacing: -0.03em;
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .hero-title-highlight {
+            position: relative;
+            color: var(--w-primary);
+            display: inline-block;
+            white-space: nowrap;
+            margin-top: 8px;
+        }
+
+        .hero-title-highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 14px;
+            right: 0;
+            width: 100%;
+            height: 16px;
+            background: var(--w-primary-container);
+            z-index: -1;
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+
+        .hero-subtitle {
+            font-size: 21px;
+            line-height: 1.8;
+            max-width: 600px;
+            color: var(--w-on-surface-variant);
+            margin-bottom: var(--w-space-2xl);
+            font-weight: 400;
+        }
+
+        .hero-visual {
+            position: relative;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-card-1 {
+            top: 0; right: 0;
+            background: linear-gradient(135deg, var(--w-primary) 0%, #818cf8 100%);
+            z-index: 3;
+            box-shadow: var(--w-shadow-xl);
+            transform: rotate(-4deg);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .hero-card-2 {
+            top: 60px; right: 40px;
+            background: var(--w-glass-bg);
+            backdrop-filter: blur(20px);
+            z-index: 2;
+            border: 1px solid var(--w-glass-border);
+            box-shadow: var(--w-shadow-lg);
+            transform: rotate(2deg);
+        }
+
+        .hero-card-3 {
+            top: 120px; right: 80px;
+            background: var(--w-secondary-container);
+            z-index: 1;
+            transform: rotate(8deg);
+            opacity: 0.6;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin-top: 60px;
+        }
+
+        .step-card {
+            padding: 40px;
+            border-radius: var(--w-radius-lg);
+            transition: all var(--w-transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .step-card:hover {
+            transform: translateY(-12px);
+            background: white;
+            box-shadow: var(--w-shadow-xl);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--w-primary-container);
+            color: var(--w-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+
+        .step-icon-box {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--w-radius-md);
+            background: var(--w-surface-dim);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            transition: all var(--w-transition);
+        }
+
+        .step-card:hover .step-icon-box {
+            background: var(--w-primary-container);
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .step-icon-box span {
+            font-size: 36px;
+            color: var(--w-primary);
+        }
+
+        @@media (max-width: 992px) {
+            .hero-section { padding: 60px 0; text-align: center; }
+            .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+            .hero-visual { display: none; }
+            .hero-title { font-size: 42px; }
+            .hero-subtitle { margin: 0 auto 32px; }
+            .hero-actions { justify-content: center; }
+            .steps-grid { grid-template-columns: 1fr; }
         }
     </style>
-</head>
-<body class="antialiased min-h-screen flex flex-col pt-20 font-arabic">
+}
 
-    <!-- Top Nav -->
-    <nav class="bg-white/90 backdrop-blur-md text-green-600 font-arabic font-bold text-base fixed top-0 w-full border-b border-gray-100 shadow-sm z-50">
-        <div class="flex flex-row-reverse justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
-            <div class="text-2xl font-black text-green-600">وصال</div>
-            <div class="hidden md:flex flex-row-reverse items-center gap-6">
-                <a class="text-green-600 border-b-2 border-green-600 pb-1 hover:text-green-500 transition-colors" href="#">الرئيسية</a>
-                <a class="text-gray-600 hover:text-green-500 transition-colors" href="#">طلبات التطوع</a>
-                <a class="text-gray-600 hover:text-green-500 transition-colors" href="#">لوحة الشرف</a>
-            </div>
-            <div class="flex items-center gap-4 flex-row-reverse">
-                @if (Context.Session.GetInt32("UserId") != null)
-                {
-                    <span class="text-label-bold text-on-surface-variant">
-                        مرحباً، @Context.Session.GetString("UserName")
-                    </span>
-                    <a asp-action="Profile" asp-controller="Account"
-                       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        الملف الشخصي
-                    </a>
-                    <a asp-action="Logout" asp-controller="Account"
-                       class="text-gray-500 hover:text-red-500 text-label-bold transition-colors">
-                        خروج
-                    </a>
-                }
-                else
-                {
-                    <a asp-action="Register" asp-controller="Account"
-                       class="text-green-600 hover:text-green-700 font-medium transition-colors">
-                        إنشاء حساب
-                    </a>
-                    <a asp-action="Login" asp-controller="Account"
-                       class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        تسجيل دخول
-                    </a>
-                }
-            </div>
-        </div>
-    </nav>
+@{
+    var sessionUserId = Context.Session.GetInt32("UserId");
+}
 
-    <main class="flex-grow">
+<!-- ════════ HERO SECTION ════════ -->
+<section class="hero-section">
+    <div class="w-container">
+        <div class="hero-inner">
+            <div class="hero-text w-animate-fadeInUp">
+                <div class="w-chip w-chip-blue w-mb-lg">
+                    <span class="material-symbols-outlined w-icon-xs">volunteer_activism</span>
+                    نحو مجتمع أكثر تكافلاً
+                </div>
 
-        <!-- Hero Section -->
-        <section class="relative min-h-[819px] flex items-center justify-center overflow-hidden">
-            <div class="absolute inset-0 z-0">
-                <img alt="وصال"
-                     class="w-full h-full object-cover opacity-20"
-                     src="https://lh3.googleusercontent.com/aida-public/AB6AXuCd3AwfoKuLYZ3ZzLY7_nH1eI8Hkr5SSP-3PhCkjNgmqxcgbVOOdICApYaCDk2CsX6P48z6V1m2SGbVUgr-Ra91NMpu0SL6TTp0mNltDz459xuwoPnAoaZ74TScWrDtIMDfMJSnCemLpXYZhh5WmsHK_JMBpTnsW3F62cH2Tk5dwyVfUnvxaAXcqqRaJIVN8kRK3RI57ranPMOEczW2cZXAFRd3XBKDyYJ7hr28cjNyD4cGU4l1t_UH4fii8F26zTfhKTpIfYrCvm2M" />
-                <div class="absolute inset-0 bg-gradient-to-b from-surface/80 to-surface"></div>
-            </div>
-            <div class="relative z-10 max-w-container-max mx-auto px-6 text-center">
-                <h1 class="text-h1 font-bold text-primary-container mb-6 drop-shadow-sm">وصال — اعمل فرق</h1>
-                <p class="text-h3 font-semibold text-on-surface-variant max-w-2xl mx-auto mb-10 leading-relaxed">
-                    منصة تجمع بين من يحتاج المساعدة ومن يرغب بتقديمها. انضم إلى مجتمعنا وكن جزءاً من التغيير الإيجابي في مجتمعك اليوم.
+                <h1 class="hero-title">
+                    وصال: نبني جسور <br>
+                    <span class="hero-title-highlight">الخير والعطاء</span>
+                </h1>
+
+                <p class="hero-subtitle">
+                    منصة مصرية ذكية تربط بين المتطوعين المبدعين ومن يحتاجون للمساعدة. نؤمن أن كل فعل خير، مهما كان صغيراً، يمكنه أن يغير حياة إنسان.
                 </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    @if (Context.Session.GetInt32("UserId") == null)
+
+                <div class="hero-actions w-flex w-gap-md w-mt-xl">
+                    @if (sessionUserId == null)
                     {
-                        <a asp-action="Register" asp-controller="Account"
-                           class="bg-[#2563EB] hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-[0_8px_30px_rgb(37,99,235,0.2)] hover:shadow-[0_8px_30px_rgb(37,99,235,0.4)] hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined">person_add</span>
-                            إنشاء حساب
+                        <a asp-action="Register" asp-controller="Account" class="w-btn w-btn-primary w-btn-lg">
+                            <span class="material-symbols-outlined">rocket_launch</span>
+                            انضم إلينا الآن
                         </a>
-                        <a asp-action="Login" asp-controller="Account"
-                           class="bg-[#22C55E] hover:bg-green-600 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-[0_8px_30px_rgb(34,197,94,0.2)] hover:shadow-[0_8px_30px_rgb(34,197,94,0.4)] hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined">login</span>
-                            تسجيل الدخول
+                        <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-outline w-btn-lg">
+                            <span class="material-symbols-outlined">search</span>
+                            تصفح الطلبات
                         </a>
                     }
                     else
                     {
-                        <a asp-controller="ServiceRequests" asp-action="Create"
-                           class="bg-[#2563EB] hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-[0_8px_30px_rgb(37,99,235,0.2)] hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined">front_hand</span>
-                            اطلب مساعدة
-                        </a>
-                        <a asp-controller="ServiceRequests" asp-action="Browse"
-                           class="bg-[#22C55E] hover:bg-green-600 text-white px-8 py-4 rounded-xl font-semibold transition-all shadow-[0_8px_30px_rgb(34,197,94,0.2)] hover:-translate-y-1 w-full sm:w-auto flex items-center justify-center gap-2">
+                        <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-primary w-btn-lg">
                             <span class="material-symbols-outlined">volunteer_activism</span>
-                            ساعد الآن
+                            ابدأ التطوع
+                        </a>
+                        <a asp-controller="ServiceRequests" asp-action="Create" class="w-btn w-btn-outline w-btn-lg">
+                            <span class="material-symbols-outlined">add_circle</span>
+                            اطلب مساعدة
                         </a>
                     }
                 </div>
             </div>
-        </section>
 
-        <!-- How it works -->
-        <section class="py-24 bg-surface-container-low relative">
-            <div class="max-w-container-max mx-auto px-6">
-                <div class="text-center mb-16">
-                    <h2 class="text-h2 font-bold text-primary-container mb-4">كيف تعمل منصة وصال؟</h2>
-                    <p class="text-body-lg text-on-surface-variant max-w-2xl mx-auto">خطوات بسيطة تفصلك عن إحداث أثر حقيقي في مجتمعك.</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-                    <div class="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-l from-primary-container/20 via-primary-container to-primary-container/20 -translate-y-1/2 z-0"></div>
-                    <!-- Step 1 -->
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-20 h-20 rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.05)] flex items-center justify-center mb-6 border border-surface-variant/50 group hover:border-primary-container transition-colors">
-                            <span class="material-symbols-outlined text-4xl text-[#2563EB] group-hover:scale-110 transition-transform">post_add</span>
+            <div class="hero-visual w-animate-fadeIn w-delay-200">
+                <div class="w-hero-card-stack">
+                    <div class="w-hero-card-item hero-card-1">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="material-symbols-outlined w-icon-xl text-white" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                            <span class="w-chip w-chip-glass text-white">+١٢٠٠ متطوع</span>
                         </div>
-                        <h3 class="text-h3 font-semibold text-on-surface mb-3">1. إضافة الطلب</h3>
-                        <p class="text-body-md text-on-surface-variant">قم بوصف المشكلة أو نوع المساعدة التي تحتاجها بوضوح وتحديد الموقع.</p>
-                    </div>
-                    <!-- Step 2 -->
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-20 h-20 rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.05)] flex items-center justify-center mb-6 border border-surface-variant/50 group hover:border-primary-container transition-colors">
-                            <span class="material-symbols-outlined text-4xl text-[#22C55E] group-hover:scale-110 transition-transform">connect_without_contact</span>
+                        <div>
+                            <h3 class="w-h4 mb-1">أحدث تأثيراً</h3>
+                            <p class="w-body-sm opacity-90">ساعد الآخرين واكتسب مهارات جديدة في رحلتك التطوعية.</p>
                         </div>
-                        <h3 class="text-h3 font-semibold text-on-surface mb-3">2. التواصل والتنسيق</h3>
-                        <p class="text-body-md text-on-surface-variant">يقوم المتطوعون القريبون برؤية طلبك والتواصل معك لتقديم المساعدة.</p>
                     </div>
-                    <!-- Step 3 -->
-                    <div class="relative z-10 flex flex-col items-center text-center">
-                        <div class="w-20 h-20 rounded-2xl bg-white shadow-[0_8px_30px_rgb(0,0,0,0.05)] flex items-center justify-center mb-6 border border-surface-variant/50 group hover:border-primary-container transition-colors">
-                            <span class="material-symbols-outlined text-4xl text-amber-500 group-hover:scale-110 transition-transform">task_alt</span>
+                    <div class="w-hero-card-item hero-card-2 p-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="w-avatar w-avatar-md">أ</div>
+                            <div>
+                                <div class="w-label">أحمد محمد</div>
+                                <div class="w-text-xs w-text-muted">قبل ١٠ دقائق</div>
+                            </div>
                         </div>
-                        <h3 class="text-h3 font-semibold text-on-surface mb-3">3. إنجاز المهمة</h3>
-                        <p class="text-body-md text-on-surface-variant">يتم إنجاز المساعدة وتقييم التجربة لضمان جودة وموثوقية المنصة.</p>
+                        <div class="w-body-sm">تم إنجاز طلب "توصيل دواء" بنجاح! شكرًا لكم على هذه المنصة.</div>
                     </div>
+                    <div class="w-hero-card-item hero-card-3"></div>
                 </div>
             </div>
-        </section>
-
-        <!-- Stats -->
-        <section class="py-16 bg-surface">
-            <div class="max-w-container-max mx-auto px-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="glass-card rounded-2xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div class="absolute -right-10 -top-10 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"></div>
-                        <span class="material-symbols-outlined text-5xl text-[#22C55E] mb-4">group</span>
-                        <h3 class="text-h1 font-bold text-on-surface mb-2">+5,000</h3>
-                        <p class="text-body-lg text-on-surface-variant">متطوع مسجل</p>
-                    </div>
-                    <div class="glass-card rounded-2xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-secondary-container/10 rounded-full blur-2xl"></div>
-                        <span class="material-symbols-outlined text-5xl text-[#2563EB] mb-4">task_alt</span>
-                        <h3 class="text-h1 font-bold text-on-surface mb-2">+1,200</h3>
-                        <p class="text-body-lg text-on-surface-variant">طلب تم إنجازه</p>
-                    </div>
-                    <div class="glass-card rounded-2xl p-8 flex flex-col items-center justify-center text-center relative overflow-hidden">
-                        <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"></div>
-                        <span class="material-symbols-outlined text-5xl text-amber-500 mb-4">location_city</span>
-                        <h3 class="text-h1 font-bold text-on-surface mb-2">+20</h3>
-                        <p class="text-body-lg text-on-surface-variant">محافظة في أنحاء مصر </p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-gray-50 text-sm font-arabic text-gray-600 w-full py-12 border-t border-gray-200 pb-24 md:pb-12">
-        <div class="flex flex-col md:flex-row-reverse justify-between items-center w-full px-8 gap-6 max-w-7xl mx-auto">
-            <div class="text-xl font-bold text-green-600">وصال</div>
-            <div class="flex flex-row-reverse items-center gap-6">
-                <a class="text-gray-500 hover:text-green-600 transition-colors" href="#">عن وصال</a>
-                <a class="text-gray-500 hover:text-green-600 transition-colors" href="#">الشروط والأحكام</a>
-                <a class="text-gray-500 hover:text-green-600 transition-colors" href="#">اتصل بنا</a>
-            </div>
-            <div>© 2026 وصال. كل الحقوق محفوظة.</div>
         </div>
-    </footer>
+    </div>
+</section>
 
-    <!-- Bottom Nav (Mobile) -->
-    <nav class="md:hidden bg-white text-[11px] font-arabic font-medium fixed bottom-0 left-0 w-full z-50 flex flex-row-reverse justify-around items-center px-4 py-3 border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-t-2xl">
-        <a class="flex flex-col items-center justify-center bg-green-50 text-green-600 rounded-xl px-3 py-1" href="#">
-            <span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">home</span>
-            الرئيسية
-        </a>
-        <a asp-action="Login" asp-controller="Account" class="flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50 px-3 py-1 rounded-xl">
-            <span class="material-symbols-outlined mb-1">login</span>
-            دخول
-        </a>
-        <a asp-action="Register" asp-controller="Account" class="flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50 px-3 py-1 rounded-xl">
-            <span class="material-symbols-outlined mb-1">person_add</span>
-            حساب جديد
-        </a>
-        <a asp-action="Profile" asp-controller="Account" class="flex flex-col items-center justify-center text-gray-500 hover:bg-gray-50 px-3 py-1 rounded-xl">
-            <span class="material-symbols-outlined mb-1">person</span>
-            الملف
-        </a>
-    </nav>
 
-</body>
-</html>
+<!-- ════════ HOW IT WORKS ════════ -->
+<section class="w-py-3xl" style="background: rgba(0,0,0,0.02);">
+    <div class="w-container">
+        <div class="w-text-center w-mb-xl">
+            <h2 class="w-h2 w-mb-md">رحلتك في وصال</h2>
+            <p class="w-body-lg w-text-muted">خطوات بسيطة نحو تغيير إيجابي مستدام في المجتمع المصري.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card w-glass w-animate-fadeInUp w-delay-100">
+                <div class="step-number">١</div>
+                <div class="step-icon-box">
+                    <span class="material-symbols-outlined">person_add</span>
+                </div>
+                <h3 class="w-h5 w-mb-sm">انضم للمجتمع</h3>
+                <p class="w-body-sm w-text-muted">أنشئ حسابك كمتطوع أو كطالب خدمة في أقل من دقيقة.</p>
+            </div>
+
+            <div class="step-card w-glass w-animate-fadeInUp w-delay-200">
+                <div class="step-number">٢</div>
+                <div class="step-icon-box">
+                    <span class="material-symbols-outlined">explore</span>
+                </div>
+                <h3 class="w-h5 w-mb-sm">استكشف الفرص</h3>
+                <p class="w-body-sm w-text-muted">تصفح الطلبات القريبة منك واختر ما يناسب مهاراتك ووقتك.</p>
+            </div>
+
+            <div class="step-card w-glass w-animate-fadeInUp w-delay-300">
+                <div class="step-number">٣</div>
+                <div class="step-icon-box" style="background: var(--w-secondary-container);">
+                    <span class="material-symbols-outlined" style="color: var(--w-secondary);">celebration</span>
+                </div>
+                <h3 class="w-h5 w-mb-sm">اصنع الفرق</h3>
+                <p class="w-body-sm w-text-muted">قدم مساعدتك، اجمع النقاط، وارتقِ في لوحة الشرف.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ════════ CTA SECTION ════════ -->
+<section class="w-py-3xl">
+    <div class="w-container">
+        <div class="w-glass-premium p-5 w-text-center rounded-xl overflow-hidden position-relative">
+            <h2 class="w-display w-h2 w-mb-lg">هل أنت مستعد لتكون بطلاً؟</h2>
+            <p class="w-body-lg w-mb-xl w-mx-auto w-text-muted" style="max-width: 600px;">
+                انضم إلى آلاف المصريين الذين يساهمون يومياً في جعل مجتمعنا مكاناً أفضل للجميع.
+            </p>
+            @if (sessionUserId == null)
+            {
+                <a asp-controller="Account" asp-action="Register" class="w-btn w-btn-primary w-btn-lg">ابدأ الآن - مجاناً</a>
+            }
+            else
+            {
+                <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-primary w-btn-lg">تصفح أحدث الطلبات</a>
+            }
+        </div>
+    </div>
+</section>

@@ -2,68 +2,144 @@
 @{
     ViewData["Title"] = "لوحة الشرف";
     var currentUserId = Context.Session.GetInt32("UserId");
+    var topThree = Model.Take(3).ToList();
+    var theRest = Model.Skip(3).ToList();
 }
 
-<div class="card shadow-sm border-0">
-    <div class="card-body p-4">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <div>
-                <h2 class="h4 mb-1">لوحة الشرف</h2>
-                <p class="text-muted mb-0">أفضل المتطوعين حسب إجمالي النقاط والمهام المكتملة.</p>
-            </div>
-            <a asp-controller="ServiceRequests" asp-action="Browse" class="btn btn-outline-primary">تصفح الطلبات</a>
+<div class="w-container w-py-xl w-animate-fadeIn">
+    
+    @* ── Header ── *@
+    <div class="text-center mb-5">
+        <div class="w-avatar w-avatar-xl w-mx-auto w-mb-md" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+            <span class="material-symbols-outlined" style="font-size: 48px;">workspace_premium</span>
+        </div>
+        <h2 class="w-display w-h2 w-mb-md w-aurora-text">لوحة الشرف</h2>
+        <p class="w-body-lg w-text-muted">نحتفي بأكثر المتطوعين عطاءً وتأثيراً في مجتمعنا المصري.</p>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="w-glass-premium w-text-center w-py-3xl">
+            <span class="material-symbols-outlined w-text-muted w-mb-md" style="font-size: 64px;">stars</span>
+            <h3 class="w-h4 w-text-muted">لا توجد بيانات حالياً</h3>
+            <p class="w-body-md w-text-muted mb-0">كن أول من يتصدر القائمة وابدأ رحلتك التطوعية الآن!</p>
+        </div>
+    }
+    else
+    {
+        @* ── Podium for Top 3 ── *@
+        <div class="row g-4 align-items-end mb-5">
+            @if (topThree.Count >= 2)
+            {
+                <div class="col-12 col-md-4 order-2 order-md-1">
+                    <div class="w-trophy-card w-trophy-silver w-animate-fadeInUp w-delay-100">
+                        <div class="w-avatar w-avatar-lg w-mx-auto mb-3" style="background: linear-gradient(135deg, #94a3b8, #64748b); color: white;">
+                            @(topThree[1].FullName?.Substring(0, 1) ?? "٢")
+                        </div>
+                        <h3 class="w-h5 fw-bold mb-1">@topThree[1].FullName</h3>
+                        <div class="w-caption w-text-muted mb-3">المركز الثاني</div>
+                        <div class="w-chip w-chip-gray">@topThree[1].TotalPoints نقطة</div>
+                    </div>
+                </div>
+            }
+
+            @if (topThree.Count >= 1)
+            {
+                <div class="col-12 col-md-4 order-1 order-md-2">
+                    <div class="w-trophy-card w-trophy-gold w-animate-fadeInUp" style="transform: scale(1.1); z-index: 10;">
+                        <div class="position-relative w-mx-auto mb-4" style="width: 80px;">
+                            <div class="w-avatar w-avatar-xl" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; border: 4px solid rgba(255,255,255,0.2)">
+                                @(topThree[0].FullName?.Substring(0, 1) ?? "١")
+                            </div>
+                            <span class="material-symbols-outlined position-absolute" style="top: -15px; left: 50%; transform: translateX(-50%); color: #fbbf24; font-size: 40px; filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.4));">military_tech</span>
+                        </div>
+                        <h3 class="w-h4 fw-bold mb-1 w-text-primary">@topThree[0].FullName</h3>
+                        <div class="w-caption w-text-muted mb-3 fw-bold">البطل الذهبي</div>
+                        <div class="w-chip w-chip-blue" style="font-weight: 800; border: 1px solid rgba(99, 102, 241, 0.2);">@topThree[0].TotalPoints نقطة</div>
+                    </div>
+                </div>
+            }
+
+            @if (topThree.Count >= 3)
+            {
+                <div class="col-12 col-md-4 order-3 order-md-3">
+                    <div class="w-trophy-card w-trophy-bronze w-animate-fadeInUp w-delay-200">
+                        <div class="w-avatar w-avatar-lg w-mx-auto mb-3" style="background: linear-gradient(135deg, #d97706, #92400e); color: white;">
+                            @(topThree[2].FullName?.Substring(0, 1) ?? "٣")
+                        </div>
+                        <h3 class="w-h5 fw-bold mb-1">@topThree[2].FullName</h3>
+                        <div class="w-caption w-text-muted mb-3">المركز الثالث</div>
+                        <div class="w-chip w-chip-gray">@topThree[2].TotalPoints نقطة</div>
+                    </div>
+                </div>
+            }
         </div>
 
-        @if (!Model.Any())
-        {
-            <div class="alert alert-info mb-0">لا توجد بيانات كافية لعرض لوحة الشرف حالياً.</div>
-        }
-        else
-        {
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th>الاسم</th>
-                            <th>المدينة</th>
-                            <th>المستوى</th>
-                            <th>النقاط</th>
-                            <th>المهام المكتملة</th>
-                            <th>التقييم</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.Count; i++)
-                        {
-                            var user = Model[i];
-                            var isCurrentUser = currentUserId == user.UserId;
-
-                            <tr class="@(isCurrentUser ? "leaderboard-current-user" : string.Empty)">
-                                <td class="fw-bold">@(i + 1)</td>
-                                <td>
-                                    <div class="fw-semibold">@user.FullName</div>
-                                    @if (isCurrentUser)
-                                    {
-                                        <small class="text-primary">حسابك</small>
-                                    }
-                                </td>
-                                <td>@(string.IsNullOrWhiteSpace(user.City) ? "غير محددة" : user.City)</td>
-                                <td>
-                                    <span class="badge level-badge badge-@user.Level.ToString().ToLower()">
-                                        @user.Level.GetDisplayName()
-                                    </span>
-                                </td>
-                                <td class="fw-semibold">@user.TotalPoints</td>
-                                <td>@user.CompletedTasksCount</td>
-                                <td>
-                                    @(user.AverageRating > 0 ? user.AverageRating.ToString("0.0") : "بدون تقييم")
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+        @* ── Rankings List ── *@
+        <div class="mt-5">
+            <div class="w-flex w-justify-between w-items-center w-mb-lg px-3">
+                <h4 class="w-h5 mb-0">ترتيب المتطوعين</h4>
+                <div class="w-caption w-text-muted">إجمالي @Model.Count متطوع</div>
             </div>
-        }
+
+            <div class="w-ranks-list">
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    var user = Model[i];
+                    var isCurrentUser = currentUserId == user.UserId;
+                    var rank = i + 1;
+
+                    <div class="w-rank-row @(isCurrentUser ? "is-current-user" : "") w-animate-fadeInUp" style="animation-delay: @(i * 50)ms">
+                        <div class="rank-number" style="width: 40px; font-weight: 800; font-family: var(--w-font-display);">
+                            @if (rank <= 3)
+                            {
+                                <span class="material-symbols-outlined" style="color: @(rank == 1 ? "#fbbf24" : rank == 2 ? "#94a3b8" : "#b45309")">
+                                    @(rank == 1 ? "workspace_premium" : rank == 2 ? "military_tech" : "emoji_events")
+                                </span>
+                            }
+                            else
+                            {
+                                <span>#@rank</span>
+                            }
+                        </div>
+
+                        <div class="w-flex w-items-center w-gap-md flex-grow-1">
+                            <div class="w-avatar w-avatar-md" style="background: @(isCurrentUser ? "var(--w-primary)" : "var(--w-surface-dim)"); color: @(isCurrentUser ? "white" : "var(--w-on-surface)")">
+                                @(user.FullName?.Substring(0, 1) ?? "?")
+                            </div>
+                            <div>
+                                <div class="w-body-md fw-bold">@user.FullName</div>
+                                <div class="w-flex w-items-center w-gap-xs">
+                                    <span class="w-caption w-text-muted">@(string.IsNullOrWhiteSpace(user.City) ? "مصر" : user.City)</span>
+                                    <span class="w-text-faint">•</span>
+                                    <span class="w-caption w-text-primary">@user.Level.GetDisplayName()</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-text-center w-hide-mobile" style="width: 120px;">
+                            <div class="w-body-sm fw-bold">@user.CompletedTasksCount</div>
+                            <div class="w-caption w-text-muted">مهمة منجزة</div>
+                        </div>
+
+                        <div class="w-text-left" style="width: 140px;">
+                            <div class="w-body-lg fw-bold w-text-primary">@user.TotalPoints.ToString("N0")</div>
+                            <div class="w-flex w-items-center w-gap-xs w-justify-end">
+                                <span class="w-caption">@(user.AverageRating > 0 ? user.AverageRating.ToString("0.0") : "جديد")</span>
+                                <span class="material-symbols-outlined w-icon-xs" style="color: #fbbf24; font-variation-settings: 'FILL' 1;">star</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="text-center mt-5 w-pb-xl">
+        <p class="w-body-sm w-text-muted w-mb-lg">كلما زاد نشاطك، ارتفع ترتيبك في لوحة الشرف!</p>
+        <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-primary w-btn-lg">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            تطوع الآن واصعد للقمة
+        </a>
     </div>
 </div>

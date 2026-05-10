@@ -1,4 +1,4 @@
-﻿@model VolunteerBridge.Models.ServiceRequest
+@model VolunteerBridge.Models.ServiceRequest
 @{
     ViewBag.Title = "تفاصيل الطلب";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,171 +7,293 @@
     var acceptance = Model.Acceptances?.FirstOrDefault();
 }
 
-<div dir="rtl" lang="ar">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-7">
-            <div class="card shadow-sm">
+<div class="w-py-xl position-relative">
+    @* --- Background Glows --- *@
+    <div class="position-absolute top-0 start-50 translate-middle-x w-100 h-100 overflow-hidden" style="z-index: -1; pointer-events: none;">
+        <div class="position-absolute" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%); top: -150px; left: -200px; filter: blur(60px);"></div>
+        <div class="position-absolute" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%); top: 300px; right: -150px; filter: blur(50px);"></div>
+    </div>
 
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">@Model.Title</h5>
-                    @switch (Model.Status)
+    <div class="w-container">
+
+        @* ── Removed-by-Admin State ── *@
+        @if (Model.IsRemovedByAdmin)
+        {
+            <div class="w-flex w-justify-center">
+                <div class="w-card w-card-glass w-text-center w-animate-fadeInUp w-max-w-600 w-p-3xl" style="border-radius: var(--w-radius-xl);">
+                    <div class="w-flex w-justify-center w-mb-md">
+                        <div class="w-p-md w-rounded-full w-bg-primary-container" style="width: fit-content;">
+                            <span class="material-symbols-outlined w-text-error" style="font-size: 64px;">report</span>
+                        </div>
+                    </div>
+                    <h2 class="w-h2 w-mb-sm">هذا الطلب غير متاح</h2>
+                    <p class="w-body-md w-text-muted w-mb-xl">تمت إزالة هذا الطلب من قبل الإدارة لمخالفته شروط المنصة.</p>
+                    
+                    @if (isOwner)
                     {
-                        case RequestStatus.Open:
-                            <span class="badge bg-success fs-6">مفتوح</span>
-                            break;
-                        case RequestStatus.Accepted:
-                            <span class="badge bg-primary fs-6">تم القبول</span>
-                            break;
-                        case RequestStatus.Completed:
-                            <span class="badge bg-dark fs-6">مكتمل</span>
-                            break;
-                        case RequestStatus.Cancelled:
-                            <span class="badge bg-danger fs-6">ملغى</span>
-                            break;
+                        <div class="w-alert w-alert-error w-text-right w-mb-xl">
+                            <span class="material-symbols-outlined">info</span>
+                            <div>
+                                <div class="w-label">سبب الإزالة:</div>
+                                <div class="w-body-sm">@(string.IsNullOrEmpty(Model.AdminRemovalReason) ? "لم يتم تحديد سبب إضافي." : Model.AdminRemovalReason)</div>
+                            </div>
+                        </div>
                     }
-                </div>
-
-                @if (!string.IsNullOrEmpty(Model.ImagePath))
-                {
-                    <img src="@Model.ImagePath" class="card-img-top"
-                         style="max-height:350px; object-fit:cover;" alt="صورة الطلب" />
-                }
-
-                <div class="card-body p-4">
-
-                    <span class="badge bg-secondary mb-3">@Model.Category.GetDisplayName()</span>
-
-                    <h6 class="text-muted">الوصف</h6>
-                    <p class="mb-4" style="white-space: pre-line;">@Model.Description</p>
-
-                    <hr />
-
-                    <div class="row text-center mb-4">
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <div class="small text-muted mb-1">المدة</div>
-                                <div class="fw-bold">@Model.EstimatedHours</div>
-                                <div class="text-muted small">ساعة</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <div class="small text-muted mb-1">النقاط</div>
-                                <div class="fw-bold">@Model.PointsReward</div>
-                                <div class="text-muted small">نقطة</div>
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="p-3 bg-light rounded">
-                                <div class="small text-muted mb-1">الموعد</div>
-                                <div class="fw-bold">@Model.ScheduledDate.ToString("dd/MM/yyyy")</div>
-                                <div class="text-muted small">الموعد</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ul class="list-group list-group-flush mb-4">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">الموقع</span>
-                            <span>@Model.Location</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">صاحب الطلب</span>
-                            <span>@Model.Requester?.FullName</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <span class="text-muted">تاريخ النشر</span>
-                            <span>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
-                        </li>
-
-                        @* ← الدخول لصفحة المتطوع لو الطلب اتقبل  student 4 *@
-                        @if (acceptance != null && acceptance.Volunteer != null)
-                        {
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="text-muted">المتطوع</span>
-                                <a asp-controller="Account"
-                                   asp-action="ViewProfile"
-                                   asp-route-id="@acceptance.VolunteerId"
-                                   class="text-decoration-none fw-bold text-success">
-                                    @acceptance.Volunteer?.FullName
-                                </a>
-                            </li>
-                        }
-                    </ul>
-
-                    <div class="d-flex gap-2 justify-content-between flex-wrap">
-                        <a asp-action="Browse" class="btn btn-outline-secondary">العودة للطلبات</a>
-
-                        <div class="d-flex gap-2">
-
-                            @* زرار Accept — للمتطوع فقط *@
-                            @if (Model.Status == RequestStatus.Open && userId != null && !isOwner)
-                            {
-                                <form asp-controller="Acceptances" asp-action="Accept" method="post">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="requestId" value="@Model.RequestId" />
-                                    <button type="submit" class="btn btn-success px-4">
-                                        قبول الطلب والتطوع
-                                    </button>
-                                </form>
-                            }
-
-                            @* زرار MarkComplete — لصاحب الطلب فقط *@
-                            @if (isOwner && Model.Status == RequestStatus.Accepted
-                                                        && acceptance != null)
-                            {
-                                <form asp-controller="Acceptances" asp-action="MarkComplete"
-                                      method="post"
-                                      onsubmit="return confirm('هل تأكدت إن المهمة اتنجزت؟')">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="acceptanceId"
-                                           value="@acceptance.AcceptanceId" />
-                                    <button type="submit" class="btn btn-success px-4">
-                                        تم الإنجاز
-                                    </button>
-                                </form>
-                            }
-
-                            @* زرار Rate — لصاحب الطلب بعد الإنجاز *@
-                            @if (isOwner && Model.Status == RequestStatus.Completed
-                                                        && acceptance != null)
-                            {
-                                bool alreadyRated = acceptance.Ratings != null &&
-                                acceptance.Ratings.Any(r => r.FromUserId == userId);
-
-                                @if (alreadyRated)
-                                {
-                                    <span class="btn btn-secondary px-4 disabled">
-                                        تم التقييم
-                                    </span>
-                                }
-                                else
-                                {
-                                    <a asp-controller="Acceptances" asp-action="Rate"
-                                       asp-route-acceptanceId="@acceptance.AcceptanceId"
-                                       asp-route-toUserId="@acceptance.VolunteerId"
-                                       class="btn btn-warning px-4">
-                                        قيّم المتطوع
-                                    </a>
-                                }
-                            }
-
-                            @* زرار Cancel — لصاحب الطلب فقط *@
-                            @if (isOwner && Model.Status == RequestStatus.Open)
-                            {
-                                <form asp-action="Cancel" asp-route-id="@Model.RequestId"
-                                      method="post"
-                                      onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-danger">إلغاء الطلب</button>
-                                </form>
-                            }
-
-                        </div>
-                    </div>
-
+                    
+                    <a asp-action="Browse" class="w-btn w-btn-primary w-w-full">العودة للطلبات</a>
                 </div>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="w-flex w-justify-center">
+                <div class="w-w-full w-max-w-900">
+
+                    @* ── Breadcrumb ── *@
+                    <nav class="w-flex w-items-center w-gap-sm w-mb-xl w-body-sm w-animate-fadeIn">
+                        <a asp-controller="Home" asp-action="Index" class="w-text-muted w-text-decoration-none hover-primary transition">الرئيسية</a>
+                        <span class="material-symbols-outlined w-text-faint" style="font-size: 16px;">chevron_left</span>
+                        <a asp-action="Browse" class="w-text-muted w-text-decoration-none hover-primary transition">طلبات التطوع</a>
+                        <span class="material-symbols-outlined w-text-faint" style="font-size: 16px;">chevron_left</span>
+                        <span class="w-text-primary w-font-semibold">تفاصيل الطلب</span>
+                    </nav>
+
+                    @* ── Main Card ── *@
+                    <div class="w-glass-premium w-animate-fadeInUp w-p-0 w-overflow-hidden mb-5">
+
+                        @* Image Header *@
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <div class="w-w-full w-h-400 w-relative w-overflow-hidden">
+                                <img src="@Model.ImagePath" 
+                                     class="w-w-full w-h-full w-object-cover" 
+                                     alt="صورة الطلب" />
+                                <div class="w-absolute w-bottom-0 w-left-0 w-right-0 w-h-full" 
+                                     style="background: linear-gradient(to top, var(--w-bg-card), transparent);"></div>
+                                
+                                @* Overlay Category *@
+                                <div class="w-absolute w-top-0 w-right-0 w-p-lg">
+                                    <span class="w-chip w-glass-premium w-text-white" style="backdrop-filter: blur(12px);">
+                                        <span class="material-symbols-outlined w-icon-xs">category</span>
+                                        @Model.Category.GetDisplayName()
+                                    </span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="w-p-xl">
+
+                            @* ── Title + Status Row ── *@
+                            <div class="w-flex w-justify-between w-items-start w-mb-xl flex-wrap gap-4">
+                                <div>
+                                    <h1 class="w-h1 w-mb-2 w-aurora-text">@Model.Title</h1>
+                                    <div class="w-flex w-items-center w-gap-sm w-text-muted w-body-md">
+                                        <span class="material-symbols-outlined w-icon-sm">calendar_today</span>
+                                        تم النشر في @Model.CreatedAt.ToString("dd MMMM yyyy")
+                                    </div>
+                                </div>
+                                <div class="w-flex w-flex-col w-items-end w-gap-sm">
+                                    @switch (Model.Status)
+                                    {
+                                        case RequestStatus.Open:
+                                            <span class="w-chip w-chip-green w-p-lg w-glass-premium" style="border-color: rgba(16, 185, 129, 0.3);">
+                                                <span class="material-symbols-outlined w-icon-md">lock_open</span>
+                                                <span class="w-font-bold w-body-md">مفتوح للتقديم</span>
+                                            </span>
+                                            break;
+                                        case RequestStatus.Accepted:
+                                            <span class="w-chip w-chip-blue w-p-lg w-glass-premium" style="border-color: rgba(59, 130, 246, 0.3);">
+                                                <span class="material-symbols-outlined w-icon-md">handshake</span>
+                                                <span class="w-font-bold w-body-md">قيد التنفيذ</span>
+                                            </span>
+                                            break;
+                                        case RequestStatus.Completed:
+                                            <span class="w-chip w-chip-green w-p-lg w-glass-premium" style="border-color: rgba(16, 185, 129, 0.3);">
+                                                <span class="material-symbols-outlined w-icon-md">check_circle</span>
+                                                <span class="w-font-bold w-body-md">مكتمل</span>
+                                            </span>
+                                            break;
+                                        case RequestStatus.Cancelled:
+                                            <span class="w-chip w-chip-red w-p-lg w-glass-premium" style="border-color: rgba(239, 68, 68, 0.3);">
+                                                <span class="material-symbols-outlined w-icon-md">cancel</span>
+                                                <span class="w-font-bold w-body-md">ملغى</span>
+                                            </span>
+                                            break;
+                                    }
+                                </div>
+                            </div>
+
+                            @if (string.IsNullOrEmpty(Model.ImagePath))
+                            {
+                                <div class="w-mb-xl">
+                                    <span class="w-chip w-chip-gray">
+                                        <span class="material-symbols-outlined w-icon-xs">category</span>
+                                        @Model.Category.GetDisplayName()
+                                    </span>
+                                </div>
+                            }
+
+                            @* ── Stats Grid (Enhanced Aurora Style) ── *@
+                            <div class="w-grid w-grid-3 w-gap-lg w-mb-xl">
+                                <div class="w-glass-premium w-p-xl w-text-center w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(167, 139, 250, 0.05));">
+                                    <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                                        <span class="material-symbols-outlined" style="font-size: 28px;">schedule</span>
+                                    </div>
+                                    <div class="w-h2 w-aurora-text w-mb-1">@Model.EstimatedHours</div>
+                                    <div class="w-body-sm w-text-muted">ساعات تطوع</div>
+                                </div>
+                                
+                                <div class="w-glass-premium w-p-xl w-text-center w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(5, 150, 105, 0.05)); animation-delay: 0.1s;">
+                                    <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(16, 185, 129, 0.1); color: var(--w-secondary);">
+                                        <span class="material-symbols-outlined" style="font-size: 28px;">stars</span>
+                                    </div>
+                                    <div class="w-h2 w-aurora-text w-mb-1" style="background: linear-gradient(90deg, #10b981, #3b82f6);">@Model.PointsReward</div>
+                                    <div class="w-body-sm w-text-muted">نقطة مكافأة</div>
+                                </div>
+
+                                <div class="w-glass-premium w-p-xl w-text-center w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); animation-delay: 0.2s;">
+                                    <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(255, 255, 255, 0.05); color: var(--w-text-muted);">
+                                        <span class="material-symbols-outlined" style="font-size: 28px;">calendar_month</span>
+                                    </div>
+                                    <div class="w-h2 w-mb-1">@Model.ScheduledDate.ToString("dd/MM")</div>
+                                    <div class="w-body-sm w-text-muted">@Model.ScheduledDate.ToString("yyyy")</div>
+                                </div>
+                            </div>
+
+                            @* ── Description ── *@
+                            <div class="w-mb-xl">
+                                <h3 class="w-label w-text-primary w-mb-md w-flex w-items-center w-gap-sm w-font-bold" style="letter-spacing: 1px;">
+                                    <span class="material-symbols-outlined" style="font-size: 20px;">description</span>
+                                    تفاصيل المهمة
+                                </h3>
+                                <div class="w-p-xl w-rounded-xl w-glass-premium" style="background: rgba(255, 255, 255, 0.02);">
+                                    <p class="w-body-lg w-leading-relaxed" style="white-space: pre-line; margin: 0; color: var(--w-text-secondary);">@Model.Description</p>
+                                </div>
+                            </div>
+
+                            @* ── Details List (Premium Glass Section) ── *@
+                            <div class="w-mb-xl w-glass-premium w-p-xl" style="border-radius: var(--w-radius-xl);">
+                                <div class="w-grid w-grid-2 w-gap-xl">
+                                    <div class="w-flex w-items-center w-gap-md">
+                                        <div class="w-avatar w-avatar-sm" style="background: rgba(255, 255, 255, 0.05);">
+                                            <span class="material-symbols-outlined w-text-muted">location_on</span>
+                                        </div>
+                                        <div>
+                                            <div class="w-caption w-text-muted w-mb-xs">الموقع</div>
+                                            <div class="w-body-md w-font-semibold">@Model.Location</div>
+                                        </div>
+                                    </div>
+                                    <div class="w-flex w-items-center w-gap-md">
+                                        <div class="w-avatar w-avatar-sm" style="background: rgba(255, 255, 255, 0.05);">
+                                            <span class="material-symbols-outlined w-text-muted">person</span>
+                                        </div>
+                                        <div>
+                                            <div class="w-caption w-text-muted w-mb-xs">صاحب الطلب</div>
+                                            <div class="w-body-md w-font-semibold">@Model.Requester?.FullName</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @if (acceptance != null && acceptance.Volunteer != null)
+                                {
+                                    <div class="w-divider w-my-xl" style="opacity: 0.1;"></div>
+                                    <div class="w-flex w-items-center w-justify-between flex-wrap gap-4">
+                                        <div class="w-flex w-items-center w-gap-md">
+                                            <div class="w-avatar w-avatar-md" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));">
+                                                <span class="material-symbols-outlined w-text-secondary">volunteer_activism</span>
+                                            </div>
+                                            <div>
+                                                <div class="w-caption w-text-muted w-mb-xs">المتطوع الحالي</div>
+                                                <div class="w-body-lg w-font-bold w-aurora-text">@acceptance.Volunteer?.FullName</div>
+                                            </div>
+                                        </div>
+                                        <a asp-controller="Account" asp-action="ViewProfile" asp-route-id="@acceptance.VolunteerId" 
+                                           class="w-btn w-btn-secondary w-btn-sm w-glass-premium">
+                                            عرض الملف الشخصي
+                                            <span class="material-symbols-outlined w-icon-xs">open_in_new</span>
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+
+                            @* ── Action Buttons ── *@
+                            <div class="w-flex w-justify-between w-items-center w-mt-xl w-pt-xl w-border-t">
+                                <a asp-action="Browse" class="w-btn w-btn-ghost w-flex w-items-center w-gap-sm">
+                                    <span class="material-symbols-outlined w-icon-md">arrow_forward</span>
+                                    العودة للمتصفح
+                                </a>
+
+                                <div class="w-flex w-gap-md">
+
+                                    @* زر القبول *@
+                                    @if (Model.Status == RequestStatus.Open && userId != null && !isOwner)
+                                    {
+                                        <form asp-controller="Acceptances" asp-action="Accept" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="requestId" value="@Model.RequestId" />
+                                            <button type="submit" class="w-btn w-btn-secondary w-px-xl">
+                                                <span class="material-symbols-outlined">volunteer_activism</span>
+                                                أريد التطوع في هذه المهمة
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @* زر الإنجاز *@
+                                    @if (isOwner && Model.Status == RequestStatus.Accepted && acceptance != null)
+                                    {
+                                        <form asp-controller="Acceptances" asp-action="MarkComplete" method="post" onsubmit="return confirm('هل تأكدت من إنجاز المهمة؟ سيتم منح المتطوع النقاط بعد التأكيد.')">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="acceptanceId" value="@acceptance.AcceptanceId" />
+                                            <button type="submit" class="w-btn w-btn-secondary w-px-xl">
+                                                <span class="material-symbols-outlined">task_alt</span>
+                                                تأكيد إنجاز المهمة
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @* زر التقييم *@
+                                    @if (isOwner && Model.Status == RequestStatus.Completed && acceptance != null)
+                                    {
+                                        bool alreadyRated = acceptance.Ratings?.Any(r => r.FromUserId == userId) ?? false;
+                                        if (alreadyRated)
+                                        {
+                                            <div class="w-chip w-chip-gray w-p-md">
+                                                <span class="material-symbols-outlined">verified</span>
+                                                تم تقييم المتطوع
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <a asp-controller="Acceptances" asp-action="Rate" 
+                                               asp-route-acceptanceId="@acceptance.AcceptanceId" 
+                                               asp-route-toUserId="@acceptance.VolunteerId" 
+                                               class="w-btn w-bg-warning w-text-white w-px-xl">
+                                                <span class="material-symbols-outlined">star_rate</span>
+                                                تقييم أداء المتطوع
+                                            </a>
+                                        }
+                                    }
+
+                                    @* زر الإلغاء *@
+                                    @if (isOwner && Model.Status == RequestStatus.Open)
+                                    {
+                                        <form asp-action="Cancel" asp-route-id="@Model.RequestId" method="post" onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="w-btn w-btn-outline-danger">
+                                                <span class="material-symbols-outlined">close</span>
+                                                إلغاء الطلب
+                                            </button>
+                                        </form>
+                                    }
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
     </div>
 </div>

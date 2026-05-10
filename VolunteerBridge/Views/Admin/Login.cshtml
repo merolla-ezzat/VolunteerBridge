@@ -1,0 +1,66 @@
+@model VolunteerBridge.ViewModels.AdminLoginViewModel
+
+@{
+    ViewData["Title"] = "دخول الإدارة";
+    Layout = "_AdminLayout";
+}
+
+<div class="row justify-content-center mt-5 w-animate-fadeInUp">
+    <div class="col-md-5">
+        <div class="w-card shadow-lg p-5">
+            <div class="text-center mb-5">
+                <div class="w-avatar w-avatar-xl w-mx-auto w-mb-md" style="background: var(--w-error-container); color: var(--w-error);">
+                    <span class="material-symbols-outlined" style="font-size: 40px;">admin_panel_settings</span>
+                </div>
+                <h3 class="w-h3 fw-bold w-text-error mb-2">تسجيل دخول الإدارة</h3>
+                <p class="w-text-muted">يرجى إدخال بيانات الاعتماد للوصول إلى لوحة التحكم.</p>
+            </div>
+            
+            <form asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+                
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="w-alert w-alert-error mb-4">
+                        <span class="material-symbols-outlined">error</span>
+                        <div asp-validation-summary="ModelOnly" class="w-body-sm"></div>
+                    </div>
+                }
+
+                <div class="w-input-group mb-4">
+                    <label asp-for="Email" class="w-input-label">البريد الإلكتروني للإدارة</label>
+                    <div class="position-relative">
+                        <input asp-for="Email" class="w-input ps-5" dir="ltr" placeholder="admin@example.com" />
+                        <span class="material-symbols-outlined position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--w-outline);">mail</span>
+                    </div>
+                    <span asp-validation-for="Email" class="w-input-error-text"></span>
+                </div>
+
+                <div class="w-input-group mb-5">
+                    <label asp-for="Password" class="w-input-label">كلمة المرور</label>
+                    <div class="position-relative">
+                        <input asp-for="Password" type="password" class="w-input ps-5" dir="ltr" placeholder="••••••••" />
+                        <span class="material-symbols-outlined position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--w-outline);">lock</span>
+                    </div>
+                    <span asp-validation-for="Password" class="w-input-error-text"></span>
+                </div>
+
+                <button type="submit" class="w-btn w-btn-primary w-btn-full w-btn-lg">
+                    <span class="material-symbols-outlined">login</span>
+                    دخول اللوحة
+                </button>
+            </form>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a asp-controller="Home" asp-action="Index" class="w-btn w-btn-ghost w-btn-sm w-text-muted">
+                <span class="material-symbols-outlined">arrow_forward</span>
+                العودة للموقع الرئيسي
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
