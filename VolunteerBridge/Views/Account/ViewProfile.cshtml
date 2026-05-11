@@ -2,24 +2,19 @@
 @{
     ViewData["Title"] = "بروفايل المتطوع";
 }
-
 <div dir="rtl" lang="ar">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow-sm">
-
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0">@Model.FullName</h5>
                 </div>
-
                 <div class="card-body p-4">
                     <ul class="list-group list-group-flush">
-
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">البريد الإلكتروني</span>
                             <span>@Model.Email</span>
                         </li>
-
                         @if (!string.IsNullOrEmpty(Model.City))
                         {
                             <li class="list-group-item d-flex justify-content-between">
@@ -27,17 +22,14 @@
                                 <span>@Model.City</span>
                             </li>
                         }
-
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">النقاط</span>
                             <span>@Model.TotalPoints نقطة</span>
                         </li>
-
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">المهام المكتملة</span>
                             <span>@Model.CompletedTasksCount مهمة</span>
                         </li>
-
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">التقييم</span>
                             <span>
@@ -51,7 +43,6 @@
                                 }
                             </span>
                         </li>
-
                         <li class="list-group-item d-flex justify-content-between">
                             <span class="text-muted">المستوى</span>
                             <span>
@@ -73,16 +64,60 @@
                             </span>
                         </li>
 
+                        <!-- Bio -->
+                        <li class="list-group-item">
+                            <div class="text-muted mb-1">نبذة شخصية</div>
+                            @if (!string.IsNullOrEmpty(Model.Bio))
+                            {
+                                <p class="mb-0">@Model.Bio</p>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">لم تُضف نبذة بعد</span>
+                            }
+                        </li>
+
+                        <!-- Skills -->
+                        <li class="list-group-item">
+                            <div class="text-muted mb-2">المهارات</div>
+                            @if (!string.IsNullOrEmpty(Model.Skills))
+                            {
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach (var skill in Model.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                                            @skill.Trim()
+                                        </span>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">لم تُضف مهارات بعد</span>
+                            }
+                        </li>
+
+                        <!-- Experience -->
+                        <li class="list-group-item">
+                            <div class="text-muted mb-1">الخبرات</div>
+                            @if (!string.IsNullOrEmpty(Model.Experience))
+                            {
+                                <p class="mb-0">@Model.Experience</p>
+                            }
+                            else
+                            {
+                                <span class="text-muted fst-italic">لم تُضف خبرات بعد</span>
+                            }
+                        </li>
+
                     </ul>
                 </div>
-
                 <div class="card-footer">
                     <a asp-action="Browse" asp-controller="ServiceRequests"
                        class="btn btn-outline-secondary btn-sm">
                         العودة للطلبات
                     </a>
                 </div>
-
             </div>
         </div>
     </div>

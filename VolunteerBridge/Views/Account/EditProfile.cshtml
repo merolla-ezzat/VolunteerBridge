@@ -30,7 +30,7 @@
             <div class="w-input-group">
                 <label asp-for="FullName" class="w-label w-mb-sm d-block">الاسم الكامل</label>
                 <div class="position-relative">
-                    <span class="material-symbols-outlined position-absolute" 
+                    <span class="material-symbols-outlined position-absolute"
                           style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">person</span>
                     <input asp-for="FullName" class="w-input" style="padding-right: 44px;" placeholder="أدخل اسمك الكامل" />
                 </div>
@@ -41,7 +41,7 @@
             <div class="w-input-group">
                 <label asp-for="Email" class="w-label w-mb-sm d-block">البريد الإلكتروني</label>
                 <div class="position-relative">
-                    <span class="material-symbols-outlined position-absolute" 
+                    <span class="material-symbols-outlined position-absolute"
                           style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">mail</span>
                     <input asp-for="Email" type="email" class="w-input" style="padding-right: 44px;" placeholder="example@domain.com" />
                 </div>
@@ -54,7 +54,7 @@
                     المدينة <span class="w-text-muted fw-normal">(اختياري)</span>
                 </label>
                 <div class="position-relative">
-                    <span class="material-symbols-outlined position-absolute" 
+                    <span class="material-symbols-outlined position-absolute"
                           style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">location_city</span>
                     <input asp-for="City" class="w-input" style="padding-right: 44px;" placeholder="مدينتك" />
                 </div>
@@ -66,9 +66,51 @@
                     رقم الهاتف <span class="w-text-muted fw-normal">(اختياري)</span>
                 </label>
                 <div class="position-relative">
-                    <span class="material-symbols-outlined position-absolute" 
+                    <span class="material-symbols-outlined position-absolute"
                           style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">phone</span>
                     <input asp-for="PhoneNumber" class="w-input" style="padding-right: 44px;" placeholder="05xxxxxxxx" />
+                </div>
+            </div>
+
+            @* ── Bio ── *@
+            <div class="w-input-group">
+                <label asp-for="Bio" class="w-label w-mb-sm d-block">
+                    نبذة عنك <span class="w-text-muted fw-normal">(اختياري)</span>
+                </label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute"
+                          style="top: 14px; right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">person_pin</span>
+                    <textarea asp-for="Bio" class="w-input" rows="3"
+                              style="padding-right: 44px; resize: vertical;"
+                              placeholder="لم تُضف نبذة بعد، اكتب شيئاً عن نفسك..."></textarea>
+                </div>
+            </div>
+
+            @* ── Skills ── *@
+            <div class="w-input-group">
+                <label asp-for="Skills" class="w-label w-mb-sm d-block">
+                    المهارات <span class="w-text-muted fw-normal">(اختياري)</span>
+                </label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute"
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">psychology</span>
+                    <input asp-for="Skills" class="w-input" style="padding-right: 44px;"
+                           placeholder="لم تُضف مهارات بعد — مثال: تصوير، تدريس، إسعاف أولي" />
+                </div>
+                <p class="w-caption w-text-muted mt-1 mb-0">افصل بين المهارات بفاصلة</p>
+            </div>
+
+            @* ── Experience ── *@
+            <div class="w-input-group">
+                <label asp-for="Experience" class="w-label w-mb-sm d-block">
+                    الخبرات <span class="w-text-muted fw-normal">(اختياري)</span>
+                </label>
+                <div class="position-relative">
+                    <span class="material-symbols-outlined position-absolute"
+                          style="top: 14px; right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">workspace_premium</span>
+                    <textarea asp-for="Experience" class="w-input" rows="3"
+                              style="padding-right: 44px; resize: vertical;"
+                              placeholder="لم تُضف خبرات بعد، اذكر خبراتك السابقة..."></textarea>
                 </div>
             </div>
 

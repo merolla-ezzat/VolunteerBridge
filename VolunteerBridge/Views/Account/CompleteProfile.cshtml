@@ -1,0 +1,279 @@
+﻿@{
+    ViewBag.Title = "أكمل ملفك الشخصي";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>وصال - أكمل ملفك الشخصي</title>
+    <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <style>
+        .register-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--w-surface);
+            padding: var(--w-space-md);
+        }
+        .register-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 1000px;
+            width: 100%;
+            background: var(--w-surface-container-lowest);
+            border-radius: var(--w-radius-lg);
+            box-shadow: var(--w-shadow-md);
+            overflow: hidden;
+        }
+
+        .register-form-side {
+            padding: var(--w-space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .register-header {
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .register-brand {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--w-primary);
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: var(--w-space-md);
+        }
+
+        .register-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--w-on-surface);
+            margin-bottom: var(--w-space-sm);
+        }
+
+        .register-subtitle {
+            font-size: 15px;
+            color: var(--w-on-surface-variant);
+            line-height: 1.5;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+            .input-with-icon .input-icon {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                color: var(--w-outline);
+                pointer-events: none;
+                font-size: 20px;
+            }
+
+            .input-with-icon .w-input {
+                padding-right: 46px;
+            }
+
+        .register-visual-side {
+            background: linear-gradient(135deg, var(--w-primary) 0%, #003ea8 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--w-space-2xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .register-visual-side::before {
+                content: '';
+                position: absolute;
+                width: 300px;
+                height: 300px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.06);
+                top: -50px;
+                right: -80px;
+            }
+
+            .register-visual-side::after {
+                content: '';
+                position: absolute;
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.04);
+                bottom: -40px;
+                left: -50px;
+            }
+
+        .visual-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--w-radius-md);
+            background: rgba(255,255,255,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--w-space-xl);
+            z-index: 1;
+        }
+
+            .visual-icon .material-symbols-outlined {
+                font-size: 40px;
+                color: white;
+                font-variation-settings: 'FILL' 1;
+            }
+
+        .visual-heading {
+            font-size: 28px;
+            font-weight: 600;
+            color: white;
+            text-align: center;
+            margin-bottom: var(--w-space-md);
+            line-height: 1.4;
+            z-index: 1;
+        }
+
+        .visual-text {
+            font-size: 15px;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            line-height: 1.7;
+            max-width: 280px;
+            z-index: 1;
+        }
+
+        .skip-link {
+            margin-top: var(--w-space-lg);
+            text-align: center;
+            font-size: 14px;
+            color: var(--w-on-surface-variant);
+        }
+
+            .skip-link a {
+                color: var(--w-primary);
+                font-weight: 600;
+                text-decoration: none;
+            }
+
+                .skip-link a:hover {
+                    text-decoration: underline;
+                }
+
+        .optional-badge {
+            font-weight: 400;
+            color: var(--w-on-surface-variant);
+            font-size: 13px;
+        }
+
+        @@media (max-width: 900px) {
+            .register-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 520px;
+            }
+
+            .register-visual-side {
+                display: none;
+            }
+
+            .register-form-side {
+                padding: var(--w-space-xl) var(--w-space-lg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="register-wrapper w-animate-fadeInUp">
+
+            <!-- ═══ Form Side ═══ -->
+            <div class="register-form-side">
+                <div class="register-header">
+                    <a asp-controller="Home" asp-action="Index" class="register-brand">وصال</a>
+                    <h1 class="register-title">أكمل ملفك الشخصي</h1>
+                    <p class="register-subtitle">
+                        أخبرنا أكثر عن نفسك — كل هذه الحقول اختيارية ويمكنك تخطيها الآن ولكن يسعدنا أن نتعرف أكثر عليك.
+                    </p>
+                </div>
+
+                <form asp-action="CompleteProfile" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Bio -->
+                    <div class="w-input-group">
+                        <label for="bio" class="w-input-label">
+                            نبذة عنك <span class="optional-badge">(اختياري)</span>
+                        </label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">person_pin</span>
+                            <textarea id="bio" name="bio" class="w-input" rows="3"
+                                      style="padding-right: 46px; resize: vertical;"
+                                      placeholder="اكتب نبذة مختصرة عن نفسك وعن اهتماماتك التطوعية..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="w-input-group">
+                        <label for="skills" class="w-input-label">
+                            مهاراتك <span class="optional-badge">(اختياري)</span>
+                        </label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">psychology</span>
+                            <input id="skills" name="skills" type="text" class="w-input"
+                                   placeholder="مثال: تصوير، تدريس، إسعاف أولي، تصميم جرافيك" />
+                        </div>
+                        <div class="input-hint" style="display:flex; align-items:center; gap:4px; font-size:12px; color:var(--w-on-surface-variant); margin-top:6px;">
+                            <span class="material-symbols-outlined" style="font-size:14px;">info</span>
+                            افصل بين المهارات بفاصلة
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="w-input-group">
+                        <label for="experience" class="w-input-label">
+                            خبراتك التطوعية <span class="optional-badge">(اختياري)</span>
+                        </label>
+                        <div class="input-with-icon">
+                            <span class="material-symbols-outlined input-icon">workspace_premium</span>
+                            <textarea id="experience" name="experience" class="w-input" rows="3"
+                                      style="padding-right: 46px; resize: vertical;"
+                                      placeholder="اذكر خبراتك السابقة في مجال التطوع أو أي مجال ذي صلة..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="w-btn w-btn-primary w-btn-lg w-btn-full" style="margin-top: var(--w-space-md);">
+                        حفظ وانطلاق
+                        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+                    </button>
+                </form>
+
+                <div class="skip-link">
+                    <a asp-action="Index" asp-controller="Home">تخطي هذه الخطوة الآن</a>
+                </div>
+            </div>
+
+            <!-- ═══ Visual Side ═══ -->
+            <div class="register-visual-side">
+                <div class="visual-icon">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                </div>
+                <h2 class="visual-heading">أضف لمستك<br />الخاصة</h2>
+                <p class="visual-text">
+                    ملفك الشخصي هو واجهتك أمام المجتمع. أضف مهاراتك وخبراتك لتحصل على فرص تطوع تناسبك.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

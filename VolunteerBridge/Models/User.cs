@@ -33,7 +33,10 @@ namespace VolunteerBridge.Models
         [Display(Name = "نبذة شخصية")]
         [StringLength(1000)]
         public string? Bio { get; set; }
+        [Display(Name = "الخبرات")]
+        public string? Experience { get; set; }
         [Display(Name = "عدد المهام المكتملة")]
+
         public int CompletedTasksCount { get; set; } = 0;
         [Display(Name = "إجمالي النقاط")]
         public int TotalPoints { get; set; } = 0;
