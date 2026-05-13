@@ -4,7 +4,7 @@
    ============================================= */
 
 /* ── Google Font Import ── */
-@import url('https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 
 /* ── CSS Custom Properties (Design Tokens) ── */
 :root {
@@ -37,7 +37,7 @@
     --w-glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
     /* ─ Typography ─ */
-    --w-font-display: 'Alexandria', sans-serif;
+    --w-font-display: 'Rubik', sans-serif;
     --w-font-body: 'IBM Plex Sans Arabic', sans-serif;
 
     /* ─ Spacing ─ */
@@ -266,6 +266,16 @@ body {
     color: var(--w-primary);
     text-decoration: none;
     letter-spacing: -0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.w-brand img {
+    height: 32px;
+    width: auto;
+    vertical-align: middle;
+    object-fit: contain;
 }
 
 .w-brand:hover { color: var(--w-primary-hover); }
@@ -362,9 +372,10 @@ body {
 }
 
 .w-btn-primary:hover {
-    background: var(--w-primary-hover);
+    background: linear-gradient(135deg, var(--w-primary), var(--w-primary-hover));
+    color: var(--w-on-primary);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.23);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.25);
 }
 
 .w-btn-secondary {
@@ -374,9 +385,10 @@ body {
 }
 
 .w-btn-secondary:hover {
-    background: var(--w-secondary-hover);
+    background: linear-gradient(135deg, var(--w-secondary), var(--w-secondary-hover));
+    color: var(--w-on-secondary);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.23);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.25);
 }
 
 .w-btn-outline {
@@ -407,9 +419,9 @@ body {
 }
 
 .w-btn-danger:hover {
-    background: #e11d48;
+    background: linear-gradient(135deg, var(--w-accent), var(--w-accent-hover));
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.23);
+    box-shadow: 0 8px 25px rgba(244, 63, 94, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.25);
 }
 
 .w-btn-outline-danger {

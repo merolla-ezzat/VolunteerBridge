@@ -1,0 +1,139 @@
+# Onboarding & Profile Ecosystem — Refined Architecture
+
+## 1. Core Architecture & Reusability
+
+**Decision: Onboarding is part of a unified Profile Ecosystem, not an isolated wizard.**
+
+The logic and UI components built for this onboarding flow must be reusable. While the first-time onboarding will use a full-page, immersive layout, the underlying components (Interest selector, Searchable City input, Profile Completion Calculator) will be architected to easily plug into the standard Profile Edit page later.
+
+*   **Shared Logic**: The `ProfileCompletionPercentage` calculation and "Points Awarding" logic will exist centrally (e.g., in the `User` model and a shared service or utility method), ensuring that if a user skips onboarding but later completes their profile via the Edit page, they still get the 50 points.
+*   **Existing Users Strategy**: Existing users will **not** be forced into the onboarding wizard. A data migration/update script will set `IsOnboardingCompleted = true` for all existing users. They will naturally interact with the profile completion system via soft nudges on the dashboard and profile pages, using the same completion percentage logic.
+
+---
+
+## 2. Updated Data Model & Completion Formula
+
+### Volunteering Interests
+We will add a new `Interests` field to the `User` model to capture the user's preferred volunteering sectors. This is critical for future recommendation algorithms and personalization.
+
+### Profile Completion Percentage Formula
+The formula is updated to balance the newly added `Interests` field:
+
+| Field | Weight | Rule |
+|---|---|---|
+| City | 15% | Not null/empty |
+| Interests | 15% | ≥ 1 interest selected |
+| Bio | 30% | ≥ 20 characters |
+| Skills | 25% | ≥ 1 skill entered |
+| Experience | 15% | ≥ 15 characters |
+| **Total** | **100%** | |
+
+```csharp
+// On User model (computed, not persisted)
+[NotMapped]
+public int ProfileCompletionPercentage
+{
+    get
+    {
+        int score = 0;
+        if (!string.IsNullOrWhiteSpace(City)) score += 15;
+        if (!string.IsNullOrWhiteSpace(Interests)) score += 15;
+        if (!string.IsNullOrWhiteSpace(Bio) && Bio.Trim().Length >= 20) score += 30;
+        if (!string.IsNullOrWhiteSpace(Skills) && Skills.Split(',', StringSplitOptions.RemoveEmptyEntries).Length >= 1) score += 25;
+        if (!string.IsNullOrWhiteSpace(Experience) && Experience.Trim().Length >= 15) score += 15;
+        return score;
+    }
+}
+```
+
+---
+
+## 3. Product & UX Decisions
+
+### 3.1 Step Structure (4 Steps)
+To avoid field overload, the wizard is broken into 4 distinct, lightweight steps:
+
+| Step | Focus | Fields | Tone / Framing |
+|---|---|---|---|
+| 1. **المدينة** | Location | City (Searchable Input) | "أهلاً بك في مجتمع وصال! أين تقيم؟" |
+| 2. **الاهتمامات** | Matching | Interests (Selectable Chips) | "ما هي المجالات التطوعية التي تهمك؟" |
+| 3. **نبذة عنك** | Identity | Bio (Textarea) | "شارك المجتمع بكلمات بسيطة عن نفسك" |
+| 4. **المهارات** | Capability | Skills & Experience | "ما هي المهارات والخبرات التي يمكنك المساهمة بها؟" |
+
+### 3.2 City Input UX: Searchable Dropdown
+A traditional `<select>` is too cumbersome for Egyptian cities. We will implement a **lightweight Vanilla JS Searchable Dropdown** (combobox).
+*   **UX**: Looks like a standard text input, but clicking it opens a dropdown of cities. Typing filters the list instantly.
+*   **Tech**: Custom HTML/JS, no heavy libraries like Select2. It will feel native, fast, and highly optimized for mobile touch targets.
+
+### 3.3 Interests UX: Selectable Chips
+Instead of checkboxes or a multiselect dropdown, Interests will be presented as **clickable chips/pills**.
+*   **Options**: مجتمعي، تقني، صحي، تعليمي، إنساني، بيئي
+*   **UX**: Tapping a chip toggles its active state (highlighted with the Wessal gradient). The selected values are saved to a hidden input as a comma-separated string. This is visually engaging and effortless on mobile.
+
+### 3.4 Layout & Text Alignment
+We must balance emotional storytelling with practical usability.
+*   **Centered Elements**: The wizard's overarching card, step titles, and success animations will be center-aligned to feel like an emotional landing page.
+*   **RTL Natural Elements**: All textareas, form inputs, placeholder text, and field instructions will be strictly **right-aligned**. Reading and writing longer Arabic text requires proper RTL alignment; centering inputs reduces readability and usability.
+
+### 3.5 Tone & Personality
+The copy will be refined to strike the perfect balance: **Warm, human, and trustworthy**.
+*   We will avoid excessive emojis or overly casual "startup" phrasing.
+*   The language will reflect a mature, established volunteer community. Instead of "يلا نبدأ! 🚀", we will use welcoming, professional encouragement like "لنبدأ رحلة العطاء" (Let's start the journey of giving) or "حفظ ومتابعة" (Save and continue).
+
+---
+
+## 4. Proposed File Changes
+
+### Model Layer
+
+#### [MODIFY] `Models/User.cs`
+-   Add `bool IsOnboardingCompleted { get; set; } = false;`
+-   Add `bool HasReceivedProfilePoints { get; set; } = false;`
+-   Add `string? Interests { get; set; }`
+-   Add the updated `[NotMapped] int ProfileCompletionPercentage` computed property.
+
+> [!WARNING]
+> This requires an EF Core database migration. A custom SQL update script will be included to set `IsOnboardingCompleted = true` for all existing users in the database to prevent disrupting their current experience.
+
+### Controller Layer
+
+#### [MODIFY] `Controllers/AccountController.cs`
+-   **ConfirmEmail**: Auto-login user upon confirmation and redirect to `Onboarding`.
+-   **Onboarding (GET)**: Handles redirection if already onboarded.
+-   **Onboarding (POST)**: Processes the 4 steps, updates `Interests`, calculates completion, and awards 50 gamification points if 100% complete.
+-   **SkipOnboarding (POST)**: Sets `IsOnboardingCompleted = true` without modifying profile data.
+
+#### [NEW] `ViewModels/OnboardingViewModel.cs`
+-   Includes `City`, `Interests`, `Bio`, `Skills`, `Experience`.
+
+### View Layer
+
+#### [NEW] `Views/Account/Onboarding.cshtml`
+-   Full-page layout without layout wrapper (`Layout = null`).
+-   Wessal Aurora background gradient.
+-   Glassmorphic centered card containing the multi-step form logic (JS array of steps).
+-   Custom Searchable City component.
+-   Interactive Selectable Chips for Volunteering Interests.
+-   Proper Right-to-Left alignment for all inputs and textareas.
+
+#### [DELETE] `Views/Account/CompleteProfile.cshtml`
+-   Remove legacy view.
+
+---
+
+## 5. Verification Plan
+
+1.  **Database Strategy**: Generate EF Migration for new fields. Execute a direct SQL command in the migration `Up()` method to mark existing users as onboarded: `UPDATE Users SET IsOnboardingCompleted = 1;`
+2.  **UX Testing**:
+    -   Verify Searchable City input works gracefully on mobile and filters correctly.
+    -   Verify Interest Chips toggle correctly and submit data properly.
+    -   Verify inputs are RTL aligned while the card header is centered.
+3.  **Completion Logic**:
+    -   Submit partial profile (e.g., just City and Interests). Verify points are **not** awarded.
+    -   Complete profile from inside the new wizard. Verify 50 points are awarded.
+4.  **Existing Users**:
+    -   Simulate an existing user logging in. Verify they bypass the `/Account/Onboarding` route automatically.
+
+## Open Questions
+> [!IMPORTANT]
+> The plan is finalized. Are you ready for me to begin generating the DB migrations and implementing the onboarding architecture?

@@ -1,0 +1,331 @@
+@{
+    ViewData["Title"] = "الأسئلة الشائعة";
+}
+
+@section Styles {
+    <style>
+        .faq-page {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-header {
+            text-align: center;
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .faq-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: var(--w-space-sm);
+            background: linear-gradient(135deg, var(--w-primary) 0%, var(--w-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .faq-subtitle {
+            color: var(--w-text-muted);
+            font-size: 1.1rem;
+        }
+
+        .faq-category {
+            margin-bottom: var(--w-space-xl);
+        }
+
+        .faq-category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--w-text-primary);
+            margin-bottom: var(--w-space-md);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-accordion {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--w-outline);
+            border-radius: var(--w-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--w-shadow-sm);
+        }
+
+        .accordion-item {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--w-outline);
+        }
+
+        .accordion-item:last-child {
+            border-bottom: none;
+        }
+
+        .accordion-button {
+            background: transparent !important;
+            color: var(--w-text-primary) !important;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: var(--w-space-md) var(--w-space-lg);
+            box-shadow: none !important;
+            gap: 15px;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            color: var(--w-primary) !important;
+        }
+
+        .accordion-button::after {
+            margin-right: auto;
+            margin-left: 0;
+            /* Using Material Symbols instead of default Bootstrap icon */
+            background-image: none !important;
+            content: "expand_more";
+            font-family: 'Material Symbols Outlined';
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-button:not(.collapsed)::after {
+            transform: rotate(-180deg);
+        }
+
+        .accordion-body {
+            color: var(--w-text-secondary);
+            padding: 0 var(--w-space-lg) var(--w-space-md) var(--w-space-lg);
+            line-height: 1.6;
+        }
+    </style>
+
+    <!-- JSON-LD FAQ Schema -->
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@@type": "Question",
+          "name": "ما هي منصة وصال؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "منصة وصال هي جسر يربط بين المتطوعين الراغبين في العطاء وبين من يحتاجون للمساعدة في مجتمعنا. نسعى لبناء مجتمع أكثر تلاحماً وتعاوناً من خلال تسهيل العمل التطوعي."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "هل التسجيل واستخدام المنصة مجاني؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "نعم، التسجيل واستخدام منصة وصال سواء لطلب المساعدة أو لتقديمها كمتطوع هو مجاني بالكامل."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "كيف يمكنني طلب المساعدة من خلال وصال؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "يمكنك طلب المساعدة عن طريق التسجيل في المنصة، ثم النقر على رز إنشاء طلب، وتعبئة تفاصيل المساعدة التي تحتاجها، وسيتم نشر طلبك ليراه المتطوعون في منطقتك."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "كيف يمكنني التطوع وتقديم المساعدة للآخرين؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "بعد تسجيل الدخول كمتطوع، يمكنك تصفح الطلبات المتاحة في صفحة الطلبات واختيار الطلب الذي يتناسب مع مهاراتك ووقتك، ثم النقر على تقديم مساعدة."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "كيف يتم احتساب النقاط التطوعية (لوحة الشرف) وما فائدتها؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "تحصل على نقاط تطوعية عند إنجازك لطلبات المساعدة بنجاح. تساهم هذه النقاط في رفع تصنيفك في لوحة الشرف، وتعد تقديراً مجتمعياً لجهودك وإسهاماتك."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "هل يمكنني تعديل أو حذف طلب المساعدة بعد نشره؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "نعم، يمكنك الذهاب إلى قسم طلباتي في حسابك الشخصي وتعديل أو حذف الطلب طالما أنه لم يتم قبوله بعد من قبل متطوع."
+          }
+        },
+        {
+          "@@type": "Question",
+          "name": "هل معلوماتي وبياناتي الشخصية آمنة؟",
+          "acceptedAnswer": {
+            "@@type": "Answer",
+            "text": "نحن نولي أمن بياناتك أهمية قصوى ونستخدم أحدث تقنيات التشفير لضمان سرية معلوماتك. يمكنك مراجعة سياسة الخصوصية الخاصة بنا لمزيد من التفاصيل."
+          }
+        }
+      ]
+    }
+    </script>
+}
+
+<div class="faq-page w-animate-fadeInUp">
+    <div class="faq-header">
+        <h1 class="faq-title">الأسئلة الشائعة</h1>
+        <p class="faq-subtitle">إليك إجابات لأكثر الأسئلة شيوعاً حول منصة وصال للتطوع.</p>
+    </div>
+
+    <!-- Category 1 -->
+    <div class="faq-category">
+        <h2 class="faq-category-title">
+            <span class="material-symbols-outlined w-text-primary">info</span>
+            عن المنصة والحسابات
+        </h2>
+        <div class="accordion faq-accordion" id="faqGeneral">
+            <!-- Question 1 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                        ما هي منصة وصال؟
+                    </button>
+                </h3>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqGeneral">
+                    <div class="accordion-body">
+                        منصة وصال هي جسر يربط بين المتطوعين الراغبين في العطاء وبين من يحتاجون للمساعدة في مجتمعنا. نسعى لبناء مجتمع أكثر تلاحماً وتعاوناً من خلال تسهيل العمل التطوعي.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question 2 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        هل التسجيل واستخدام المنصة مجاني؟
+                    </button>
+                </h3>
+                <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqGeneral">
+                    <div class="accordion-body">
+                        نعم، التسجيل واستخدام منصة وصال سواء لطلب المساعدة أو لتقديمها كمتطوع هو مجاني بالكامل. هدفنا هو نشر ثقافة العمل التطوعي بدون أي عوائق مالية.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 3 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                        هل معلوماتي وبياناتي الشخصية آمنة؟
+                    </button>
+                </h3>
+                <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqGeneral">
+                    <div class="accordion-body">
+                        نحن نولي أمن بياناتك أهمية قصوى ونستخدم أحدث تقنيات التشفير لضمان سرية معلوماتك. لا يتم مشاركة بياناتك مع أطراف ثالثة لأغراض تجارية. يمكنك مراجعة سياسة الخصوصية الخاصة بنا لمزيد من التفاصيل.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question 4 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                        كيف يمكنني التواصل مع الدعم الفني للمنصة؟
+                    </button>
+                </h3>
+                <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqGeneral">
+                    <div class="accordion-body">
+                        يمكنك التواصل معنا عبر البريد الإلكتروني (support@wessal.com) أو من خلال زيارة صفحة "اتصل بنا" وسيقوم فريق الدعم بالرد على استفساراتك في أقرب وقت ممكن.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category 2 -->
+    <div class="faq-category">
+        <h2 class="faq-category-title">
+            <span class="material-symbols-outlined w-text-primary">volunteer_activism</span>
+            الطلبات والتطوع
+        </h2>
+        <div class="accordion faq-accordion" id="faqVolunteer">
+            <!-- Question 5 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                        كيف يمكنني طلب المساعدة من خلال وصال؟
+                    </button>
+                </h3>
+                <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        يمكنك طلب المساعدة عن طريق التسجيل في المنصة، ثم النقر على زر "إنشاء طلب" من القائمة العلوية. قم بتعبئة تفاصيل المساعدة التي تحتاجها (نوع المساعدة، الوصف، الموقع)، وسيتم نشر طلبك ليراه المتطوعون في منطقتك.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Question 6 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingSix">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                        كيف يمكنني التطوع وتقديم المساعدة للآخرين؟
+                    </button>
+                </h3>
+                <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        بعد تسجيل الدخول كمتطوع، يمكنك تصفح الطلبات المتاحة في صفحة "تصفح الطلبات". يمكنك استخدام الفلاتر للبحث عن الطلبات القريبة منك أو التي تناسب مهاراتك. عند إيجاد الطلب المناسب، انقر على زر "تقديم مساعدة".
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingSeven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                        كيف يتم احتساب النقاط التطوعية (لوحة الشرف) وما فائدتها؟
+                    </button>
+                </h3>
+                <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        تحصل على نقاط تطوعية عند إنجازك لطلبات المساعدة بنجاح وعند تقييمك بشكل إيجابي. تساهم هذه النقاط في رفع تصنيفك في "لوحة الشرف"، وتعد تقديراً مجتمعياً لجهودك وإسهاماتك القيمة في مساعدة الآخرين.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingEight">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                        هل يمكنني التواصل مع صاحب الطلب مباشرة؟
+                    </button>
+                </h3>
+                <div id="collapseEight" class="accordion-collapse collapse" aria-labelledby="headingEight" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        نعم، بمجرد أن تعرض المساعدة على طلب ويقوم صاحب الطلب بالموافقة، سيتم فتح قناة تواصل تتيح لكما رؤية معلومات الاتصال الخاصة بالطرف الآخر (مثل رقم الهاتف إذا تم توفيره) لترتيب التفاصيل.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingNine">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+                        هل يمكنني تعديل أو حذف طلب المساعدة بعد نشره؟
+                    </button>
+                </h3>
+                <div id="collapseNine" class="accordion-collapse collapse" aria-labelledby="headingNine" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        نعم، يمكنك الذهاب إلى قسم "طلباتي" في حسابك الشخصي لتعديل أو حذف الطلب، طالما أنه لم يتم قبوله أو إنجازه من قبل متطوع بعد.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Question 10 -->
+            <div class="accordion-item">
+                <h3 class="accordion-header" id="headingTen">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTen" aria-expanded="false" aria-controls="collapseTen">
+                        ماذا أفعل إذا واجهت مشكلة مع مستخدم آخر؟
+                    </button>
+                </h3>
+                <div id="collapseTen" class="accordion-collapse collapse" aria-labelledby="headingTen" data-bs-parent="#faqVolunteer">
+                    <div class="accordion-body">
+                        في حال مواجهة أي مشكلة أو سلوك غير لائق من مستخدم آخر، يرجى التواصل فوراً مع الدعم الفني وتزويدنا بتفاصيل المشكلة واسم المستخدم. نحن نأخذ هذه البلاغات بجدية لضمان بيئة تطوعية آمنة للجميع.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

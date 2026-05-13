@@ -151,6 +151,15 @@
                                 </div>
                                 <span class="material-symbols-outlined">chevron_left</span>
                             </a>
+                            <a asp-controller="Acceptances" asp-action="MyTasks" class="w-btn w-btn-outline w-btn-full justify-content-between p-3 border-0" style="background: rgba(99, 102, 241, 0.05);">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="w-icon-container w-icon-container-sm" style="background: white; color: var(--w-primary);">
+                                        <span class="material-symbols-outlined">task</span>
+                                    </div>
+                                    <span class="fw-bold">مهامي</span>
+                                </div>
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -161,74 +170,109 @@
 
                 <!-- Bio -->
                 <div class="col-12">
-                    <div class="w-glass-premium p-4">
-                        <h3 class="w-h5 mb-3 fw-bold d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined" style="color:var(--w-primary); font-variation-settings:'FILL' 1;">person_pin</span>
-                            نبذة شخصية
-                        </h3>
-                        @if (!string.IsNullOrEmpty(Model.Bio))
-                        {
-                            <p class="w-body-md w-text-muted mb-0" style="line-height:1.8;">@Model.Bio</p>
-                        }
-                        else
-                        {
-                            <p class="w-body-md mb-0 d-flex align-items-center gap-2" style="color: var(--w-outline);">
-                                <span class="material-symbols-outlined" style="font-size:18px;">edit_note</span>
-                                لم تُضف نبذة بعد —
-                                <a asp-action="EditProfile" asp-controller="Account" style="color:var(--w-primary);">أضفها الآن</a>
-                            </p>
-                        }
+                    <div class="w-glass-premium p-4 position-relative overflow-hidden">
+                        <!-- decorative background icon -->
+                        <span class="material-symbols-outlined position-absolute" style="font-size: 150px; color: rgba(99, 102, 241, 0.03); left: -20px; top: -20px; z-index: 0; font-variation-settings: 'FILL' 1; transform: rotate(-15deg);">format_quote</span>
+                        
+                        <div class="position-relative" style="z-index: 1;">
+                            <h3 class="w-h5 mb-3 fw-bold d-flex align-items-center gap-2">
+                                <div class="w-icon-container w-icon-container-sm" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings:'FILL' 1;">person_pin</span>
+                                </div>
+                                نبذة شخصية
+                            </h3>
+                            @if (!string.IsNullOrEmpty(Model.Bio))
+                            {
+                                <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.5);">
+                                    <p class="w-body-md w-text-muted mb-0" style="line-height:1.8;">@Model.Bio</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="p-4 rounded-3 text-center" style="background: rgba(255, 255, 255, 0.3); border: 1px dashed rgba(99, 102, 241, 0.3);">
+                                    <span class="material-symbols-outlined w-mb-sm" style="font-size:32px; color: var(--w-outline);">edit_note</span>
+                                    <p class="w-body-md mb-3" style="color: var(--w-text-secondary);">أخبرنا المزيد عن نفسك، اهتماماتك وشغفك بالتطوع.</p>
+                                    <a asp-action="EditProfile" asp-controller="Account" class="w-btn w-btn-outline w-btn-sm rounded-pill px-4" style="border-color: rgba(99, 102, 241, 0.2); color: var(--w-primary);">
+                                        <span class="material-symbols-outlined w-icon-xs">add</span> أضف نبذة شخصية
+                                    </a>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
 
                 <!-- Skills -->
                 <div class="col-md-6">
-                    <div class="w-glass-premium p-4 h-100">
-                        <h3 class="w-h5 mb-3 fw-bold d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined" style="color:var(--w-primary); font-variation-settings:'FILL' 1;">psychology</span>
-                            المهارات
-                        </h3>
-                        @if (!string.IsNullOrEmpty(Model.Skills))
-                        {
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach (var skill in Model.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries))
-                                {
-                                    <span class="w-chip" style="background: rgba(99,102,241,0.1); color: var(--w-primary); font-size:13px; padding: 6px 14px; border-radius: 20px;">
-                                        @skill.Trim()
-                                    </span>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <p class="w-body-md mb-0 d-flex align-items-center gap-2" style="color: var(--w-outline);">
-                                <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
-                                لم تُضف مهارات بعد —
-                                <a asp-action="EditProfile" asp-controller="Account" style="color:var(--w-primary);">أضفها الآن</a>
-                            </p>
-                        }
+                    <div class="w-glass-premium p-4 h-100 position-relative overflow-hidden">
+                        <div class="position-relative" style="z-index: 1;">
+                            <h3 class="w-h5 mb-4 fw-bold d-flex align-items-center gap-2">
+                                <div class="w-icon-container w-icon-container-sm" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings:'FILL' 1;">psychology</span>
+                                </div>
+                                المهارات
+                            </h3>
+                            @if (!string.IsNullOrEmpty(Model.Skills))
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var skill in Model.Skills.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                    {
+                                        <div class="d-flex align-items-center gap-1 rounded-pill" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 1px solid rgba(99, 102, 241, 0.2); padding: 6px 16px;">
+                                            <span class="material-symbols-outlined" style="font-size: 14px; color: var(--w-primary);">verified</span>
+                                            <span class="w-body-sm fw-bold" style="color: var(--w-primary);">@skill.Trim()</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="p-4 rounded-3 text-center h-100 d-flex flex-column justify-content-center" style="background: rgba(255, 255, 255, 0.3); border: 1px dashed rgba(99, 102, 241, 0.3);">
+                                    <span class="material-symbols-outlined w-mb-sm" style="font-size:32px; color: var(--w-outline);">model_training</span>
+                                    <p class="w-body-md mb-3" style="color: var(--w-text-secondary);">ما هي المهارات التي تتقنها ويمكنك المساعدة بها؟</p>
+                                    <div class="mt-auto">
+                                        <a asp-action="EditProfile" asp-controller="Account" class="w-btn w-btn-outline w-btn-sm rounded-pill px-4" style="border-color: rgba(99, 102, 241, 0.2); color: var(--w-primary);">
+                                            <span class="material-symbols-outlined w-icon-xs">add</span> أضف مهاراتك
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
 
                 <!-- Experience -->
                 <div class="col-md-6">
-                    <div class="w-glass-premium p-4 h-100">
-                        <h3 class="w-h5 mb-3 fw-bold d-flex align-items-center gap-2">
-                            <span class="material-symbols-outlined" style="color:var(--w-primary); font-variation-settings:'FILL' 1;">workspace_premium</span>
-                            الخبرات
-                        </h3>
-                        @if (!string.IsNullOrEmpty(Model.Experience))
-                        {
-                            <p class="w-body-md w-text-muted mb-0" style="line-height:1.8;">@Model.Experience</p>
-                        }
-                        else
-                        {
-                            <p class="w-body-md mb-0 d-flex align-items-center gap-2" style="color: var(--w-outline);">
-                                <span class="material-symbols-outlined" style="font-size:18px;">add_circle</span>
-                                لم تُضف خبرات بعد —
-                                <a asp-action="EditProfile" asp-controller="Account" style="color:var(--w-primary);">أضفها الآن</a>
-                            </p>
-                        }
+                    <div class="w-glass-premium p-4 h-100 position-relative overflow-hidden">
+                        <div class="position-relative" style="z-index: 1;">
+                            <h3 class="w-h5 mb-4 fw-bold d-flex align-items-center gap-2">
+                                <div class="w-icon-container w-icon-container-sm" style="background: rgba(168, 85, 247, 0.1); color: var(--w-secondary);">
+                                    <span class="material-symbols-outlined" style="font-size: 20px; font-variation-settings:'FILL' 1;">workspace_premium</span>
+                                </div>
+                                الخبرات
+                            </h3>
+                            @if (!string.IsNullOrEmpty(Model.Experience))
+                            {
+                                <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.5);">
+                                    <div class="d-flex gap-3">
+                                        <div class="mt-1">
+                                            <span class="material-symbols-outlined" style="color: var(--w-secondary); font-variation-settings: 'FILL' 1;">arrow_drop_down_circle</span>
+                                        </div>
+                                        <p class="w-body-md w-text-muted mb-0" style="line-height:1.8;">@Model.Experience</p>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="p-4 rounded-3 text-center h-100 d-flex flex-column justify-content-center" style="background: rgba(255, 255, 255, 0.3); border: 1px dashed rgba(168, 85, 247, 0.3);">
+                                    <span class="material-symbols-outlined w-mb-sm" style="font-size:32px; color: var(--w-outline);">work_history</span>
+                                    <p class="w-body-md mb-3" style="color: var(--w-text-secondary);">شاركنا خبراتك السابقة والأعمال التطوعية التي شاركت بها.</p>
+                                    <div class="mt-auto">
+                                        <a asp-action="EditProfile" asp-controller="Account" class="w-btn w-btn-outline w-btn-sm rounded-pill px-4" style="border-color: rgba(168, 85, 247, 0.2); color: var(--w-secondary);">
+                                            <span class="material-symbols-outlined w-icon-xs">add</span> أضف خبراتك
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
 

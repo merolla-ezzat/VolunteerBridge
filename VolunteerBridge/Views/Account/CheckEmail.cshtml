@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "تحقق من بريدك";
     Layout = null;
 }
@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>وصال - تحقق من بريدك</title>
+    <title>تحقق من البريد | وصال</title>
     <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
@@ -92,7 +92,9 @@
     <div class="check-page">
         <div class="check-card w-animate-fadeInUp">
 
-            <a asp-controller="Home" asp-action="Index" class="check-brand">وصال</a>
+            <a asp-controller="Home" asp-action="Index" class="check-brand">
+                <img src="~/images/MainLogo.png" alt="وصال" style="height: 38px; width: auto; object-fit: contain;" />
+            </a>
 
             <div class="check-icon-wrap">
                 <span class="material-symbols-outlined">mark_email_unread</span>

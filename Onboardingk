@@ -1,0 +1,30 @@
+# Onboarding & Profile Ecosystem Tasks
+
+- [ ] **Phase 1: DB Changes**
+  - [ ] Add `IsOnboardingCompleted`, `HasReceivedProfilePoints`, and `Interests` to `User` model
+  - [ ] Add `ProfileCompletionPercentage` computed property
+  - [ ] Generate EF Migration
+  - [ ] Update migration to set existing users `IsOnboardingCompleted = true`
+  - [ ] Update database
+- [ ] **Phase 2: Backend Logic**
+  - [ ] Update `AccountController.ConfirmEmail` to auto-login and redirect
+  - [ ] Create `OnboardingViewModel`
+  - [ ] Add `Onboarding` GET/POST actions
+  - [ ] Add `SkipOnboarding` POST action
+  - [ ] Remove old `CompleteProfile` actions
+- [ ] **Phase 3: Reusable Components**
+  - [ ] Create UI partials or JS modules for Searchable City Input
+  - [ ] Create UI partials or JS modules for Selectable Interest Chips
+- [ ] **Phase 4: Onboarding UI**
+  - [ ] Create `Onboarding.cshtml` standalone page
+  - [ ] Implement multi-step JS logic (slide transitions)
+  - [ ] Integrate City and Interest components
+  - [ ] Ensure RTL alignment inside the centered card
+  - [ ] Delete old `CompleteProfile.cshtml`
+- [ ] **Phase 5: Gamification Integration**
+  - [ ] Add profile completion check in `Onboarding` POST
+  - [ ] Award 50 points and create `PointTransaction` if fully complete
+- [ ] **Phase 6: Polish & Verification**
+  - [ ] Review keyboard accessibility and mobile touch targets
+  - [ ] Ensure animations feel premium, subtle, and trustworthy
+  - [ ] Verify existing users are not redirected to onboarding

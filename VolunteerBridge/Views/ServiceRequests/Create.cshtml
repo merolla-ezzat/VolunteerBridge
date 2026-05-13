@@ -4,204 +4,284 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="w-py-xl">
+<div class="w-py-xl w-bg-surface-dim">
     <div class="w-container">
-        <div class="w-flex w-justify-center">
-            <div class="w-w-full w-max-w-700">
+        
+        @* ── Page Header (Breadcrumbs + Title) ── *@
+        <div class="w-mb-xl w-animate-fadeIn">
+            <nav class="w-flex w-items-center w-gap-sm w-mb-sm w-body-sm">
+                <a asp-controller="Home" asp-action="Index" class="w-text-muted w-text-decoration-none hover-link">الرئيسية</a>
+                <span class="material-symbols-outlined w-text-faint w-icon-xs">chevron_left</span>
+                <a asp-action="MyRequests" class="w-text-muted w-text-decoration-none hover-link">طلباتي</a>
+                <span class="material-symbols-outlined w-text-faint w-icon-xs">chevron_left</span>
+                <span class="w-text-primary w-font-semibold">نشر طلب جديد</span>
+            </nav>
+            <h1 class="w-h1 w-font-bold w-mb-0 w-aurora-text">نشر طلب مساعدة جديد</h1>
+            <p class="w-body-md w-text-muted w-mt-xs">املأ البيانات أدناه لطلب المساعدة من مجتمع المتطوعين.</p>
+        </div>
 
-                @* ── Breadcrumb ── *@
-                <nav class="w-flex w-items-center w-gap-sm w-mb-lg w-body-sm">
-                    <a asp-controller="Home" asp-action="Index" class="w-text-muted w-text-decoration-none">الرئيسية</a>
-                    <span class="material-symbols-outlined w-text-faint w-icon-xs">chevron_left</span>
-                    <a asp-action="MyRequests" class="w-text-muted w-text-decoration-none">طلباتي</a>
-                    <span class="material-symbols-outlined w-text-faint w-icon-xs">chevron_left</span>
-                    <span class="w-text-primary w-font-semibold">نشر طلب جديد</span>
-                </nav>
-
-                @* ── Form Card ── *@
+        <div class="row g-5">
+            @* ── Main Form Column ── *@
+            <div class="col-lg-8">
                 <div class="w-glass-premium w-animate-fadeInUp w-p-0 w-overflow-hidden" style="border-radius: var(--w-radius-2xl);">
-                    
-                    @* Card Header *@
-                    <div class="w-px-xl w-py-xl" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(167, 139, 250, 0.1)); border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
-                        <h1 class="w-h2 w-mb-0 w-flex w-items-center w-gap-md w-aurora-text">
-                            <span class="material-symbols-outlined" style="font-size: 32px;">edit_note</span>
-                            نشر طلب مساعدة جديد
-                        </h1>
-                    </div>
-
-                    @* Card Body *@
                     <div class="w-p-xl">
-                        <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <form asp-action="Create" method="post" enctype="multipart/form-data" id="createRequestForm">
                             @Html.AntiForgeryToken()
 
-                            <div asp-validation-summary="ModelOnly" class="w-alert w-alert-error w-mb-lg"></div>
+                            <div asp-validation-summary="ModelOnly" class="w-alert w-alert-error w-mb-xl"></div>
 
-                            @* ── Title ── *@
-                            <div class="w-input-group">
-                                <label asp-for="Title" class="w-input-label">
-                                    عنوان الطلب <span class="w-text-error">*</span>
-                                </label>
-                                <input asp-for="Title" class="w-input" placeholder="مثال: أحتاج مساعدة في نقل أثاث" />
-                                <span asp-validation-for="Title" class="w-input-error-text"></span>
-                            </div>
-
-                            @* ── Category ── *@
-                            <div class="w-input-group">
-                                <label asp-for="Category" class="w-input-label">
-                                    الفئة <span class="w-text-error">*</span>
-                                </label>
-                                <select asp-for="Category" class="w-input"
-                                        asp-items="Html.GetEnumSelectList(typeof(VolunteerBridge.Models.Enums.RequestCategory))">
-                                    <option value="">-- اختر الفئة --</option>
-                                </select>
-                                <span asp-validation-for="Category" class="w-input-error-text"></span>
-                            </div>
-
-                            @* ── Description ── *@
-                            <div class="w-input-group">
-                                <label asp-for="Description" class="w-input-label">
-                                    وصف الطلب <span class="w-text-error">*</span>
-                                </label>
-                                <textarea asp-for="Description" class="w-input" rows="4" placeholder="اشرح ما تحتاجه بالتفصيل..."></textarea>
-                                <span asp-validation-for="Description" class="w-input-error-text"></span>
-                            </div>
-
-                            @* ── Location ── *@
-                            <div class="w-input-group">
-                                <label asp-for="Location" class="w-input-label">
-                                    الموقع <span class="w-text-error">*</span>
-                                </label>
-                                <div class="w-relative">
-                                    <span class="material-symbols-outlined w-absolute w-right-0 w-top-0 w-translate-y-center w-px-md w-icon-md w-text-faint" style="pointer-events: none; top: 50%;">location_on</span>
-                                    <input asp-for="Location" class="w-input" style="padding-right: 48px;" placeholder="مثال: القاهرة، المعادي" />
+                            @* ── Section 1: طبيعة الطلب ── *@
+                            <div class="w-mb-xl">
+                                <div class="w-flex w-items-center w-gap-sm w-mb-lg">
+                                    <div class="w-icon-container w-icon-container-sm" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </div>
+                                    <h2 class="w-h5 w-font-bold w-mb-0">الأساسيات</h2>
                                 </div>
-                                <span asp-validation-for="Location" class="w-input-error-text"></span>
-                            </div>
-
-                            @* ── Date + Hours Row ── *@
-                            <div class="w-grid w-grid-2 w-gap-md w-mb-lg">
-                                <div>
-                                    <label asp-for="ScheduledDate" class="w-input-label">
-                                        التاريخ المقترح <span class="w-text-error">*</span>
-                                    </label>
-                                    <input asp-for="ScheduledDate" type="date" class="w-input" />
-                                    <span asp-validation-for="ScheduledDate" class="w-input-error-text"></span>
-                                </div>
-                                <div>
-                                    <label asp-for="EstimatedHours" class="w-input-label">
-                                        الساعات المتوقعة <span class="w-text-error">*</span>
-                                    </label>
-                                    <input asp-for="EstimatedHours" type="number" step="0.5" min="0.5" max="24" class="w-input" placeholder="مثال: 2" />
-                                    <span asp-validation-for="EstimatedHours" class="w-input-error-text"></span>
-                                    <div class="w-flex w-items-center w-gap-xs w-mt-sm w-caption w-text-muted">
-                                        <span class="material-symbols-outlined w-icon-xs">info</span>
-                                        النقاط = الساعات × 20 (بحد أدنى 10)
+                                
+                                <div class="row g-4">
+                                    <div class="col-md-8">
+                                        <div class="w-input-group mb-0">
+                                            <label asp-for="Title" class="w-input-label">عنوان الطلب قصير وواضح <span class="w-text-error">*</span></label>
+                                            <input asp-for="Title" class="w-input" placeholder="مثال: مساعدة في توصيل أدوية" />
+                                            <span asp-validation-for="Title" class="w-input-error-text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="w-input-group mb-0">
+                                            <label asp-for="Category" class="w-input-label">الفئة <span class="w-text-error">*</span></label>
+                                            <select asp-for="Category" class="w-input w-appearance-none"
+                                                    asp-items="Html.GetEnumSelectList(typeof(VolunteerBridge.Models.Enums.RequestCategory))">
+                                                <option value="">-- اختر --</option>
+                                            </select>
+                                            <span asp-validation-for="Category" class="w-input-error-text"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            @* ── Image Upload ── *@
-                            <div class="w-input-group">
-                                <label asp-for="Image" class="w-input-label">
-                                    صورة توضيحية <span class="w-text-faint w-font-normal">(اختياري)</span>
-                                </label>
+                            <hr class="w-divider w-my-xl" style="opacity: 0.05;" />
 
-                                <div id="uploadZone" 
-                                     class="w-glass-premium w-p-2xl w-text-center w-relative w-animate-fadeIn"
-                                     style="cursor: pointer; transition: all 0.3s ease; border: 2px dashed rgba(255,255,255,0.1); border-radius: var(--w-radius-xl);"
-                                     onmouseenter="this.style.borderColor='var(--w-primary)'; this.style.background='rgba(99,102,241,0.05)';"
-                                     onmouseleave="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.background='rgba(255,255,255,0.02)';"
-                                     onclick="document.getElementById('imageInput').click()">
-                                    <div class="w-avatar w-avatar-lg w-mx-auto w-mb-md" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
-                                        <span class="material-symbols-outlined" style="font-size: 32px;">cloud_upload</span>
+                            @* ── Section 2: التفاصيل والوسائط ── *@
+                            <div class="w-mb-xl">
+                                <div class="w-flex w-items-center w-gap-sm w-mb-lg">
+                                    <div class="w-icon-container w-icon-container-sm" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                                        <span class="material-symbols-outlined">description</span>
                                     </div>
-                                    <p class="w-h3 w-mb-xs w-aurora-text">اضغط لرفع صورة</p>
-                                    <p class="w-body-sm w-text-muted opacity-75">jpg, png, gif, webp (الحد الأقصى 2MB)</p>
+                                    <h2 class="w-h5 w-font-bold w-mb-0">تفاصيل المساعدة</h2>
                                 </div>
 
-                                <input asp-for="Image" type="file" class="w-hidden" id="imageInput" accept="image/*" onchange="previewImage(this)" />
-                                <span asp-validation-for="Image" class="w-input-error-text"></span>
+                                <div class="w-input-group">
+                                    <label asp-for="Description" class="w-input-label">اشرح ما تحتاجه بوضوح <span class="w-text-error">*</span></label>
+                                    <textarea asp-for="Description" class="w-input" rows="5" placeholder="اكتب تفاصيل أكثر ليتمكن المتطوع من فهم طبيعة المهمة..."></textarea>
+                                    <span asp-validation-for="Description" class="w-input-error-text"></span>
+                                </div>
 
-                                @* معاينة الصورة *@
-                                <div id="imagePreview" class="w-mt-md w-hidden">
-                                    <div class="w-relative w-flex">
-                                        <img id="previewImg" src="" alt="معاينة" 
-                                             class="w-h-200 w-w-auto w-rounded-md w-border" />
-                                        <button type="button" onclick="removeImage()" 
-                                                class="w-absolute w-top-0 w-left-0 w-m-sm w-flex w-items-center w-justify-center w-rounded-full w-bg-surface-dim w-text-white w-border-0"
-                                                style="width: 28px; height: 28px; cursor: pointer; background: rgba(0,0,0,0.6);">
-                                            <span class="material-symbols-outlined w-icon-xs">close</span>
-                                        </button>
+                                @* Premium Upload Zone *@
+                                <div class="w-input-group mb-0">
+                                    <label class="w-input-label">صورة توضيحية <span class="w-text-faint w-font-normal">(اختياري)</span></label>
+                                    
+                                    <div id="uploadWrapper" class="w-relative">
+                                        <div id="uploadZone" 
+                                             class="w-glass-premium w-p-2xl w-text-center w-relative w-animate-fadeIn"
+                                             style="cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px dashed rgba(255,255,255,0.15); border-radius: var(--w-radius-xl);"
+                                             onclick="document.getElementById('imageInput').click()">
+                                            
+                                            <div class="w-avatar w-avatar-lg w-mx-auto w-mb-md" style="background: rgba(255, 255, 255, 0.05); color: var(--w-text-primary);">
+                                                <span class="material-symbols-outlined" style="font-size: 32px;">add_a_photo</span>
+                                            </div>
+                                            <p class="w-body-md w-font-semibold w-mb-xs">اضغط هنا لإضافة صورة</p>
+                                            <p class="w-caption w-text-muted opacity-75">تساعد الصورة المتطوعين على الاستجابة لطلبك بشكل أسرع</p>
+                                        </div>
+
+                                        <input asp-for="Image" type="file" class="w-hidden" id="imageInput" accept="image/*" onchange="previewImage(this)" />
+                                        
+                                        @* Premium Preview Container *@
+                                        <div id="imagePreview" class="w-hidden w-animate-scaleIn w-absolute w-inset-0 w-z-10">
+                                            <div class="w-h-full w-w-full w-relative w-overflow-hidden w-rounded-xl w-border">
+                                                <img id="previewImg" src="" alt="معاينة" class="w-h-full w-w-full" style="object-fit: cover;" />
+                                                <div class="w-absolute w-inset-0 w-flex w-items-center w-justify-center w-bg-black w-bg-opacity-40 opacity-0 hover-opacity-100 w-transition-all">
+                                                    <button type="button" onclick="removeImage()" class="w-btn w-btn-sm w-btn-outline-error w-glass-premium">
+                                                        <span class="material-symbols-outlined w-icon-sm">delete</span>
+                                                        إزالة الصورة
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span asp-validation-for="Image" class="w-input-error-text"></span>
+                                </div>
+                            </div>
+
+                            <hr class="w-divider w-my-xl" style="opacity: 0.05;" />
+
+                            @* ── Section 3: الترتيبات اللوجستية ── *@
+                            <div class="w-mb-xl">
+                                <div class="w-flex w-items-center w-gap-sm w-mb-lg">
+                                    <div class="w-icon-container w-icon-container-sm" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                                        <span class="material-symbols-outlined">event_available</span>
+                                    </div>
+                                    <h2 class="w-h5 w-font-bold w-mb-0">الموعد والمكان</h2>
+                                </div>
+
+                                <div class="w-input-group">
+                                    <label asp-for="Location" class="w-input-label">مكان تقديم المساعدة <span class="w-text-error">*</span></label>
+                                    <div class="w-relative">
+                                        <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">location_on</span>
+                                        <input asp-for="Location" class="w-input w-ps-xl" placeholder="مثال: حي الرياض، شارع التخصصي" />
+                                    </div>
+                                    <span asp-validation-for="Location" class="w-input-error-text"></span>
+                                </div>
+
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="w-input-group mb-0">
+                                            <label asp-for="ScheduledDate" class="w-input-label">التاريخ المقترح <span class="w-text-error">*</span></label>
+                                            <div class="w-relative">
+                                                <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">calendar_today</span>
+                                                <input asp-for="ScheduledDate" type="date" class="w-input w-ps-xl" />
+                                            </div>
+                                            <span asp-validation-for="ScheduledDate" class="w-input-error-text"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="w-input-group mb-0">
+                                            <label asp-for="EstimatedHours" class="w-input-label">الوقت المتوقع (ساعات) <span class="w-text-error">*</span></label>
+                                            <div class="w-relative">
+                                                <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">schedule</span>
+                                                <input asp-for="EstimatedHours" id="hoursInput" type="number" step="0.5" min="0.5" max="24" class="w-input w-ps-xl" placeholder="2" />
+                                            </div>
+                                            <span asp-validation-for="EstimatedHours" class="w-input-error-text"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            @* ── Action Buttons ── *@
-                            <div class="w-flex w-justify-between w-items-center w-mt-xl w-pt-lg w-border-t">
-                                <a asp-action="MyRequests" class="w-btn w-btn-ghost">
-                                    إلغاء
+                            @* ── Action Footer ── *@
+                            <div class="w-flex w-justify-between w-items-center w-mt-xl w-pt-xl w-border-t" style="border-color: rgba(255,255,255,0.05) !important;">
+                                <a asp-action="MyRequests" class="w-btn w-btn-ghost w-text-muted">
+                                    إلغاء العملية
                                 </a>
-                                <button type="submit" class="w-btn w-btn-primary">
-                                    <span class="material-symbols-outlined w-icon-sm">send</span>
-                                    نشر الطلب
+                                <button type="submit" class="w-btn w-btn-primary w-btn-lg px-5 shadow-glow">
+                                    <span class="material-symbols-outlined">publish</span>
+                                    تأكيد ونشر الطلب
                                 </button>
                             </div>
 
                         </form>
                     </div>
                 </div>
+            </div>
 
-                @* ── Info Card ── *@
-                <div class="w-mt-xl w-glass-premium w-p-xl w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); animation-delay: 0.1s;">
-                    <div class="w-flex w-gap-xl w-items-center">
-                        <div class="w-avatar w-avatar-lg" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary); flex-shrink: 0;">
-                            <span class="material-symbols-outlined" style="font-size: 32px;">lightbulb</span>
+            @* ── Sidebar Context Column ── *@
+            <div class="col-lg-4">
+                <div class="w-sticky-top" style="top: 2rem;">
+                    
+                    @* Points Calculator Info *@
+                    <div class="w-glass-premium w-p-xl w-mb-lg w-animate-fadeInUp" style="border-radius: var(--w-radius-xl);">
+                        <div class="w-flex w-items-center w-gap-md w-mb-md">
+                            <div class="w-icon-container w-icon-container-sm" style="background: rgba(147, 51, 234, 0.1); color: #9333ea;">
+                                <span class="material-symbols-outlined">stars</span>
+                            </div>
+                            <h3 class="w-h6 w-font-bold w-mb-0">نقاط العطاء</h3>
                         </div>
-                        <div>
-                            <h3 class="w-h3 w-aurora-text w-mb-xs">لماذا تطلب المساعدة عبر وصال؟</h3>
-                            <p class="w-body-md w-text-muted w-leading-relaxed w-m-0">
-                                من خلال منصة وصال، نهدف إلى بناء مجتمع متكافل. طلبك سيصل إلى المتطوعين الموثوقين في منطقتك، وستساهم في منحهم نقاطاً تعزز من رصيدهم التطوعي وتكرم جهودهم.
-                            </p>
+                        <p class="w-body-sm w-text-muted w-mb-lg">
+                            مقابل كل ساعة تطوع، سيحصل المتطوع على <span class="w-text-primary w-font-bold">20 نقطة</span> تضاف إلى رصيده وتزيد من مستواه في المنصة.
+                        </p>
+                        <div id="pointsPreview" class="w-bg-surface-container w-p-md w-rounded-lg w-text-center">
+                            <div class="w-caption w-text-muted w-mb-xs">النقاط المقدرة للمتطوع</div>
+                            <div class="w-h4 w-font-bold w-aurora-text" id="calculatedPoints">20 نقطة</div>
                         </div>
                     </div>
-                </div>
 
+                    @* Trust & Impact Card *@
+                    <div class="w-glass-premium w-p-xl w-mb-lg w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); animation-delay: 0.1s;">
+                        <h3 class="w-h6 w-font-bold w-mb-md">لماذا وصال؟</h3>
+                        <ul class="w-list-none w-p-0 w-m-0 d-flex flex-column w-gap-md">
+                            <li class="w-flex w-gap-sm">
+                                <span class="material-symbols-outlined w-text-primary w-icon-sm">verified_user</span>
+                                <p class="w-caption w-text-muted w-mb-0">متطوعون موثوقون ومقيمون من قبل المجتمع.</p>
+                            </li>
+                            <li class="w-flex w-gap-sm">
+                                <span class="material-symbols-outlined w-text-primary w-icon-sm">groups</span>
+                                <p class="w-caption w-text-muted w-mb-0">بناء جسور التكافل بين أفراد الحي الواحد.</p>
+                            </li>
+                            <li class="w-flex w-gap-sm">
+                                <span class="material-symbols-outlined w-text-primary w-icon-sm">shield_with_heart</span>
+                                <p class="w-caption w-text-muted w-mb-0">بيئة آمنة تضمن خصوصية بياناتك وسلامة الجميع.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    @* Help Banner *@
+                    <div class="w-p-xl w-rounded-xl w-animate-fadeInUp" 
+                         style="background: linear-gradient(135deg, var(--w-primary), var(--w-secondary)); color: white; animation-delay: 0.2s;">
+                        <h4 class="w-body-md w-font-bold mb-2">هل تحتاج للمساعدة؟</h4>
+                        <p class="w-caption opacity-90 mb-3">إذا واجهت أي مشكلة في تعبئة البيانات، فريق الدعم متواجد لخدمتك.</p>
+                        <a asp-action="FAQ" asp-controller="Home" class="w-btn w-btn-sm w-btn-light w-w-full">
+                            اقرأ الأسئلة الشائعة
+                        </a>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    .w-ps-xl { padding-right: 48px !important; }
+    .w-inset-0 { top: 0; left: 0; right: 0; bottom: 0; }
+    .w-z-10 { z-index: 10; }
+    .w-transition-all { transition: all 0.3s ease; }
+    .hover-opacity-100:hover { opacity: 1 !important; }
+    .w-bg-opacity-40 { background-color: rgba(0,0,0,0.4); }
+    .w-sticky-top { position: sticky; }
+    .hover-link:hover { color: var(--w-primary) !important; text-decoration: underline !important; }
+    .shadow-glow { box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3); }
+    
+    @@media (max-width: 991.98px) {
+        .w-sticky-top { position: static; }
     }
+</style>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script>
+        // Points Calculation
+        const hoursInput = document.getElementById('hoursInput');
+        const pointsDisplay = document.getElementById('calculatedPoints');
+
+        function updatePoints() {
+            const hours = parseFloat(hoursInput.value) || 0;
+            let points = Math.round(hours * 20);
+            if (hours > 0 && points < 10) points = 10;
+            pointsDisplay.innerText = `${points} نقطة`;
+        }
+
+        hoursInput.addEventListener('input', updatePoints);
+        updatePoints();
+
+        // Image Handling
         function previewImage(input) {
             const preview = document.getElementById('imagePreview');
             const img = document.getElementById('previewImg');
-            const uploadZone = document.getElementById('uploadZone');
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     img.src = e.target.result;
-                    preview.style.display = 'block';
-                    uploadZone.style.display = 'none';
+                    preview.classList.remove('w-hidden');
                 };
                 reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.style.display = 'none';
-                uploadZone.style.display = 'block';
             }
         }
 
         function removeImage() {
             const input = document.getElementById('imageInput');
             const preview = document.getElementById('imagePreview');
-            const uploadZone = document.getElementById('uploadZone');
             input.value = '';
-            preview.style.display = 'none';
-            uploadZone.style.display = 'block';
+            preview.classList.add('w-hidden');
         }
     </script>
 }
