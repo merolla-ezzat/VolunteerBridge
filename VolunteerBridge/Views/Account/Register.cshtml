@@ -122,15 +122,88 @@
             display: block;
         }
 
-        .input-hint {
+        /* ── Password Validation UI ── */
+        .password-validation-container {
+            margin-top: 8px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+            opacity: 0;
+        }
+
+        .password-validation-container.active {
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        .password-strength-meter {
+            height: 4px;
+            background: var(--w-surface-variant);
+            border-radius: 2px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .password-strength-fill {
+            height: 100%;
+            width: 0;
+            background: var(--w-error);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .password-checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .password-checklist-item {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             font-size: 12px;
             color: var(--w-on-surface-variant);
-            margin-top: 6px;
+            transition: color 0.3s ease;
         }
-        .input-hint .material-symbols-outlined { font-size: 14px; }
+
+        .password-checklist-item .material-symbols-outlined {
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .password-checklist-item.valid {
+            color: #10b981; /* Green */
+        }
+        
+        .password-checklist-item.valid .material-symbols-outlined {
+            color: #10b981;
+        }
+
+        /* ── Show/Hide Icon ── */
+        .toggle-password {
+            position: absolute;
+            top: 50%;
+            left: 14px;
+            transform: translateY(-50%);
+            color: var(--w-outline);
+            cursor: pointer;
+            font-size: 20px;
+            user-select: none;
+            transition: color 0.2s;
+            z-index: 2;
+        }
+
+        .toggle-password:hover {
+            color: var(--w-on-surface);
+        }
+
+        .input-with-icon .w-input.has-toggle {
+            padding-left: 40px;
+        }
 
         /* ── Visual Side ── */
         .register-visual-side {
@@ -267,7 +340,9 @@
             <!-- ═══ Form Side ═══ -->
             <div class="register-form-side">
                 <div class="register-header">
-                    <a asp-controller="Home" asp-action="Index" class="register-brand">وصال</a>
+                    <a asp-controller="Home" asp-action="Index" class="register-brand">
+                        <img src="~/images/MainLogo.png" alt="وصال" style="height: 38px; width: auto; object-fit: contain;" />
+                    </a>
                     <h1 class="register-title">إنشاء حساب جديد</h1>
                     <p class="register-subtitle">انضم إلى مجتمعنا وساهم في صنع التغيير.</p>
                 </div>
@@ -301,28 +376,51 @@
                     <!-- Passwords Grid -->
                     <div class="form-grid-2">
                         <!-- Password -->
-                        <div class="w-input-group">
+                        <div class="w-input-group" style="margin-bottom: 0;">
                             <label asp-for="Password" class="w-input-label">كلمة المرور</label>
                             <div class="input-with-icon">
                                 <span class="material-symbols-outlined input-icon">lock</span>
-                                <input asp-for="Password" type="password" class="w-input" placeholder="••••••••" />
-                            </div>
-                            <div class="input-hint">
-                                <span class="material-symbols-outlined">info</span>
-                                6 أحرف على الأقل
+                                <input asp-for="Password" type="password" class="w-input has-toggle" placeholder="••••••••" id="PasswordInput" />
+                                <span class="material-symbols-outlined toggle-password" onclick="togglePassword('PasswordInput', this)">visibility</span>
                             </div>
                             <span asp-validation-for="Password" class="field-validation-error"></span>
                         </div>
 
                         <!-- Confirm Password -->
-                        <div class="w-input-group">
+                        <div class="w-input-group" style="margin-bottom: 0;">
                             <label asp-for="ConfirmPassword" class="w-input-label">تأكيد كلمة المرور</label>
                             <div class="input-with-icon">
                                 <span class="material-symbols-outlined input-icon">lock_reset</span>
-                                <input asp-for="ConfirmPassword" type="password" class="w-input" placeholder="••••••••" />
+                                <input asp-for="ConfirmPassword" type="password" class="w-input has-toggle" placeholder="••••••••" id="ConfirmPasswordInput" />
+                                <span class="material-symbols-outlined toggle-password" onclick="togglePassword('ConfirmPasswordInput', this)">visibility</span>
                             </div>
                             <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
                         </div>
+                    </div>
+
+                    <!-- Full-width Password Strength Checklist -->
+                    <div class="password-validation-container" id="PasswordValidationBox" style="margin-bottom: 16px;">
+                        <div class="password-strength-meter">
+                            <div class="password-strength-fill" id="PasswordStrengthFill"></div>
+                        </div>
+                        <ul class="password-checklist">
+                            <li class="password-checklist-item" id="req-length">
+                                <span class="material-symbols-outlined">circle</span>
+                                8 أحرف على الأقل
+                            </li>
+                            <li class="password-checklist-item" id="req-uppercase">
+                                <span class="material-symbols-outlined">circle</span>
+                                حرف كبير
+                            </li>
+                            <li class="password-checklist-item" id="req-number">
+                                <span class="material-symbols-outlined">circle</span>
+                                رقم واحد
+                            </li>
+                            <li class="password-checklist-item" id="req-special">
+                                <span class="material-symbols-outlined">circle</span>
+                                رمز خاص
+                            </li>
+                        </ul>
                     </div>
 
                     <!-- Optional Fields Grid -->
@@ -332,7 +430,34 @@
                             <label asp-for="City" class="w-input-label">المدينة <span style="font-weight:400; color:var(--w-on-surface-variant);">(اختياري)</span></label>
                             <div class="input-with-icon">
                                 <span class="material-symbols-outlined input-icon">location_city</span>
-                                <input asp-for="City" type="text" class="w-input" placeholder="مدينتك" />
+                                <select asp-for="City" class="w-input" style="appearance: none; padding-left: 40px; cursor: pointer; color: var(--w-on-surface);">
+                                    <option value="" disabled selected>اختر مدينتك...</option>
+                                    <option value="القاهرة">القاهرة</option>
+                                    <option value="الإسكندرية">الإسكندرية</option>
+                                    <option value="الجيزة">الجيزة</option>
+                                    <option value="الشرقية">الشرقية</option>
+                                    <option value="الدقهلية">الدقهلية</option>
+                                    <option value="المنصورة">المنصورة</option>
+                                    <option value="البحيرة">البحيرة</option>
+                                    <option value="الغربية">الغربية</option>
+                                    <option value="طنطا">طنطا</option>
+                                    <option value="المنيا">المنيا</option>
+                                    <option value="القليوبية">القليوبية</option>
+                                    <option value="سوهاج">سوهاج</option>
+                                    <option value="المنوفية">المنوفية</option>
+                                    <option value="أسيوط">أسيوط</option>
+                                    <option value="الفيوم">الفيوم</option>
+                                    <option value="قنا">قنا</option>
+                                    <option value="بني سويف">بني سويف</option>
+                                    <option value="كفر الشيخ">كفر الشيخ</option>
+                                    <option value="أسوان">أسوان</option>
+                                    <option value="دمياط">دمياط</option>
+                                    <option value="الإسماعيلية">الإسماعيلية</option>
+                                    <option value="بورسعيد">بورسعيد</option>
+                                    <option value="السويس">السويس</option>
+                                    <option value="الأقصر">الأقصر</option>
+                                </select>
+                                <span class="material-symbols-outlined" style="position: absolute; top: 50%; left: 14px; transform: translateY(-50%); color: var(--w-outline); pointer-events: none; font-size: 20px;">keyboard_arrow_down</span>
                             </div>
                         </div>
 
@@ -375,5 +500,115 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function togglePassword(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.textContent = "visibility_off";
+            } else {
+                input.type = "password";
+                icon.textContent = "visibility";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const passwordInput = document.getElementById("PasswordInput");
+            const confirmInput = document.getElementById("ConfirmPasswordInput");
+            const validationBox = document.getElementById("PasswordValidationBox");
+            const strengthFill = document.getElementById("PasswordStrengthFill");
+            
+            const reqLength = document.getElementById("req-length");
+            const reqUppercase = document.getElementById("req-uppercase");
+            const reqNumber = document.getElementById("req-number");
+            const reqSpecial = document.getElementById("req-special");
+
+            let isFullyValid = false;
+
+            function checkValidationVisibility() {
+                // Delay slightly to allow activeElement to update when tabbing
+                setTimeout(() => {
+                    const activeEl = document.activeElement;
+                    if (activeEl !== passwordInput && activeEl !== confirmInput) {
+                        if (isFullyValid || passwordInput.value.length === 0) {
+                            validationBox.classList.remove("active");
+                        }
+                    }
+                }, 10);
+            }
+
+            if (!passwordInput || !confirmInput) return;
+
+            passwordInput.addEventListener("focus", function() {
+                validationBox.classList.add("active");
+            });
+
+            confirmInput.addEventListener("focus", function() {
+                validationBox.classList.add("active");
+            });
+
+            passwordInput.addEventListener("blur", checkValidationVisibility);
+            confirmInput.addEventListener("blur", checkValidationVisibility);
+
+            passwordInput.addEventListener("input", function() {
+                validationBox.classList.add("active");
+                const val = passwordInput.value;
+                let score = 0;
+
+                // Length
+                if (val.length >= 8) {
+                    reqLength.classList.add("valid");
+                    reqLength.querySelector("span").textContent = "check_circle";
+                    score++;
+                } else {
+                    reqLength.classList.remove("valid");
+                    reqLength.querySelector("span").textContent = "circle";
+                }
+
+                // Uppercase
+                if (/[A-Z]/.test(val)) {
+                    reqUppercase.classList.add("valid");
+                    reqUppercase.querySelector("span").textContent = "check_circle";
+                    score++;
+                } else {
+                    reqUppercase.classList.remove("valid");
+                    reqUppercase.querySelector("span").textContent = "circle";
+                }
+
+                // Number
+                if (/[0-9]/.test(val)) {
+                    reqNumber.classList.add("valid");
+                    reqNumber.querySelector("span").textContent = "check_circle";
+                    score++;
+                } else {
+                    reqNumber.classList.remove("valid");
+                    reqNumber.querySelector("span").textContent = "circle";
+                }
+
+                // Special (any character that is not letter or number)
+                if (/[^a-zA-Z0-9]/.test(val)) {
+                    reqSpecial.classList.add("valid");
+                    reqSpecial.querySelector("span").textContent = "check_circle";
+                    score++;
+                } else {
+                    reqSpecial.classList.remove("valid");
+                    reqSpecial.querySelector("span").textContent = "circle";
+                }
+
+                isFullyValid = (score === 4);
+
+                // Update Progress Bar
+                strengthFill.style.width = (score * 25) + "%";
+                
+                if (score <= 1) {
+                    strengthFill.style.backgroundColor = "var(--w-error)";
+                } else if (score === 2 || score === 3) {
+                    strengthFill.style.backgroundColor = "#f59e0b"; // Orange
+                } else if (score === 4) {
+                    strengthFill.style.backgroundColor = "#10b981"; // Green
+                }
+            });
+        });
+    </script>
 </body>
 </html>

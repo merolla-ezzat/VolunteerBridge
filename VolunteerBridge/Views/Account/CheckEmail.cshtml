@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "تحقق من بريدك";
     Layout = null;
 }
@@ -92,7 +92,9 @@
     <div class="check-page">
         <div class="check-card w-animate-fadeInUp">
 
-            <a asp-controller="Home" asp-action="Index" class="check-brand">وصال</a>
+            <a asp-controller="Home" asp-action="Index" class="check-brand">
+                <img src="~/images/MainLogo.png" alt="وصال" style="height: 38px; width: auto; object-fit: contain;" />
+            </a>
 
             <div class="check-icon-wrap">
                 <span class="material-symbols-outlined">mark_email_unread</span>

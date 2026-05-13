@@ -4,142 +4,150 @@
     Layout = "_AdminLayout";
 }
 
-<div class="w-container" style="padding-top: 40px; padding-bottom: 60px;">
-
-    @* ── Header Section ── *@
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-        <div>
-            <h2 class="w-h2 mb-1" style="color: var(--w-on-surface);">إدارة المستخدمين</h2>
-            <p class="w-body-sm text-muted">قائمة المستخدمين المسجلين داخل منصة وصال.</p>
+@* ── Page Header ── *@
+<div class="admin-page-header">
+    <div class="admin-page-header-content">
+        <div class="admin-page-icon">
+            <span class="material-symbols-outlined">group</span>
         </div>
-        <a asp-action="Index" class="w-btn w-btn-ghost d-flex align-items-center gap-2">
-            <span class="material-symbols-outlined" style="font-size: 20px;">arrow_forward</span>
+        <div>
+            <h2 class="admin-page-title">إدارة المستخدمين</h2>
+            <p class="admin-page-subtitle">قائمة المستخدمين المسجلين داخل منصة وصال.</p>
+        </div>
+    </div>
+    <div class="admin-page-actions">
+        <a asp-action="Dashboard" class="admin-back-link">
+            <span class="material-symbols-outlined">arrow_forward</span>
             العودة للوحة الإدارة
         </a>
     </div>
+</div>
 
-    @* ── Users Table Card ── *@
-    <div class="w-card shadow-sm border-0" style="padding: 0; overflow: hidden; background: white;">
-        <div class="table-responsive">
-            <table class="w-table">
-                <thead>
-                    <tr>
-                        <th style="padding-right: 28px;">المستخدم</th>
-                        <th>البريد الإلكتروني</th>
-                        <th>المدينة</th>
-                        <th class="text-center">النقاط</th>
-                        <th class="text-center">المستوى</th>
-                        <th class="text-center">تاريخ التسجيل</th>
-                        <th class="text-left" style="padding-left: 28px;">إجراءات</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if(Model.Any())
+@* ── Users Table ── *@
+<div class="admin-table-card">
+    <div class="table-responsive">
+        <table class="w-table">
+            <thead>
+                <tr>
+                    <th>المستخدم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>المدينة</th>
+                    <th class="text-center">النقاط</th>
+                    <th class="text-center">المستوى</th>
+                    <th class="text-center">تاريخ التسجيل</th>
+                    <th class="text-left">إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(Model.Any())
+                {
+                    foreach (var user in Model)
                     {
-                        foreach (var user in Model)
-                        {
-                            <tr style="@(user.IsBanned ? "background: rgba(186,26,26,0.02);" : "")">
-                                <td style="padding-right: 28px;">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="w-avatar w-avatar-sm" style="@(user.IsBanned ? "background: var(--w-outline);" : "")">
-                                            @user.FullName.Substring(0, 1)
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold" style="color: var(--w-on-surface);">@user.FullName</div>
-                                            @if (user.IsBanned)
-                                            {
-                                                <span class="w-caption text-danger d-flex align-items-center gap-1">
-                                                    <span class="material-symbols-outlined" style="font-size: 12px;">block</span>
-                                                    محظور
-                                                </span>
-                                            }
-                                        </div>
+                        <tr style="@(user.IsBanned ? "background: rgba(186,26,26,0.02);" : "")">
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="w-avatar w-avatar-sm" style="@(user.IsBanned ? "background: var(--w-outline);" : "")">
+                                        @user.FullName.Substring(0, 1)
                                     </div>
-                                </td>
-                                <td><span class="w-body-sm" style="color: var(--w-on-surface-variant);">@user.Email</span></td>
-                                <td><span class="w-body-sm">@(string.IsNullOrWhiteSpace(user.City) ? "غير محددة" : user.City)</span></td>
-                                <td class="text-center fw-bold">@user.TotalPoints</td>
-                                <td class="text-center">
-                                    <span class="w-chip w-chip-blue">
-                                        @user.Level.GetDisplayName()
-                                    </span>
-                                </td>
-                                <td class="text-center w-body-sm text-muted">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
-                                <td class="text-left" style="padding-left: 28px;">
-                                    @if(user.IsBanned)
-                                    {
-                                        <div class="d-flex flex-column align-items-end gap-1">
-                                            <form asp-action="UnbanUser" method="post" class="d-inline">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@user.UserId" />
-                                                <button type="submit" class="w-btn w-btn-sm w-btn-secondary" style="padding: 4px 12px; font-size: 12px;">
-                                                    فك الحظر
-                                                </button>
-                                            </form>
-                                            <span class="w-caption text-muted" title="@user.BanReason" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                                @user.BanReason
+                                    <div>
+                                        <div class="fw-bold" style="color: var(--w-on-surface);">@user.FullName</div>
+                                        @if (user.IsBanned)
+                                        {
+                                            <span class="w-caption text-danger d-flex align-items-center gap-1">
+                                                <span class="material-symbols-outlined" style="font-size: 12px;">block</span>
+                                                محظور
                                             </span>
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        <form asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirmBan(this);">
+                                        }
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="w-body-sm" style="color: var(--w-on-surface-variant);">@user.Email</span></td>
+                            <td><span class="w-body-sm">@(string.IsNullOrWhiteSpace(user.City) ? "غير محددة" : user.City)</span></td>
+                            <td class="text-center fw-bold">@user.TotalPoints</td>
+                            <td class="text-center">
+                                <span class="w-chip w-chip-blue">
+                                    @user.Level.GetDisplayName()
+                                </span>
+                            </td>
+                            <td class="text-center w-body-sm text-muted">@user.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td class="text-left">
+                                @if(user.IsBanned)
+                                {
+                                    <div class="d-flex flex-column align-items-end gap-1">
+                                        <form asp-action="UnbanUser" method="post" class="d-inline">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="id" value="@user.UserId" />
-                                            <input type="hidden" name="reason" class="ban-reason-input" />
-                                            <button type="submit" class="w-btn w-btn-sm w-btn-outline-danger" style="padding: 4px 12px; font-size: 12px;">
-                                                حظر
+                                            <button type="submit" class="w-btn w-btn-sm w-btn-secondary" style="padding: 4px 12px; font-size: 12px;">
+                                                فك الحظر
                                             </button>
                                         </form>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-5">لا يوجد مستخدمون بعد.</td>
+                                        <span class="w-caption text-muted" title="@user.BanReason" style="max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            @user.BanReason
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <form asp-action="BanUser" method="post" class="d-inline" onsubmit="return confirmBan(this);">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@user.UserId" />
+                                        <input type="hidden" name="reason" class="ban-reason-input" />
+                                        <button type="submit" class="w-btn w-btn-sm w-btn-outline-danger" style="padding: 4px 12px; font-size: 12px;">
+                                            حظر
+                                        </button>
+                                    </form>
+                                }
+                            </td>
                         </tr>
                     }
-                </tbody>
-            </table>
-        </div>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="admin-empty-state">
+                                <div class="admin-empty-state-icon">
+                                    <span class="material-symbols-outlined">group</span>
+                                </div>
+                                <p class="admin-empty-state-title">لا يوجد مستخدمون بعد</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-
-    @* ── Pagination ── *@
-    @if (ViewBag.TotalPages > 1)
-    {
-        <div class="d-flex justify-content-center mt-5">
-            <div class="d-flex gap-2">
-                @if (ViewBag.CurrentPage > 1)
-                {
-                    <a class="w-btn w-btn-outline w-btn-sm" asp-action="Users" asp-route-page="@(ViewBag.CurrentPage - 1)">
-                        <span class="material-symbols-outlined" style="font-size: 18px;">chevron_right</span>
-                        السابق
-                    </a>
-                }
-                
-                @for (int i = 1; i <= ViewBag.TotalPages; i++)
-                {
-                    <a class="w-btn w-btn-sm @(i == ViewBag.CurrentPage ? "w-btn-primary" : "w-btn-ghost")" 
-                       asp-action="Users" asp-route-page="@i" style="min-width: 40px;">
-                        @i
-                    </a>
-                }
-
-                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-                {
-                    <a class="w-btn w-btn-outline w-btn-sm" asp-action="Users" asp-route-page="@(ViewBag.CurrentPage + 1)">
-                        التالي
-                        <span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span>
-                    </a>
-                }
-            </div>
-        </div>
-    }
-
 </div>
+
+@* ── Pagination ── *@
+@if (ViewBag.TotalPages > 1)
+{
+    <div class="admin-pagination">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <a class="admin-pagination-btn" asp-action="Users" asp-route-page="@(ViewBag.CurrentPage - 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+                السابق
+            </a>
+        }
+        
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a class="admin-pagination-num @(i == ViewBag.CurrentPage ? "active" : "")" 
+               asp-action="Users" asp-route-page="@i">
+                @i
+            </a>
+        }
+
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <a class="admin-pagination-btn" asp-action="Users" asp-route-page="@(ViewBag.CurrentPage + 1)">
+                التالي
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+        }
+    </div>
+}
 
 @section Scripts {
     <script>

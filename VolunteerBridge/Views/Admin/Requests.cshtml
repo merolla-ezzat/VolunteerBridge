@@ -1,105 +1,103 @@
 @model List<VolunteerBridge.Models.ServiceRequest>
 @{
-    ViewData["Title"] = "إدارة الطلبات";
+    ViewData["Title"] = "الطلبات";
     Layout = "_AdminLayout";
+
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
 }
 
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-    <div>
-        <h2 class="w-h4 mb-1">إدارة الطلبات</h2>
-        <p class="w-text-muted mb-0">مراقبة وإدارة كافة طلبات التطوع المنشورة في المنصة.</p>
+@* ── Page Header ── *@
+<div class="admin-page-header">
+    <div class="admin-page-header-content">
+        <div class="admin-page-icon">
+            <span class="material-symbols-outlined">assignment</span>
+        </div>
+        <div>
+            <h2 class="admin-page-title">إدارة الطلبات</h2>
+            <p class="admin-page-subtitle">عرض وإدارة جميع طلبات المساعدة المقدمة في المنصة.</p>
+        </div>
     </div>
-    <a asp-action="Index" class="w-btn w-btn-outline w-btn-sm">
-        <span class="material-symbols-outlined">dashboard</span>
-        العودة للوحة الإدارة
-    </a>
+    <div class="admin-page-actions">
+        <a asp-action="Dashboard" class="admin-back-link">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            العودة للوحة الإدارة
+        </a>
+    </div>
 </div>
 
-<div class="w-card p-0 overflow-hidden">
+@* ── Requests Table ── *@
+<div class="admin-table-card">
     <div class="table-responsive">
         <table class="w-table">
             <thead>
                 <tr>
-                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">subject</span> العنوان</span></th>
-                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">category</span> الفئة</span></th>
-                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">person</span> صاحب الطلب</span></th>
-                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">info</span> الحالة</span></th>
-                    <th><span class="w-flex w-items-center w-gap-xs"><span class="material-symbols-outlined fs-6">calendar_today</span> تاريخ النشر</span></th>
-                    <th class="w-text-left">إجراءات</th>
+                    <th>مقدم الطلب</th>
+                    <th>الوصف</th>
+                    <th class="text-center">الفئة</th>
+                    <th class="text-center">الحالة</th>
+                    <th class="text-center">التاريخ</th>
+                    <th class="text-left">إجراءات</th>
                 </tr>
             </thead>
             <tbody>
-                @if (Model.Any())
+                @if(Model.Any())
                 {
-                    foreach (var request in Model)
+                    foreach (var req in Model)
                     {
+                        string statusClass = req.Status switch
+                        {
+                            VolunteerBridge.Models.Enums.RequestStatus.Open => "w-chip-green",
+                            VolunteerBridge.Models.Enums.RequestStatus.Completed => "w-chip-gray",
+                            _ => "w-chip-red"
+                        };
+                        string statusText = req.Status switch
+                        {
+                            VolunteerBridge.Models.Enums.RequestStatus.Open => "مفتوح",
+                            VolunteerBridge.Models.Enums.RequestStatus.Completed => "مكتمل",
+                            VolunteerBridge.Models.Enums.RequestStatus.Accepted => "تم القبول",
+                            VolunteerBridge.Models.Enums.RequestStatus.Cancelled => "ملغي",
+                            _ => req.Status.ToString()
+                        };
+                        string categoryText = req.Category.ToString() switch
+                        {
+                            "Groceries" => "تسوق البقالة",
+                            "Transportation" => "مواصلات",
+                            "Cleaning" => "تنظيف",
+                            "Teaching" => "تعليم",
+                            "Technical" => "دعم تقني",
+                            "Medical" => "طبي",
+                            "Other" => "أخرى",
+                            _ => req.Category.ToString()
+                        };
+
                         <tr>
-                            <td class="fw-medium">@request.Title</td>
                             <td>
-                                <span class="w-caption w-text-muted">@request.Category.GetDisplayName()</span>
-                            </td>
-                            <td>
-                                <div class="w-flex w-items-center w-gap-sm">
+                                <div class="d-flex align-items-center gap-3">
                                     <div class="w-avatar w-avatar-sm">
-                                        @(request.Requester?.FullName?.Substring(0, 1) ?? "?")
+                                        @(req.Requester?.FullName?.Substring(0, 1) ?? "?")
                                     </div>
-                                    <span class="w-body-sm">@request.Requester?.FullName</span>
+                                    <div class="fw-bold" style="color: var(--w-on-surface);">
+                                        @(req.Requester?.FullName ?? "غير معروف")
+                                    </div>
                                 </div>
                             </td>
-                            <td>
-                                @if(request.IsRemovedByAdmin)
-                                {
-                                    <span class="w-chip w-chip-red">
-                                        <span class="material-symbols-outlined fs-6">block</span>
-                                        محذوف إدارياً
-                                    </span>
-                                }
-                                else
-                                {
-                                    var statusClass = request.Status switch {
-                                        //RequestStatus.Pending => "w-chip-gray",
-                                        //RequestStatus.Active => "w-chip-blue",
-                                        RequestStatus.Completed => "w-chip-green",
-                                        RequestStatus.Cancelled => "w-chip-gray",
-                                        _ => "w-chip-gray"
-                                    };
-                                    <span class="w-chip @statusClass">
-                                        @request.Status.GetDisplayName()
-                                    </span>
-                                }
+                            <td style="max-width: 280px;">
+                                <p class="text-truncate mb-0 w-body-sm" style="color: var(--w-on-surface-variant);">
+                                    @req.Description
+                                </p>
                             </td>
-                            <td class="w-caption w-text-muted">@request.CreatedAt.ToString("dd/MM/yyyy")</td>
-                            <td class="w-text-left">
-                                <div class="w-flex w-justify-end w-gap-sm">
-                                    @if(!request.IsRemovedByAdmin)
-                                    {
-                                        if (request.Acceptances != null && request.Acceptances.Any())
-                                        {
-                                            <span class="w-caption w-text-muted">تم البدء (محمي)</span>
-                                        }
-                                        else
-                                        {
-                                            <form asp-action="RemoveRequest" method="post" class="d-inline" onsubmit="return confirmRemove(this);">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@request.RequestId" />
-                                                <input type="hidden" name="reason" class="remove-reason-input" />
-                                                <button type="submit" class="w-btn w-btn-outline-danger w-btn-sm" title="إزالة الطلب">
-                                                    <span class="material-symbols-outlined">delete_forever</span>
-                                                    إزالة
-                                                </button>
-                                            </form>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <button type="button" class="w-btn w-btn-ghost w-btn-sm" 
-                                                title="@request.AdminRemovalReason" 
-                                                onclick="alert('سبب الحذف: @request.AdminRemovalReason')">
-                                            <span class="material-symbols-outlined">info</span>
-                                            السبب
-                                        </button>
-                                    }
-                                </div>
+                            <td class="text-center"><span class="w-chip w-chip-blue">@categoryText</span></td>
+                            <td class="text-center"><span class="w-chip @statusClass">@statusText</span></td>
+                            <td class="text-center w-body-sm text-muted">@req.CreatedAt.ToString("dd/MM/yyyy")</td>
+                            <td class="text-left">
+                                <form asp-action="RemoveRequest" method="post" onsubmit="return confirm('هل أنت متأكد من حذف هذا الطلب؟');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@req.RequestId" />
+                                    <button type="submit" class="w-btn w-btn-sm w-btn-outline-danger" style="padding: 4px 12px; font-size: 12px;">
+                                        حذف
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     }
@@ -107,10 +105,13 @@
                 else
                 {
                     <tr>
-                        <td colspan="6" class="w-py-3xl w-text-center">
-                            <div class="w-flex w-flex-col w-items-center w-gap-sm">
-                                <span class="material-symbols-outlined w-text-faint" style="font-size: 48px;">inbox</span>
-                                <span class="w-text-muted">لا توجد طلبات في المنصة حالياً.</span>
+                        <td colspan="6">
+                            <div class="admin-empty-state">
+                                <div class="admin-empty-state-icon">
+                                    <span class="material-symbols-outlined">assignment</span>
+                                </div>
+                                <p class="admin-empty-state-title">لا توجد طلبات حالياً</p>
+                                <p class="admin-empty-state-text">لم يتم تقديم أي طلبات مساعدة بعد.</p>
                             </div>
                         </td>
                     </tr>
@@ -120,42 +121,32 @@
     </div>
 </div>
 
-@if (ViewBag.TotalPages > 1)
+@* ── Pagination ── *@
+@if (totalPages > 1)
 {
-    <nav aria-label="Page navigation" class="w-mt-xl">
-        <ul class="pagination w-justify-center w-gap-sm border-0">
-            <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0" 
-                   asp-action="Requests" asp-route-page="@(ViewBag.CurrentPage - 1)" style="width: 40px; height: 40px; background: var(--w-surface-container-low); color: var(--w-on-surface);">
-                    <span class="material-symbols-outlined">chevron_right</span>
-                </a>
-            </li>
-            @for (int i = 1; i <= ViewBag.TotalPages; i++)
-            {
-                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                    <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0 @(i == ViewBag.CurrentPage ? "w-bg-primary text-white" : "w-text-primary")" 
-                       asp-action="Requests" asp-route-page="@i" style="width: 40px; height: 40px; @(i != ViewBag.CurrentPage ? "background: var(--w-surface-container-low);" : "")">@i</a>
-                </li>
-            }
-            <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
-                <a class="page-link rounded-circle w-flex w-items-center w-justify-center shadow-none border-0" 
-                   asp-action="Requests" asp-route-page="@(ViewBag.CurrentPage + 1)" style="width: 40px; height: 40px; background: var(--w-surface-container-low); color: var(--w-on-surface);">
-                    <span class="material-symbols-outlined">chevron_left</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-}
-
-@section Scripts {
-    <script>
-        function confirmRemove(form) {
-            const reason = prompt("يرجى كتابة سبب الإزالة (اختياري):");
-            if (reason === null) {
-                return false; // User cancelled
-            }
-            form.querySelector('.remove-reason-input').value = reason || "لم يتم تحديد سبب";
-            return true;
+    <div class="admin-pagination">
+        @if (currentPage > 1)
+        {
+            <a class="admin-pagination-btn" asp-action="Requests" asp-route-page="@(currentPage - 1)">
+                <span class="material-symbols-outlined">chevron_right</span>
+                السابق
+            </a>
         }
-    </script>
+
+        @for (int i = 1; i <= totalPages; i++)
+        {
+            <a class="admin-pagination-num @(i == currentPage ? "active" : "")" 
+               asp-action="Requests" asp-route-page="@i">
+                @i
+            </a>
+        }
+
+        @if (currentPage < totalPages)
+        {
+            <a class="admin-pagination-btn" asp-action="Requests" asp-route-page="@(currentPage + 1)">
+                التالي
+                <span class="material-symbols-outlined">chevron_left</span>
+            </a>
+        }
+    </div>
 }

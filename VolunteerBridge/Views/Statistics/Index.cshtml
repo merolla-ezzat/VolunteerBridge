@@ -1,133 +1,290 @@
 @model VolunteerBridge.ViewModels.StatisticsViewModel
 @{
     ViewData["Title"] = "الإحصائيات";
-    if (Context.Session.GetString("IsAdmin") == "true")
-    {
-        Layout = "_AdminLayout";
-    }
+    Layout = "_AdminLayout";
 }
 
-<div class="@(Context.Session.GetString("IsAdmin") == "true" ? "" : "w-container") w-py-xl w-animate-fadeIn">
-    
-    @* ── Header Section ── *@
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
-        <div>
-            <h2 class="w-h3 fw-bold mb-1 w-aurora-text">إحصائيات المنصة</h2>
-            <p class="w-body-sm w-text-muted">نظرة عامة على نشاط وتفاعل مجتمع وصال المتنامي.</p>
+@* ── Page Header ── *@
+<div class="admin-page-header">
+    <div class="admin-page-header-content">
+        <div class="admin-page-icon">
+            <span class="material-symbols-outlined">insights</span>
         </div>
-        <div class="d-flex gap-2">
-            <a asp-controller="Leaderboard" asp-action="Index" class="w-btn w-btn-primary w-btn-sm">
-                <span class="material-symbols-outlined">military_tech</span>
-                لوحة الشرف
-            </a>
-            @if (Context.Session.GetString("IsAdmin") == "true")
-            {
-                <a asp-controller="Admin" asp-action="Dashboard" class="w-btn w-btn-outline w-btn-sm">
-                    <span class="material-symbols-outlined">dashboard</span>
-                    اللوحة الإدارية
-                </a>
-            }
+        <div>
+            <h2 class="admin-page-title">تحليلات واتجاهات المنصة</h2>
+            <p class="admin-page-subtitle">رؤى معمّقة وتحليلات أداء المنصة والمجتمع التطوعي.</p>
+        </div>
+    </div>
+    <div class="admin-page-actions">
+        <a asp-controller="Admin" asp-action="Dashboard" class="admin-back-link">
+            <span class="material-symbols-outlined">arrow_forward</span>
+            العودة للوحة الإدارة
+        </a>
+    </div>
+</div>
+
+@* ── Insight KPI Cards ── *@
+<div class="admin-kpi-grid">
+    <div class="admin-kpi-card admin-kpi-card--insight">
+        <div class="admin-kpi-header">
+            <div>
+                <div class="admin-kpi-label">الفئة الأكثر نشاطاً</div>
+                <div class="admin-kpi-value">@Model.MostActiveCategory</div>
+            </div>
+            <div class="admin-kpi-icon admin-kpi-icon--primary">
+                <span class="material-symbols-outlined">category</span>
+            </div>
         </div>
     </div>
 
-    @* ── Main Stats Grid ── *@
-    <div class="row g-4 mb-5 w-stagger">
-        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
-            <div class="w-card w-card-interactive h-100 w-border-accent-primary w-glass-premium">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-primary">
-                        <span class="material-symbols-outlined">group</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">المستخدمون النشطون</div>
-                        <div class="w-h4 mb-0 fw-bold">@Model.TotalUsers</div>
-                    </div>
-                </div>
+    <div class="admin-kpi-card admin-kpi-card--insight">
+        <div class="admin-kpi-header">
+            <div>
+                <div class="admin-kpi-label">ذروة التطوع</div>
+                <div class="admin-kpi-value">@Model.PeakVolunteeringDay</div>
+            </div>
+            <div class="admin-kpi-icon admin-kpi-icon--warning">
+                <span class="material-symbols-outlined">schedule</span>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
-            <div class="w-card w-card-interactive h-100 w-border-accent-secondary w-glass-premium">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-secondary">
-                        <span class="material-symbols-outlined">list_alt</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">إجمالي الطلبات</div>
-                        <div class="w-h4 mb-0 fw-bold">@Model.TotalRequests</div>
-                    </div>
-                </div>
+    <div class="admin-kpi-card admin-kpi-card--insight">
+        <div class="admin-kpi-header">
+            <div>
+                <div class="admin-kpi-label">معدل إتمام المهام</div>
+                <div class="admin-kpi-value">@Model.TaskCompletionRate.ToString("0.#")%</div>
+            </div>
+            <div class="admin-kpi-icon admin-kpi-icon--secondary">
+                <span class="material-symbols-outlined">check_circle</span>
             </div>
         </div>
+    </div>
 
-        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
-            <div class="w-card w-card-interactive h-100 w-border-accent-warning w-glass-premium">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-warning">
-                        <span class="material-symbols-outlined">pending_actions</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">الطلبات المفتوحة</div>
-                        <div class="w-h4 mb-0 fw-bold">@Model.TotalOpenRequests</div>
-                    </div>
-                </div>
+    <div class="admin-kpi-card admin-kpi-card--insight">
+        <div class="admin-kpi-header">
+            <div>
+                <div class="admin-kpi-label">متوسط التقييم</div>
+                <div class="admin-kpi-value">@Model.AverageResponseRating.ToString("0.#") ⭐</div>
             </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3 w-animate-fadeInUp">
-            <div class="w-card w-card-interactive h-100 w-border-accent-cyan w-glass-premium">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-cyan">
-                        <span class="material-symbols-outlined">task_alt</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">الطلبات المكتملة</div>
-                        <div class="w-h4 mb-0 fw-bold">@Model.TotalCompletedRequests</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
-            <div class="w-card h-100 w-border-accent-violet">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-violet">
-                        <span class="material-symbols-outlined">volunteer_activism</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">عدد المتطوعين</div>
-                        <div class="w-h4 mb-0">@Model.TotalVolunteers</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
-            <div class="w-card w-card-interactive h-100" style="background: linear-gradient(135deg, var(--w-primary) 0%, var(--w-primary-hover) 100%); color: white; border: none; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-inverse">
-                        <span class="material-symbols-outlined">stars</span>
-                    </div>
-                    <div>
-                        <div class="w-caption" style="opacity: 0.8; font-weight: 600;">إجمالي النقاط الممنوحة</div>
-                        <div class="w-h3 mb-0 fw-bold">@Model.TotalPointsAwarded.ToString("N0")</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 col-lg-4 w-animate-fadeInUp">
-            <div class="w-card h-100 w-border-accent-rose">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="w-icon-container w-icon-container-rose">
-                        <span class="material-symbols-outlined">location_on</span>
-                    </div>
-                    <div>
-                        <div class="w-caption w-text-muted">المدينة الأكثر نشاطاً</div>
-                        <div class="w-h5 mb-0 fw-bold">@(string.IsNullOrWhiteSpace(Model.TopCity) ? "غير محددة" : Model.TopCity)</div>
-                    </div>
-                </div>
+            <div class="admin-kpi-icon admin-kpi-icon--accent">
+                <span class="material-symbols-outlined">star</span>
             </div>
         </div>
     </div>
 </div>
+
+@* ── Monthly Trend Line Chart (Full Width) ── *@
+<div class="admin-section">
+    <div class="admin-chart-card">
+        <div class="admin-chart-header">
+            <div class="admin-chart-header-start">
+                <div class="admin-chart-icon admin-chart-icon--primary">
+                    <span class="material-symbols-outlined">show_chart</span>
+                </div>
+                <div>
+                    <h5 class="admin-chart-title">اتجاه النمو الشهري</h5>
+                    <p class="admin-chart-subtitle">مقارنة بين الطلبات الجديدة، المهام المكتملة، وتسجيلات المستخدمين.</p>
+                </div>
+            </div>
+            <div class="admin-chart-badge">
+                <span class="material-symbols-outlined">date_range</span>
+                آخر 6 أشهر
+            </div>
+        </div>
+        <div id="trendChart" style="height: 340px;"></div>
+    </div>
+</div>
+
+@* ── Two Column Charts ── *@
+<div class="row g-4 mb-4">
+    @* Donut — Requests by Category *@
+    <div class="col-lg-5">
+        <div class="admin-chart-card h-100">
+            <div class="admin-chart-header">
+                <div class="admin-chart-header-start">
+                    <div class="admin-chart-icon admin-chart-icon--secondary">
+                        <span class="material-symbols-outlined">donut_large</span>
+                    </div>
+                    <div>
+                        <h5 class="admin-chart-title">توزيع الطلبات حسب الفئة</h5>
+                        <p class="admin-chart-subtitle">أنواع المساعدة الأكثر طلباً.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="categoryChart" style="height: 320px;"></div>
+        </div>
+    </div>
+
+    @* Bar — Top Cities *@
+    <div class="col-lg-7">
+        <div class="admin-chart-card h-100">
+            <div class="admin-chart-header">
+                <div class="admin-chart-header-start">
+                    <div class="admin-chart-icon admin-chart-icon--warning">
+                        <span class="material-symbols-outlined">location_city</span>
+                    </div>
+                    <div>
+                        <h5 class="admin-chart-title">أكثر المدن نشاطاً</h5>
+                        <p class="admin-chart-subtitle">أفضل 5 مدن من حيث عدد الطلبات.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="cityChart" style="height: 320px;"></div>
+        </div>
+    </div>
+</div>
+
+@* ── Two Column: Ratings + Top Volunteers ── *@
+<div class="row g-4">
+    @* Bar — Ratings Distribution *@
+    <div class="col-lg-7">
+        <div class="admin-chart-card h-100">
+            <div class="admin-chart-header">
+                <div class="admin-chart-header-start">
+                    <div class="admin-chart-icon admin-chart-icon--accent">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                    </div>
+                    <div>
+                        <h5 class="admin-chart-title">توزيع التقييمات</h5>
+                        <p class="admin-chart-subtitle">عدد التقييمات لكل درجة من النجوم.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="ratingChart" style="height: 320px;"></div>
+        </div>
+    </div>
+
+    @* Leaderboard — Top Volunteers This Month *@
+    <div class="col-lg-5">
+        <div class="admin-section-card h-100">
+            <div class="admin-section-header">
+                <div class="admin-section-header-start">
+                    <div class="admin-section-icon admin-section-icon--warning">
+                        <span class="material-symbols-outlined">emoji_events</span>
+                    </div>
+                    <div>
+                        <h5 class="admin-section-title">أفضل المتطوعين هذا الشهر</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-section-body">
+                @if (Model.MonthlyTopVolunteers.Any())
+                {
+                    <div class="d-flex flex-column gap-2 p-3">
+                        @{ var rank = 1; }
+                        @foreach (var v in Model.MonthlyTopVolunteers.Take(5))
+                        {
+                            var avatarClass = rank <= 3 ? $"admin-rank-avatar--{rank}" : "admin-rank-avatar--default";
+                            var itemClass = rank == 1 ? "admin-rank-item--gold" : "";
+
+                            <div class="admin-rank-item @itemClass">
+                                <div class="admin-rank-info">
+                                    <div class="admin-rank-number @(rank <= 3 ? $"admin-rank-number--{rank}" : "")">@rank</div>
+                                    <div class="admin-rank-avatar @avatarClass">@v.Initials</div>
+                                    <div>
+                                        <div class="admin-rank-name">@v.FullName</div>
+                                    </div>
+                                </div>
+                                <div class="admin-rank-score">
+                                    <div class="admin-rank-score-value">@v.MonthlyPoints</div>
+                                    <div class="admin-rank-score-label">نقطة</div>
+                                </div>
+                            </div>
+                            rank++;
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="admin-empty-state">
+                        <div class="admin-empty-state-icon">
+                            <span class="material-symbols-outlined">emoji_events</span>
+                        </div>
+                        <p class="admin-empty-state-title">لا يوجد بيانات لهذا الشهر</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // --- Shared chart config ---
+        var fontFamily = 'Tajawal, sans-serif';
+        var primaryColor = '#6366f1';
+        var secondaryColor = '#10b981';
+        var warningColor = '#f59e0b';
+        var accentColor = '#9333ea';
+        var infoColor = '#0ea5e9';
+
+        var sharedOptions = {
+            chart: { fontFamily: fontFamily, toolbar: { show: false } },
+            grid: { borderColor: 'rgba(0,0,0,0.05)', strokeDashArray: 3 },
+            tooltip: { style: { fontFamily: fontFamily }, theme: 'light' }
+        };
+
+        // --- 1. Monthly Trend Line Chart ---
+        var trendOptions = {
+            ...sharedOptions,
+            chart: { ...sharedOptions.chart, type: 'area', height: 340 },
+            series: [
+                { name: 'طلبات جديدة', data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyNewRequests)) },
+                { name: 'مهام مكتملة', data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyCompletedTasks)) },
+                { name: 'مستخدمون جدد', data: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyNewUsers)) }
+            ],
+            xaxis: { categories: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TrendMonths)) },
+            colors: [primaryColor, secondaryColor, warningColor],
+            stroke: { curve: 'smooth', width: 2.5 },
+            fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.25, opacityTo: 0.05, stops: [0, 90, 100] } },
+            dataLabels: { enabled: false },
+            legend: { position: 'top', horizontalAlign: 'right', fontFamily: fontFamily, fontSize: '13px', fontWeight: 600, markers: { radius: 12 } }
+        };
+        new ApexCharts(document.querySelector("#trendChart"), trendOptions).render();
+
+        // --- 2. Donut Chart — Requests by Category ---
+        var catLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RequestsByCategory.Keys.ToList()));
+        var catValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RequestsByCategory.Values.ToList()));
+        var categoryOptions = {
+            ...sharedOptions,
+            chart: { ...sharedOptions.chart, type: 'donut', height: 320 },
+            series: catValues,
+            labels: catLabels,
+            colors: [primaryColor, secondaryColor, warningColor, '#f43f5e', infoColor, accentColor],
+            plotOptions: { pie: { donut: { size: '60%', labels: { show: true, total: { show: true, label: 'الإجمالي', fontFamily: fontFamily, fontWeight: 700, fontSize: '14px' } } } } },
+            legend: { position: 'bottom', fontFamily: fontFamily, fontSize: '13px', fontWeight: 600 },
+            dataLabels: { enabled: false }
+        };
+        new ApexCharts(document.querySelector("#categoryChart"), categoryOptions).render();
+
+        // --- 3. Bar Chart — Top Cities ---
+        var cityLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopCitiesActivity.Keys.ToList()));
+        var cityValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TopCitiesActivity.Values.ToList()));
+        var cityOptions = {
+            ...sharedOptions,
+            chart: { ...sharedOptions.chart, type: 'bar', height: 320 },
+            series: [{ name: 'عدد الطلبات', data: cityValues }],
+            xaxis: { categories: cityLabels },
+            colors: [warningColor],
+            plotOptions: { bar: { borderRadius: 8, horizontal: true, barHeight: '55%' } },
+            dataLabels: { enabled: true, style: { fontFamily: fontFamily, fontWeight: 700, fontSize: '13px' } }
+        };
+        new ApexCharts(document.querySelector("#cityChart"), cityOptions).render();
+
+        // --- 4. Bar Chart — Ratings Distribution ---
+        var ratingLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RatingsDistribution.Keys.Select(k => k + " ⭐").ToList()));
+        var ratingValues = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.RatingsDistribution.Values.ToList()));
+        var ratingOptions = {
+            ...sharedOptions,
+            chart: { ...sharedOptions.chart, type: 'bar', height: 320 },
+            series: [{ name: 'عدد التقييمات', data: ratingValues }],
+            xaxis: { categories: ratingLabels },
+            colors: [accentColor],
+            plotOptions: { bar: { borderRadius: 8, columnWidth: '50%' } },
+            dataLabels: { enabled: true, style: { fontFamily: fontFamily, fontWeight: 700, fontSize: '13px' } }
+        };
+        new ApexCharts(document.querySelector("#ratingChart"), ratingOptions).render();
+    </script>
+}

@@ -76,12 +76,21 @@ namespace VolunteerBridge.Controllers
             var vm = new AdminDashboardViewModel
             {
                 TotalUsers = _db.Users.Count(),
+                UsersGrowth = 15.0, // Mock data
+                
                 TotalRequests = _db.ServiceRequests.Count(),
+                
                 CompletedRequests = _db.ServiceRequests.Count(r => r.Status == Enums.RequestStatus.Completed),
+                CompletedTasksGrowth = 8.2, // Mock data
+                
                 OpenRequests = _db.ServiceRequests.Count(r => r.Status == Enums.RequestStatus.Open),
+                ActiveRequestsGrowth = 12.0, // Mock data
+                
                 ActiveVolunteers = _db.Users.Count(u => u.IsActive && !u.IsBanned && u.TotalPoints > 0),
                 BannedUsers = _db.Users.Count(u => u.IsBanned),
+                
                 TotalPointsAwarded = _db.pointTransactions.Sum(t => (int?)t.Points) ?? 0,
+                PointsGrowth = 20.0, // Mock data
                 
                 TopVolunteers = _db.Users
                     .Where(u => !u.IsBanned)
@@ -117,6 +126,59 @@ namespace VolunteerBridge.Controllers
                     .Take(10)
                     .ToList()
             };
+
+            var activities = new List<ActivityItem>();
+
+            foreach(var u in vm.RecentUsers) {
+                activities.Add(new ActivityItem {
+                    UserInitials = string.IsNullOrEmpty(u.FullName) ? "?" : u.FullName.Substring(0, 1),
+                    UserFullName = u.FullName,
+                    ActionText = "انضم للمنصة",
+                    Details = "",
+                    Timestamp = u.CreatedAt,
+                    Icon = "person_add"
+                });
+            }
+            foreach(var r in vm.RecentRequests) {
+                activities.Add(new ActivityItem {
+                    UserInitials = string.IsNullOrEmpty(r.Requester?.FullName) ? "?" : r.Requester.FullName.Substring(0, 1),
+                    UserFullName = r.Requester?.FullName ?? "مستخدم",
+                    ActionText = "أنشأ طلباً جديداً",
+                    Details = $"\"{r.Title}\"",
+                    Timestamp = r.CreatedAt,
+                    Icon = "post_add"
+                });
+            }
+            foreach(var a in vm.RecentCompletedTasks) {
+                activities.Add(new ActivityItem {
+                    UserInitials = string.IsNullOrEmpty(a.Volunteer?.FullName) ? "?" : a.Volunteer.FullName.Substring(0, 1),
+                    UserFullName = a.Volunteer?.FullName ?? "متطوع",
+                    ActionText = "أكمل مهمة",
+                    Details = $"\"{a.Request?.Title}\"",
+                    Timestamp = a.CompletedAt ?? DateTime.Now,
+                    Icon = "task_alt"
+                });
+            }
+            foreach(var r in vm.RecentRatings) {
+                activities.Add(new ActivityItem {
+                    UserInitials = string.IsNullOrEmpty(r.FromUser?.FullName) ? "?" : r.FromUser.FullName.Substring(0, 1),
+                    UserFullName = r.FromUser?.FullName ?? "مستخدم",
+                    ActionText = "قيّم متطوعاً",
+                    Details = string.Concat(Enumerable.Repeat("⭐", r.Rate)),
+                    Timestamp = r.CreatedAt,
+                    Icon = "star"
+                });
+            }
+
+            var now = DateTime.Now;
+            foreach(var act in activities) {
+                var span = now - act.Timestamp;
+                if(span.TotalMinutes < 60) act.TimeAgo = $"قبل {(int)span.TotalMinutes} دقيقة";
+                else if(span.TotalHours < 24) act.TimeAgo = $"قبل {(int)span.TotalHours} ساعة";
+                else act.TimeAgo = $"قبل {(int)span.TotalDays} يوم";
+            }
+
+            vm.RecentActivities = activities.OrderByDescending(a => a.Timestamp).Take(8).ToList();
 
             return View(vm);
         }

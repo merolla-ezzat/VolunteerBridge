@@ -87,9 +87,18 @@
                             <div class="w-flex w-justify-between w-items-start w-mb-xl flex-wrap gap-4">
                                 <div>
                                     <h1 class="w-h1 w-mb-2 w-aurora-text">@Model.Title</h1>
-                                    <div class="w-flex w-items-center w-gap-sm w-text-muted w-body-md">
+                                    <div class="w-flex w-items-center w-gap-sm w-text-muted w-body-md flex-wrap">
                                         <span class="material-symbols-outlined w-icon-sm">calendar_today</span>
                                         تم النشر في @Model.CreatedAt.ToString("dd MMMM yyyy")
+                                        
+                                        @if (string.IsNullOrEmpty(Model.ImagePath))
+                                        {
+                                            <span class="w-divider-vertical w-mx-sm" style="height: 16px; border-left: 1px solid rgba(255,255,255,0.1);"></span>
+                                            <span class="w-chip w-chip-gray w-px-md w-py-xs w-text-xs w-glass-premium">
+                                                <span class="material-symbols-outlined" style="font-size: 14px;">category</span>
+                                                @Model.Category.GetDisplayName()
+                                            </span>
+                                        }
                                     </div>
                                 </div>
                                 <div class="w-flex w-flex-col w-items-end w-gap-sm">
@@ -123,15 +132,7 @@
                                 </div>
                             </div>
 
-                            @if (string.IsNullOrEmpty(Model.ImagePath))
-                            {
-                                <div class="w-mb-xl">
-                                    <span class="w-chip w-chip-gray">
-                                        <span class="material-symbols-outlined w-icon-xs">category</span>
-                                        @Model.Category.GetDisplayName()
-                                    </span>
-                                </div>
-                            }
+
 
                             @* ── Stats Grid (Enhanced Aurora Style) ── *@
                             <div class="w-grid w-grid-3 w-gap-lg w-mb-xl">
@@ -147,23 +148,23 @@
                                     <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(16, 185, 129, 0.1); color: var(--w-secondary);">
                                         <span class="material-symbols-outlined" style="font-size: 28px;">stars</span>
                                     </div>
-                                    <div class="w-h2 w-aurora-text w-mb-1" style="background: linear-gradient(90deg, #10b981, #3b82f6);">@Model.PointsReward</div>
+                                    <div class="w-h2 w-aurora-text w-mb-1">@Model.PointsReward</div>
                                     <div class="w-body-sm w-text-muted">نقطة مكافأة</div>
                                 </div>
 
-                                <div class="w-glass-premium w-p-xl w-text-center w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); animation-delay: 0.2s;">
-                                    <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(255, 255, 255, 0.05); color: var(--w-text-muted);">
+                                <div class="w-glass-premium w-p-xl w-text-center w-animate-fadeInUp" style="border-radius: var(--w-radius-xl); background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(14, 165, 233, 0.05)); animation-delay: 0.2s;">
+                                    <div class="w-avatar w-avatar-md w-mx-auto w-mb-md" style="background: rgba(56, 189, 248, 0.1); color: #38bdf8;">
                                         <span class="material-symbols-outlined" style="font-size: 28px;">calendar_month</span>
                                     </div>
-                                    <div class="w-h2 w-mb-1">@Model.ScheduledDate.ToString("dd/MM")</div>
+                                    <div class="w-h2 w-aurora-text w-mb-1">@Model.ScheduledDate.ToString("dd/MM")</div>
                                     <div class="w-body-sm w-text-muted">@Model.ScheduledDate.ToString("yyyy")</div>
                                 </div>
                             </div>
 
                             @* ── Description ── *@
                             <div class="w-mb-xl">
-                                <h3 class="w-label w-text-primary w-mb-md w-flex w-items-center w-gap-sm w-font-bold" style="letter-spacing: 1px;">
-                                    <span class="material-symbols-outlined" style="font-size: 20px;">description</span>
+                                <h3 class="w-h4 w-text-primary w-mb-md w-flex w-items-center w-gap-sm w-font-bold">
+                                    <span class="material-symbols-outlined" style="font-size: 24px;">description</span>
                                     تفاصيل المهمة
                                 </h3>
                                 <div class="w-p-xl w-rounded-xl w-glass-premium" style="background: rgba(255, 255, 255, 0.02);">
@@ -217,7 +218,7 @@
                             </div>
 
                             @* ── Action Buttons ── *@
-                            <div class="w-flex w-justify-between w-items-center w-mt-xl w-pt-xl w-border-t">
+                            <div class="w-flex w-justify-between w-items-center mt-5 w-pt-xl w-border-t">
                                 <a asp-action="Browse" class="w-btn w-btn-ghost w-flex w-items-center w-gap-sm">
                                     <span class="material-symbols-outlined w-icon-md">arrow_forward</span>
                                     العودة للمتصفح
@@ -231,7 +232,7 @@
                                         <form asp-controller="Acceptances" asp-action="Accept" method="post">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="requestId" value="@Model.RequestId" />
-                                            <button type="submit" class="w-btn w-btn-secondary w-px-xl">
+                                            <button type="submit" class="w-btn w-btn-primary w-btn-lg w-px-xl w-shadow-lg" style="box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
                                                 <span class="material-symbols-outlined">volunteer_activism</span>
                                                 أريد التطوع في هذه المهمة
                                             </button>
@@ -244,7 +245,7 @@
                                         <form asp-controller="Acceptances" asp-action="MarkComplete" method="post" onsubmit="return confirm('هل تأكدت من إنجاز المهمة؟ سيتم منح المتطوع النقاط بعد التأكيد.')">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="acceptanceId" value="@acceptance.AcceptanceId" />
-                                            <button type="submit" class="w-btn w-btn-secondary w-px-xl">
+                                            <button type="submit" class="w-btn w-btn-secondary w-btn-lg w-px-xl w-shadow-lg">
                                                 <span class="material-symbols-outlined">task_alt</span>
                                                 تأكيد إنجاز المهمة
                                             </button>

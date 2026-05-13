@@ -9,23 +9,44 @@
     <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="~/VolunteerBridge.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="icon" type="image/png" href="~/images/MainLogo.png" />
 </head>
 <body style="background-color: var(--w-surface);">
     <header>
         <nav class="w-navbar scrolled" style="position: sticky; border-top: 4px solid var(--w-primary);">
             <div class="w-navbar-inner">
                 <a class="w-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Admin" asp-action="Dashboard">
-                    <span class="material-symbols-outlined" style="font-size: 28px;">shield_person</span>
-                    وصال - الإدارة
+                    <img src="~/images/MainLogo.png" alt="وصال" style="height: 32px; width: auto; vertical-align: middle;" />
                 </a>
                 
                 @if (Context.Session.GetString("IsAdmin") == "true")
                 {
-                    <ul class="w-nav-links">
-                        <li><a asp-controller="Admin" asp-action="Dashboard" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")">الرئيسية</a></li>
-                        <li><a asp-controller="Admin" asp-action="Users" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")">المستخدمين</a></li>
-                        <li><a asp-controller="Admin" asp-action="Requests" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Requests" ? "active" : "")">الطلبات</a></li>
-                        <li><a asp-controller="Statistics" asp-action="Index">الإحصائيات</a></li>
+                    <ul class="d-flex align-items-center gap-4 mb-0 list-unstyled p-0 m-0 flex-wrap">
+                        <li>
+                            <a asp-controller="Admin" asp-action="Dashboard" class="d-flex align-items-center gap-2 text-decoration-none @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "w-text-primary fw-bold" : "text-secondary")" style="font-size: 15px;">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">dashboard</span>
+                                <span>الرئيسية</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Admin" asp-action="Users" class="d-flex align-items-center gap-2 text-decoration-none @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "w-text-primary fw-bold" : "text-secondary")" style="font-size: 15px;">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">group</span>
+                                <span>المستخدمين</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Admin" asp-action="Requests" class="d-flex align-items-center gap-2 text-decoration-none @(ViewContext.RouteData.Values["action"]?.ToString() == "Requests" ? "w-text-primary fw-bold" : "text-secondary")" style="font-size: 15px;">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">list_alt</span>
+                                <span>الطلبات</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Statistics" asp-action="Index" class="d-flex align-items-center gap-2 text-decoration-none @(ViewContext.RouteData.Values["controller"]?.ToString() == "Statistics" ? "w-text-primary fw-bold" : "text-secondary")" style="font-size: 15px;">
+                                <span class="material-symbols-outlined" style="font-size: 20px;">bar_chart</span>
+                                <span>الإحصائيات</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <div class="w-nav-actions">
@@ -43,7 +64,7 @@
         </nav>
     </header>
 
-    <div class="container" style="padding-top: 100px; padding-bottom: 60px;">
+    <div class="container" style="padding-top: 24px; padding-bottom: 40px;">
         @* ── Unified Alert System ── *@
         <div class="site-alerts">
             @if (TempData["Success"] != null)
@@ -69,7 +90,8 @@
             }
         </div>
 
-        <main role="main" class="pb-3 text-end">
+        <main role="main" class="pb-3 text-end admin-page">
+            <div class="admin-bg-glows"></div>
             @RenderBody()
         </main>
     </div>
