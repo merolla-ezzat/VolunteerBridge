@@ -64,6 +64,8 @@ namespace VolunteerBridge.Models
         public ICollection<Rating> RatingsGiven { get; set; } = new List<Rating>();
         public ICollection<Rating> RatingsReceived { get; set; } = new List<Rating>();
         public ICollection<PointTransaction> PointTransactions { get; set; } = new List<PointTransaction>();
+        public ICollection<ChatMessage> ChatMessagesSent { get; set; } = new List<ChatMessage>();
+        public ICollection<ChatMessage> ChatMessagesReceived { get; set; } = new List<ChatMessage>();
 
     }
 

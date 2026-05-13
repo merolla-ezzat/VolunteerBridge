@@ -226,6 +226,26 @@
 
                                 <div class="w-flex w-gap-md">
 
+                                    @* صاحب الطلب: مراسلة المتطوع المعيّن *@
+                                    @if (isOwner && userId != null && acceptance != null)
+                                    {
+                                        <a asp-controller="Chat" asp-action="Thread" asp-route-otherUserId="@acceptance.VolunteerId"
+                                           class="w-btn w-btn-secondary w-btn-lg w-px-xl w-glass-premium w-flex w-items-center w-gap-sm">
+                                            <span class="material-symbols-outlined">chat</span>
+                                            مراسلة المتطوع
+                                        </a>
+                                    }
+
+                                    @* محادثة خاصة مع صاحب الطلب (للمستخدمين المسجلين فقط، وليس لصاحب الطلب) *@
+                                    @if (userId != null && !isOwner)
+                                    {
+                                        <a asp-controller="Chat" asp-action="Thread" asp-route-otherUserId="@Model.RequesterId"
+                                           class="w-btn w-btn-secondary w-btn-lg w-px-xl w-glass-premium w-flex w-items-center w-gap-sm">
+                                            <span class="material-symbols-outlined">chat</span>
+                                            مراسلة صاحب الطلب
+                                        </a>
+                                    }
+
                                     @* زر القبول *@
                                     @if (Model.Status == RequestStatus.Open && userId != null && !isOwner)
                                     {

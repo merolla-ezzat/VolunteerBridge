@@ -21,7 +21,11 @@
                 <div class="pt-5 pb-5 text-center mt-4">
                     <h1 class="w-h2 mb-1 w-aurora-text">@Model.FullName</h1>
                     <p class="w-text-muted mb-4">@Model.Email</p>
-                    <div class="d-flex justify-content-center gap-3">
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a asp-controller="Chat" asp-action="Inbox" class="w-btn w-btn-primary w-btn-sm px-4">
+                            <span class="material-symbols-outlined w-icon-xs">chat</span>
+                            الرسائل
+                        </a>
                         <a asp-action="EditProfile" asp-controller="Account" class="w-btn w-btn-primary w-btn-sm px-4">
                             <span class="material-symbols-outlined w-icon-xs">edit</span>
                             تعديل الملف

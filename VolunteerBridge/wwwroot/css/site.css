@@ -1,5 +1,7 @@
 html {
-  font-size: 14px;
+  font-size: 16px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,54 +10,87 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Focus ring aligned with وصال theme (not default Bootstrap blue) */
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem rgba(255, 255, 255, 0.9), 0 0 0 0.22rem rgba(99, 102, 241, 0.45);
+  border-color: var(--w-primary);
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* Bottom nav provides spacing; avoid double footer gap from legacy rule */
 body {
-  margin-bottom: 60px;
+  margin-bottom: 0;
 }
-html, body {
-    direction: rtl;
-    text-align: right;
+
+html,
+body {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Bootstrap pages inside main layout — match w-input look where Bootstrap is used */
+main .form-control,
+main .form-select {
+  border-radius: var(--w-radius);
+  border-color: var(--w-outline);
+  font-family: var(--w-font-body);
+  padding: 0.65rem 1rem;
+}
+
+main .form-control::placeholder {
+  color: var(--w-on-surface-variant);
+  opacity: 0.55;
+}
+
+main .form-label {
+  font-weight: 600;
+  color: var(--w-on-surface);
+  font-size: 0.9rem;
+}
+
+main .text-muted {
+  color: var(--w-on-surface-variant) !important;
+}
+
+main .text-secondary {
+  color: var(--w-on-surface-variant) !important;
 }
 
 /* Modified by Yousef: add shared navbar and level badge helpers for the new Bootstrap pages. */
 .badge-newcomer {
-    background-color: #6c757d;
+  background-color: #6c757d;
 }
 
 .badge-helper {
-    background-color: #0d6efd;
+  background-color: var(--w-primary);
 }
 
 .badge-trusted {
-    background-color: #198754;
+  background-color: #198754;
 }
 
 .badge-champion {
-    background-color: #ffc107;
-    color: #000;
+  background-color: #ffc107;
+  color: #000;
 }
 
 .level-badge {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .leaderboard-current-user {
-    background-color: #f0f7ff;
+  background-color: rgba(99, 102, 241, 0.06);
 }
 
 .site-alerts {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .navbar-nav .nav-link,
 .navbar-nav .btn {
-    white-space: nowrap;
+  white-space: nowrap;
 }

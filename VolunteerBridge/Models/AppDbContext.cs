@@ -12,8 +12,9 @@ namespace VolunteerBridge.Models
         public DbSet<Acceptance> Acceptances { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<PointTransaction> pointTransactions { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -67,6 +68,17 @@ namespace VolunteerBridge.Models
                 .WithMany(a => a.PointTransactions)
                 .HasForeignKey(pt => pt.AcceptanceId)
                 .OnDelete(DeleteBehavior.SetNull);
+            // chat message relationships: each message has one sender and one receiver, both are users. Deleting a user should not delete messages, but should prevent orphaned references.
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.Sender)
+                .WithMany(u => u.ChatMessagesSent)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u => u.ChatMessagesReceived)
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

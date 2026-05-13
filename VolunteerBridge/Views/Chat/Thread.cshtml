@@ -1,0 +1,181 @@
+@model VolunteerBridge.ViewModels.ChatThreadViewModel
+@{
+    ViewBag.Title = "محادثة مع " + Model.OtherUserName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentUserId = Context.Session.GetInt32("UserId");
+}
+
+<div class="w-py-xl">
+    <div class="w-container w-max-w-800">
+        <nav class="w-flex w-items-center w-gap-sm w-mb-lg w-body-sm">
+            <a asp-controller="ServiceRequests" asp-action="Browse" class="w-text-muted w-text-decoration-none hover-primary transition">طلبات التطوع</a>
+            <span class="material-symbols-outlined w-text-faint" style="font-size: 16px;">chevron_left</span>
+            <span class="w-text-primary w-font-semibold">المحادثة</span>
+        </nav>
+
+        <div class="w-glass-premium w-rounded-xl w-overflow-hidden">
+            <div class="w-p-lg w-border-b d-flex align-items-center justify-content-between gap-3 flex-wrap" style="border-color: rgba(255,255,255,0.08);">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-avatar w-avatar-md" style="background: rgba(99, 102, 241, 0.15); color: var(--w-primary);">
+                        <span class="material-symbols-outlined">chat</span>
+                    </div>
+                    <div>
+                        <div class="w-caption w-text-muted">محادثة خاصة مع</div>
+                        <div class="w-h4 w-mb-0 w-font-bold">@Model.OtherUserName</div>
+                    </div>
+                </div>
+                <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-ghost w-btn-sm">إغلاق</a>
+            </div>
+
+            <div id="chatMessages" class="w-p-lg w-chat-thread-scroll" style="min-height: 320px; max-height: 55vh; overflow-y: auto; background: rgba(15, 23, 42, 0.06); border-radius: var(--w-radius-md);">
+                <div id="chatLoading" class="w-text-muted w-body-sm">جاري تحميل الرسائل...</div>
+            </div>
+
+            <div class="w-p-lg w-border-t" style="border-color: rgba(255,255,255,0.08);">
+                <div class="d-flex gap-2 align-items-stretch">
+                    <input type="text" id="messageInput" class="form-control w-flex-grow-1" maxlength="2000" placeholder="اكتب رسالتك..." autocomplete="off" />
+                    <button type="button" id="sendBtn" class="w-btn w-btn-primary">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+                <div id="chatError" class="text-danger small mt-2 d-none"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js" crossorigin="anonymous"></script>
+    <script>
+        (function () {
+            const otherUserId = @Model.OtherUserId;
+            const currentUserId = @Html.Raw(currentUserId.HasValue ? currentUserId.Value.ToString() : "null");
+            const messagesEl = document.getElementById('chatMessages');
+            const loadingEl = document.getElementById('chatLoading');
+            const inputEl = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const errorEl = document.getElementById('chatError');
+
+            function showError(msg) {
+                errorEl.textContent = msg || '';
+                errorEl.classList.toggle('d-none', !msg);
+            }
+
+            function appendBubble(item) {
+                const wrap = document.createElement('div');
+                wrap.className = 'd-flex mb-3 ' + (item.senderId === currentUserId ? 'justify-content-start' : 'justify-content-end');
+                const bubble = document.createElement('div');
+                bubble.className = 'px-3 py-2 rounded-3 w-body-sm';
+                bubble.style.maxWidth = '78%';
+                if (item.senderId === currentUserId) {
+                    bubble.style.background = 'linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(99, 102, 241, 0.2))';
+                    bubble.style.border = '1px solid rgba(99, 102, 241, 0.35)';
+                } else {
+                    bubble.style.background = 'rgba(255,255,255,0.06)';
+                    bubble.style.border = '1px solid rgba(255,255,255,0.08)';
+                }
+                const meta = document.createElement('div');
+                meta.className = 'small w-text-muted mb-1';
+                const d = new Date(item.sentAt);
+                meta.textContent = isNaN(d.getTime()) ? '' : d.toLocaleString('ar-EG');
+                const text = document.createElement('div');
+                text.style.whiteSpace = 'pre-wrap';
+                text.textContent = item.message;
+                bubble.appendChild(meta);
+                bubble.appendChild(text);
+                wrap.appendChild(bubble);
+                messagesEl.appendChild(wrap);
+                messagesEl.scrollTop = messagesEl.scrollHeight;
+            }
+
+            async function loadHistory() {
+                const res = await fetch('@Url.Action("History", "Chat")?otherUserId=' + encodeURIComponent(otherUserId), {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) throw new Error('تعذر تحميل الرسائل');
+                const data = await res.json();
+                if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+                (data || []).forEach(function (row) {
+                    appendBubble({
+                        id: row.id,
+                        senderId: row.senderId,
+                        message: row.message,
+                        sentAt: row.sentAt
+                    });
+                });
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl('@Url.Content("~/hubs/chat")')
+                .withAutomaticReconnect()
+                .build();
+
+            connection.on('ReceiveMessage', function (payload) {
+                appendBubble({
+                    id: payload.id,
+                    senderId: payload.senderId,
+                    message: payload.message,
+                    sentAt: payload.sentAt
+                });
+            });
+
+            connection.onreconnected(async function () {
+                try {
+                    await connection.invoke('JoinThread', otherUserId);
+                } catch (e) { /* ignore */ }
+                showError('');
+            });
+
+            connection.onclose(function () {
+                showError('انقطع الاتصال بالمحادثة. جاري إعادة المحاولة...');
+            });
+
+            async function start() {
+                showError('');
+                try {
+                    await loadHistory();
+                } catch (e) {
+                    console.error(e);
+                    if (loadingEl && loadingEl.parentNode) {
+                        loadingEl.textContent = 'تعذر تحميل الرسائل. تأكد أنك مسجّل الدخول ثم حدّث الصفحة.';
+                    }
+                }
+                try {
+                    await connection.start();
+                    await connection.invoke('JoinThread', otherUserId);
+                } catch (e) {
+                    console.error(e);
+                    showError('التنبيه الفوري غير متاح حالياً. يمكنك قراءة الرسائل أعلاه وتحديث الصفحة لرؤية الجديد.');
+                }
+            }
+
+            async function send() {
+                const text = (inputEl.value || '').trim();
+                if (!text) return;
+                showError('');
+                sendBtn.disabled = true;
+                try {
+                    await connection.invoke('SendMessage', otherUserId, text);
+                    inputEl.value = '';
+                    inputEl.focus();
+                } catch (e) {
+                    const msg = (e && e.message) ? e.message : 'تعذر إرسال الرسالة.';
+                    showError(msg);
+                } finally {
+                    sendBtn.disabled = false;
+                }
+            }
+
+            sendBtn.addEventListener('click', send);
+            inputEl.addEventListener('keydown', function (ev) {
+                if (ev.key === 'Enter' && !ev.shiftKey) {
+                    ev.preventDefault();
+                    send();
+                }
+            });
+
+            start();
+        })();
+    </script>
+}

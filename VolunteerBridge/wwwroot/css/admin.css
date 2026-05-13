@@ -1,9 +1,11 @@
-/* =============================================
-   وصال (Wessal) — Admin Dashboard CSS Module
-   Unified admin components for consistent pages
-   ============================================= */
+/* ── Admin header nav — match public tone (Bootstrap text-secondary → token) ── */
+header .w-navbar .text-secondary {
+    color: var(--w-on-surface-variant) !important;
+}
 
-/* ── Admin Page Wrapper ── */
+header .w-navbar a.text-decoration-none:hover {
+    color: var(--w-primary) !important;
+}
 .admin-page {
     position: relative;
     animation: w-fadeInUp 0.5s ease forwards;

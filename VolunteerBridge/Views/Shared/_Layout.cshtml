@@ -112,6 +112,10 @@
             <ul class="w-nav-links mb-0 p-0">
                 <li><a class="@(controller == "Home" && action == "Index" ? "w-active" : "")" asp-controller="Home" asp-action="Index">الرئيسية</a></li>
                 <li><a class="@(controller == "ServiceRequests" && action == "Browse" ? "w-active" : "")" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
+                @if (sessionUserId != null)
+                {
+                    <li><a class="@(controller == "Chat" && action == "Inbox" ? "w-active" : "")" asp-controller="Chat" asp-action="Inbox">الرسائل</a></li>
+                }
                 <li><a class="@(controller == "Leaderboard" ? "w-active" : "")" asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
             </ul>
 
@@ -128,6 +132,9 @@
                                 <span class="w-user-name">@sessionUserName</span>
                             </div>
                         </a>
+                        <a class="w-btn w-btn-ghost w-btn-sm d-none d-md-inline-flex" asp-controller="Chat" asp-action="Inbox" title="الرسائل">
+                            <span class="material-symbols-outlined">chat</span>
+                        </a>
                         <a class="w-btn w-btn-primary w-btn-sm" asp-controller="ServiceRequests" asp-action="Create">
                             <span class="material-symbols-outlined">add</span>
                             إنشاء طلب
@@ -143,7 +150,7 @@
         </div>
     </header>
 
-    <div class="container" style="padding-top: 100px; padding-bottom: 80px;">
+    <div class="w-app-shell">
         @* Modified by Yousef: display shared TempData messages once in the layout for the new pages and security flows. *@
         <div class="site-alerts">
             @if (TempData["Success"] != null)
@@ -183,6 +190,13 @@
             <span class="material-symbols-outlined">search</span>
             الطلبات
         </a>
+        @if (sessionUserId != null)
+        {
+            <a asp-controller="Chat" asp-action="Inbox" class="w-bottom-nav-item @(controller == "Chat" ? "active" : "")">
+                <span class="material-symbols-outlined">chat</span>
+                الرسائل
+            </a>
+        }
         <a asp-controller="Leaderboard" asp-action="Index" class="w-bottom-nav-item @(controller == "Leaderboard" ? "active" : "")">
             <span class="material-symbols-outlined">social_leaderboard</span>
             الشرف
@@ -219,6 +233,10 @@
                     <ul class="w-footer-links">
                         <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
                         <li><a asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
+                        @if (sessionUserId != null)
+                        {
+                            <li><a asp-controller="Chat" asp-action="Inbox">الرسائل</a></li>
+                        }
                         <li><a asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
                     </ul>
                 </div>

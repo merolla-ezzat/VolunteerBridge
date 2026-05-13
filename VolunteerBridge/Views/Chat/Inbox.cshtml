@@ -1,0 +1,54 @@
+@model VolunteerBridge.ViewModels.ChatInboxViewModel
+@{
+    ViewBag.Title = "الرسائل";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="w-py-xl">
+    <div class="w-container w-max-w-800">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+            <h1 class="w-h2 w-mb-0 w-aurora-text">الرسائل</h1>
+            <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-ghost w-btn-sm">تصفح الطلبات</a>
+        </div>
+
+        @if (Model.Threads.Count == 0)
+        {
+            <div class="w-glass-premium w-p-xl w-text-center w-rounded-xl">
+                <span class="material-symbols-outlined w-text-muted mb-3" style="font-size: 48px;">forum</span>
+                <p class="w-body-lg w-text-muted w-mb-0">لا توجد محادثات بعد. عند استلام رسالة ستظهر هنا.</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var t in Model.Threads)
+                {
+                    <a asp-action="Thread" asp-route-otherUserId="@t.OtherUserId"
+                       class="w-glass-premium w-rounded-xl w-p-lg text-decoration-none d-block text-reset border-0"
+                       style="border: 1px solid rgba(255,255,255,0.08) !important;">
+                        <div class="d-flex align-items-start justify-content-between gap-3">
+                            <div class="d-flex align-items-start gap-3 min-w-0">
+                                <div class="w-avatar w-avatar-md flex-shrink-0" style="background: rgba(99, 102, 241, 0.12); color: var(--w-primary);">
+                                    <span class="material-symbols-outlined">person</span>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <span class="w-font-bold w-body-lg">@t.OtherUserName</span>
+                                        @if (t.UnreadCount > 0)
+                                        {
+                                            <span class="w-chip w-chip-blue w-py-xs w-px-md" style="font-size: 12px;">@t.UnreadCount</span>
+                                        }
+                                    </div>
+                                    <p class="w-body-sm w-text-muted w-mb-0 text-truncate mt-1" style="max-width: 100%;">@t.LastMessagePreview</p>
+                                </div>
+                            </div>
+                            <div class="w-caption w-text-muted flex-shrink-0 text-nowrap">
+                                @t.LastMessageAt.ToLocalTime().ToString("dd/MM HH:mm")
+                            </div>
+                        </div>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>
