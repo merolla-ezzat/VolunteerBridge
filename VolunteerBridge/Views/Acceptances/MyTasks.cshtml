@@ -72,6 +72,14 @@
                                     التفاصيل
                                 </a>
 
+                                @* Inside the foreach loop that renders each accepted task *@
+                                <a asp-controller="RequestProgress" asp-action="Index"
+                                   asp-route-id="@task.RequestId"
+                                   class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-activity"></i> تتبع
+                                </a>
+
+
                                 @if (task.Status != VolunteerBridge.Models.Enums.AcceptanceStatus.Done && task.Request?.RequesterId == currentUserId)
                                 {
                                     <form method="post" asp-action="MarkComplete" class="flex-grow-1">

@@ -1,0 +1,211 @@
+﻿@model VolunteerBridge.ViewModels.RequestProgressViewModel
+@using VolunteerBridge.ViewModels
+
+@{
+    ViewData["Title"] = "تتبع الطلب";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* ─── Link to custom CSS (add once at top of view) ─────────────── *@
+<link rel="stylesheet" href="~/css/progress-tracker.css" />
+
+<div class="container py-4" dir="rtl">
+
+    @* ── Title ── *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">تتبع الطلب</h2>
+            <p class="text-muted mb-0">@Model.Request.Title</p>
+        </div>
+        <span class="badge bg-primary fs-6">@Model.ProgressPercent%</span>
+    </div>
+
+    @* ── Current Stage Alert ─────────────────────────────────────── *@
+    <div class="alert alert-info d-flex align-items-center gap-3 mb-4" role="alert">
+        <i class="bi bi-info-circle-fill fs-4"></i>
+        <div>
+            <div class="fw-bold">المرحلة الحالية: @Model.CurrentStageArabic</div>
+            <small class="text-muted">@Model.CurrentStageLabel</small>
+        </div>
+    </div>
+
+    @* ── Progress Bar ─────────────────────────────────────────────── *@
+    <div class="progress mb-4" style="height:12px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+             role="progressbar"
+             style="width: @Model.ProgressPercent%"
+             aria-valuenow="@Model.ProgressPercent"
+             aria-valuemin="0" aria-valuemax="100">
+        </div>
+    </div>
+
+    @* ── Timeline (desktop: horizontal | mobile: vertical) ───────── *@
+    <div class="tracker-timeline d-none d-md-flex mb-4" id="timelineDesktop">
+        @foreach (var stage in Model.Stages)
+        {
+            <div class="tracker-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
+                <div class="step-icon">
+                    <i class="bi @stage.Icon"></i>
+                </div>
+                <div class="step-line"></div>
+                <div class="step-label">
+                    <div class="label-ar">@stage.LabelAr</div>
+                    <div class="label-en">@stage.Label</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* ── Timeline vertical (mobile) ─────────────────────────────── *@
+    <div class="tracker-timeline-vertical d-md-none mb-4">
+        @foreach (var stage in Model.Stages)
+        {
+            <div class="v-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
+                <div class="v-icon-col">
+                    <div class="v-icon"><i class="bi @stage.Icon"></i></div>
+                    @if (stage.Number < 7)
+                    {
+                        <div class="v-line"></div>
+                    }
+                </div>
+                <div class="v-label">
+                    <span class="label-ar">@stage.LabelAr</span>
+                    <span class="label-en">@stage.Label</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    @* ── Info Cards: Requester + Volunteer side by side ─────────── *@
+    <div class="row g-3 mb-4">
+
+        @* Requester Card *@
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white fw-bold">
+                    <i class="bi bi-person-lines-fill me-2"></i>صاحب الطلب
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-placeholder bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white fs-4"
+                             style="width:56px;height:56px;">
+                            @(Model.Request.Requester?.FullName.FirstOrDefault())
+                        </div>
+                        <div>
+                            <div class="fw-bold">@Model.Request.Requester?.FullName</div>
+                            <div class="text-muted small">@Model.Request.Requester?.City</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @* Volunteer Card *@
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="bi bi-person-badge me-2"></i>المتطوع
+                </div>
+                <div class="card-body">
+                    @if (Model.ActiveAcceptance?.Volunteer != null)
+                    {
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-placeholder bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fs-4"
+                                 style="width:56px;height:56px;">
+                                @(Model.ActiveAcceptance.Volunteer.FullName.FirstOrDefault())
+                            </div>
+                            <div>
+                                <div class="fw-bold">@Model.ActiveAcceptance.Volunteer.FullName</div>
+                                <div class="text-muted small">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                    @Model.ActiveAcceptance.Volunteer.AverageRating.ToString("0.0")
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">لم يتم قبول متطوع بعد</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* ── Conditional Action Buttons ─────────────────────────────── *@
+    <div class="d-flex gap-2 flex-wrap">
+
+        @if (Model.CanMarkComplete)
+        {
+            <a asp-controller="Volunteer" asp-action="MarkComplete"
+               asp-route-id="@Model.ActiveAcceptance!.AcceptanceId"
+               class="btn btn-success">
+                <i class="bi bi-check-lg me-1"></i>تأكيد الإتمام
+            </a>
+        }
+
+        @if (Model.CanRate)
+        {
+            <a asp-controller="Rating" asp-action="Create"
+               asp-route-acceptanceId="@Model.ActiveAcceptance!.AcceptanceId"
+               class="btn btn-warning">
+                <i class="bi bi-star me-1"></i>تقييم المتطوع
+            </a>
+        }
+
+        @if (Model.CanCancel)
+        {
+            <a asp-controller="ServiceRequests" asp-action="Cancel"
+               asp-route-id="@Model.Request.RequestId"
+               class="btn btn-outline-danger">
+                <i class="bi bi-x-circle me-1"></i>إلغاء الطلب
+            </a>
+        }
+
+        <a asp-controller="ServiceRequests" asp-action="Details"
+           asp-route-id="@Model.Request.RequestId"
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-right me-1"></i>تفاصيل الطلب
+        </a>
+
+    </div>
+
+</div>
+
+@* ── Toast Notification (auto-refresh) ─────────────────────────── *@
+<div class="toast-container position-fixed bottom-0 start-0 p-3" dir="rtl">
+    <div id="refreshToast" class="toast" role="alert">
+        <div class="toast-header">
+            <i class="bi bi-arrow-repeat text-primary me-2"></i>
+            <strong class="me-auto">تحديث</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">تم تحديث حالة الطلب</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh every 30 seconds
+        const requestId = @Model.Request.RequestId;
+        let lastStage = @Model.CurrentStage;
+
+        async function checkProgress() {
+          try {
+            const res = await fetch(`/RequestProgress/ProgressData/${requestId}`);
+            const data = await res.json();
+            if (data.stage !== lastStage) {
+              lastStage = data.stage;
+              // Show toast then reload
+              const toastEl = document.getElementById('refreshToast');
+              const toast = new bootstrap.Toast(toastEl, { delay: 2000 });
+              toast.show();
+              setTimeout(() => location.reload(), 2200);
+            }
+          } catch(e) { /* silent fail */ }
+        }
+
+        setInterval(checkProgress, 30000);
+    </script>
+}
+

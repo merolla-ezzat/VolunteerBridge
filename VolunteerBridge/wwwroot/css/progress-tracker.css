@@ -1,0 +1,198 @@
+﻿/* wwwroot/css/progress-tracker.css */
+/* Bootstrap 5 RTL compatible — VolunteerBridge theme */
+
+/* ──────────────────────────────────────────────────────
+   DESKTOP HORIZONTAL TIMELINE
+────────────────────────────────────────────────────── */
+.tracker-timeline {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    padding: 16px 0;
+}
+
+.tracker-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+    /* Connector line between icons */
+    .tracker-step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: calc(-50% + 24px); /* RTL-safe: we flip via dir=rtl */
+        right: calc(50% + 24px);
+        height: 3px;
+        background: #dee2e6;
+        z-index: 0;
+    }
+
+    .tracker-step.step-done:not(:last-child)::after,
+    .tracker-step.step-active:not(:last-child)::after {
+        background: #0d6efd;
+    }
+
+/* Icons */
+.step-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    border: 3px solid #dee2e6;
+    background: #fff;
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+.step-done .step-icon {
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.step-active .step-icon {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: 0 0 0 6px rgba(13,110,253,.25);
+    animation: pulse-glow 1.8s ease-in-out infinite;
+}
+
+.step-pending .step-icon {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    color: #adb5bd;
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 0 4px rgba(13,110,253,.2);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(13,110,253,.05);
+    }
+}
+
+/* Labels */
+.step-label {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.label-ar {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #212529;
+}
+
+.label-en {
+    font-size: .72rem;
+    color: #6c757d;
+}
+
+.step-pending .label-ar,
+.step-pending .label-en {
+    color: #adb5bd;
+}
+
+
+/* ──────────────────────────────────────────────────────
+   MOBILE VERTICAL TIMELINE
+────────────────────────────────────────────────────── */
+.tracker-timeline-vertical {
+    padding: 8px 0;
+}
+
+.v-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.v-icon-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 44px;
+}
+
+.v-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    border: 3px solid #dee2e6;
+    background: #fff;
+    transition: all 0.3s;
+}
+
+.v-line {
+    width: 3px;
+    flex: 1;
+    min-height: 32px;
+    background: #dee2e6;
+    margin: 4px 0;
+}
+
+.v-step.step-done .v-icon {
+    background: #198754;
+    border-color: #198754;
+    color: #fff;
+}
+
+.v-step.step-done .v-line {
+    background: #198754;
+}
+
+.v-step.step-active .v-icon {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    animation: pulse-glow 1.8s ease-in-out infinite;
+}
+
+.v-step.step-active .v-line {
+    background: #0d6efd;
+}
+
+.v-step.step-pending .v-icon {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    color: #adb5bd;
+}
+
+.v-label {
+    display: flex;
+    flex-direction: column;
+    padding-top: 8px;
+}
+
+    .v-label .label-ar {
+        font-size: .88rem;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .v-label .label-en {
+        font-size: .78rem;
+        color: #6c757d;
+    }
+
+.v-step.step-pending .v-label .label-ar,
+.v-step.step-pending .v-label .label-en {
+    color: #adb5bd;
+}

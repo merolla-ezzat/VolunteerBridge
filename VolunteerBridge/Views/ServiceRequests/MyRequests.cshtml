@@ -174,6 +174,15 @@
                                         <span>التفاصيل</span>
                                     </a>
 
+                                    @* Inside the foreach loop that renders each request *@
+                                    @* Menna+Merolla *@
+                                    <a asp-controller="RequestProgress" asp-action="Index"
+                                       asp-route-id="@item.RequestId"
+                                       class="btn btn-sm btn-outline-info">
+                                        <i class="bi bi-activity"></i> تتبع
+                                    </a>
+
+
                                     @if (item.Status == VolunteerBridge.Models.Enums.RequestStatus.Open)
                                     {
                                         <form asp-action="Cancel" asp-route-id="@item.RequestId" method="post" onsubmit="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')" class="d-contents">
