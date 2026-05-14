@@ -135,9 +135,16 @@
                 {
                     <div class="d-flex align-items-center gap-3">
                         <a asp-controller="Account" asp-action="Profile" class="w-user-profile-btn">
-                            <div class="w-user-avatar">
-                                @(string.IsNullOrEmpty(sessionUserName) ? "U" : sessionUserName.Substring(0, 1).ToUpper())
-                            </div>
+                            @if (!string.IsNullOrEmpty(Context.Session.GetString("UserProfilePicture")))
+                            {
+                                <img src="@Context.Session.GetString("UserProfilePicture")" alt="@sessionUserName" class="w-user-avatar" style="object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="w-user-avatar">
+                                    @(string.IsNullOrEmpty(sessionUserName) ? "U" : sessionUserName.Substring(0, 1).ToUpper())
+                                </div>
+                            }
                             <div class="w-user-name-wrapper d-none d-md-block">
                                 <span class="w-user-name">@sessionUserName</span>
                             </div>

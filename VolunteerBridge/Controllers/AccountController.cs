@@ -4,6 +4,9 @@ using VolunteerBridge.ViewModels;
 using VolunteerBridge.Services;
 using BCrypt.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using Microsoft.AspNetCore.Hosting;
 
 namespace VolunteerBridge.Controllers
 {
@@ -11,12 +14,13 @@ namespace VolunteerBridge.Controllers
     {
         private readonly AppDbContext _db;
         private readonly EmailService _emailService;
+        private readonly IWebHostEnvironment _env;
 
-        public AccountController(AppDbContext db, EmailService emailService)
+        public AccountController(AppDbContext db, EmailService emailService, IWebHostEnvironment env)
         {
             _db = db;
             _emailService = emailService;
-
+            _env = env;
         }
 
         // Register
@@ -159,6 +163,10 @@ namespace VolunteerBridge.Controllers
             // save user ID in session
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("UserName", user.FullName);
+            if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+            {
+                HttpContext.Session.SetString("UserProfilePicture", user.ProfilePictureUrl);
+            }
             return RedirectToAction("Index", "Home");
         }
         // logout
@@ -188,7 +196,7 @@ namespace VolunteerBridge.Controllers
 
         // POST: /Account/EditProfile
         [HttpPost]
-        public IActionResult EditProfile(User model)
+        public async Task<IActionResult> EditProfile(User model, IFormFile? profilePicture)
         {
             var user = _db.Users.Find(model.UserId);
             if (user == null) return RedirectToAction("Login");
@@ -200,7 +208,35 @@ namespace VolunteerBridge.Controllers
             user.Bio = model.Bio;
             user.Skills = model.Skills;
             user.Experience = model.Experience;
+
+            if (profilePicture != null && profilePicture.Length > 0)
+            {
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var extension = Path.GetExtension(profilePicture.FileName).ToLowerInvariant();
+
+                if (allowedExtensions.Contains(extension))
+                {
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "profiles");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + extension;
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await profilePicture.CopyToAsync(fileStream);
+                    }
+
+                    user.ProfilePictureUrl = "/uploads/profiles/" + uniqueFileName;
+                    HttpContext.Session.SetString("UserProfilePicture", user.ProfilePictureUrl);
+                }
+            }
+
             _db.SaveChanges();
+            HttpContext.Session.SetString("UserName", user.FullName);
             return RedirectToAction("Profile");
         }
 

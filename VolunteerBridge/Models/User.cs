@@ -59,6 +59,7 @@ namespace VolunteerBridge.Models
 
         public bool IsEmailConfirmed { get; set; } = false;
         public string? EmailConfirmationToken { get; set; }
+        public string? ProfilePictureUrl { get; set; }
         public ICollection<ServiceRequest> ServiceRequests { get; set; } = new List<ServiceRequest>();
         public ICollection<Acceptance> Acceptances { get; set; } = new List<Acceptance>();
         public ICollection<Rating> RatingsGiven { get; set; } = new List<Rating>();
