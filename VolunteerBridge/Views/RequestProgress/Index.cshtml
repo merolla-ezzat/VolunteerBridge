@@ -53,7 +53,7 @@
         {
             <div class="tracker-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
                 <div class="step-icon">
-                    <i class="bi @stage.Icon"></i>
+                    <span class="material-symbols-outlined">@stage.Icon</span>
                 </div>
                 <div class="step-line"></div>
                 <div class="step-label">
@@ -70,7 +70,7 @@
         {
             <div class="v-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
                 <div class="v-icon-col">
-                    <div class="v-icon"><i class="bi @stage.Icon"></i></div>
+                    <div class="v-icon"><span class="material-symbols-outlined">@stage.Icon</span></div>
                     @if (stage.Number < 7)
                     {
                         <div class="v-line"></div>
@@ -189,7 +189,9 @@
         <div class="toast-header border-0 bg-transparent">
             <span class="material-symbols-outlined w-text-primary me-2" style="animation: w-spin-slow 4s linear infinite;">refresh</span>
             <strong class="me-auto w-body-md">تحديث</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            <button type="button" class="w-btn w-btn-ghost w-btn-sm p-1" data-bs-dismiss="toast" aria-label="إغلاق">
+                <span class="material-symbols-outlined" style="font-size: 20px;">close</span>
+            </button>
         </div>
         <div class="toast-body w-text-muted">تم تحديث حالة الطلب</div>
     </div>

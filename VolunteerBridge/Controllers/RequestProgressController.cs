@@ -1,4 +1,4 @@
-﻿// Controllers/RequestProgressController.cs
+// Controllers/RequestProgressController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VolunteerBridge.Models;
@@ -216,15 +216,15 @@ namespace VolunteerBridge.Controllers
         // ─────────────────────────────────────────────────────────
         private string GetIconForStage(int stageNumber)
         {
-            if (stageNumber == 1) return "bi-plus-circle";
-            if (stageNumber == 2) return "bi-hourglass-split";
-            if (stageNumber == 3) return "bi-person-check";
-            if (stageNumber == 4) return "bi-tools";
-            if (stageNumber == 5) return "bi-clock-history";
-            if (stageNumber == 6) return "bi-check-circle";
-            if (stageNumber == 7) return "bi-star-fill";
+            if (stageNumber == 1) return "add_circle";
+            if (stageNumber == 2) return "hourglass_empty";
+            if (stageNumber == 3) return "person_check";
+            if (stageNumber == 4) return "handyman";
+            if (stageNumber == 5) return "pending_actions";
+            if (stageNumber == 6) return "check_circle";
+            if (stageNumber == 7) return "star";
 
-            return "bi-circle";
+            return "radio_button_unchecked";
         }
     }
 }
