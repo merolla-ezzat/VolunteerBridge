@@ -62,12 +62,25 @@
             @* ── Email ── *@
             <div class="w-input-group">
                 <label asp-for="Email" class="w-label w-mb-sm d-block">البريد الإلكتروني</label>
+
                 <div class="position-relative">
                     <span class="material-symbols-outlined position-absolute"
-                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">mail</span>
-                    <input asp-for="Email" type="email" class="w-input" style="padding-right: 44px;" placeholder="example@domain.com" />
+                          style="top: 50%; transform: translateY(-50%); right: 14px; color: var(--w-outline); font-size: 20px; pointer-events: none;">
+                        mail
+                    </span>
+
+                    <input asp-for="Email"
+                           type="email"
+                           class="w-input"
+                           readonly
+                           style="padding-right: 44px; background-color: #f5f5f5; cursor: not-allowed;"
+                           placeholder="example@domain.com" />
                 </div>
-                <span asp-validation-for="Email" class="w-caption" style="color: var(--w-error); margin-top: 4px; display: block;"></span>
+
+                <span asp-validation-for="Email"
+                      class="w-caption"
+                      style="color: var(--w-error); margin-top: 4px; display: block;">
+                </span>
             </div>
 
             @* ── City ── *@

@@ -115,10 +115,6 @@
             <ul class="w-nav-links mb-0 p-0">
                 <li><a class="@(controller == "Home" && action == "Index" ? "w-active" : "")" asp-controller="Home" asp-action="Index">الرئيسية</a></li>
                 <li><a class="@(controller == "ServiceRequests" && action == "Browse" ? "w-active" : "")" asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
-                @if (sessionUserId != null)
-                {
-                    <li><a class="@(controller == "Chat" && action == "Inbox" ? "w-active" : "")" asp-controller="Chat" asp-action="Inbox">الرسائل</a></li>
-                }
                 <li><a class="@(controller == "Leaderboard" ? "w-active" : "")" asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
                 
                 @if (Context.Session.GetInt32("UserId") != null)
@@ -204,13 +200,7 @@
             <span class="material-symbols-outlined">search</span>
             الطلبات
         </a>
-        @if (sessionUserId != null)
-        {
-            <a asp-controller="Chat" asp-action="Inbox" class="w-bottom-nav-item @(controller == "Chat" && action == "Inbox" ? "active" : "")">
-                <span class="material-symbols-outlined">forum</span>
-                الرسائل
-            </a>
-        }
+   
         <a asp-controller="Leaderboard" asp-action="Index" class="w-bottom-nav-item @(controller == "Leaderboard" ? "active" : "")">
             <span class="material-symbols-outlined">social_leaderboard</span>
             الشرف
@@ -247,10 +237,6 @@
                     <ul class="w-footer-links">
                         <li><a asp-controller="Home" asp-action="Index">الرئيسية</a></li>
                         <li><a asp-controller="ServiceRequests" asp-action="Browse">تصفح الطلبات</a></li>
-                        @if (sessionUserId != null)
-                        {
-                            <li><a asp-controller="Chat" asp-action="Inbox">الرسائل</a></li>
-                        }
                         <li><a asp-controller="Leaderboard" asp-action="Index">لوحة الشرف</a></li>
                     </ul>
                 </div>

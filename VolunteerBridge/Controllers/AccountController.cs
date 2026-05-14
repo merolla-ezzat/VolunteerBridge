@@ -93,9 +93,13 @@ namespace VolunteerBridge.Controllers
                 IsEmailConfirmed = true,
                 EmailConfirmationToken = null
             };
+            
 
             _db.Users.Add(user);
             _db.SaveChanges();
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("UserName", user.FullName);
+
 
             // delete session data
             HttpContext.Session.Remove("PendingUser_FullName");
@@ -202,7 +206,6 @@ namespace VolunteerBridge.Controllers
             if (user == null) return RedirectToAction("Login");
 
             user.FullName = model.FullName;
-            user.Email = model.Email;
             user.City = model.City;
             user.PhoneNumber = model.PhoneNumber;
             user.Bio = model.Bio;

@@ -65,38 +65,6 @@ namespace VolunteerBridge.Controllers
 
 
 
-        // GET: /Chat/Inbox
-        public async Task<IActionResult> Inbox(int? activeUserId = null)
-        {
-            var userId = GetUserId();
-            if (userId == null) return RedirectToAction("Login", "Account");
-
-            var vm = new ChatInboxViewModel
-            {
-                Threads = await GetInboxRowsAsync(userId.Value)
-            };
-
-            if (activeUserId.HasValue && activeUserId.Value != userId.Value)
-            {
-                var other = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == activeUserId.Value);
-                if (other != null)
-                {
-                    await MarkConversationAsReadAsync(userId.Value, activeUserId.Value);
-                    vm.ActiveUserId = other.UserId;
-                    vm.ActiveUserName = other.FullName;
-                }
-            }
-
-            return View(vm);
-        }
-
-        // GET: /Chat/Thread?otherUserId=5
-        public IActionResult Thread(int otherUserId)
-        {
-            // Redirect to Inbox with activeUserId to use the unified view
-            return RedirectToAction("Inbox", new { activeUserId = otherUserId });
-        }
-
         // GET: /Chat/History?otherUserId=5
         [HttpGet]
         public async Task<IActionResult> History(int otherUserId)
