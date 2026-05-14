@@ -1,4 +1,4 @@
-﻿@model VolunteerBridge.ViewModels.RequestProgressViewModel
+@model VolunteerBridge.ViewModels.RequestProgressViewModel
 @using VolunteerBridge.ViewModels
 
 @{
@@ -9,38 +9,46 @@
 @* ─── Link to custom CSS (add once at top of view) ─────────────── *@
 <link rel="stylesheet" href="~/css/progress-tracker.css" />
 
-<div class="container py-4" dir="rtl">
+<div class="w-container w-py-xl w-animate-fadeIn" dir="rtl">
+
+    @* --- Background Glows --- *@
+    <div class="position-fixed top-0 start-50 translate-middle-x w-100 h-100 overflow-hidden" style="z-index: -1; pointer-events: none;">
+        <div class="position-absolute tracker-ambient-glow tracker-ambient-glow-1" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(16, 185, 129, 0.06) 0%, transparent 70%); top: -100px; right: -150px; filter: blur(80px);"></div>
+        <div class="position-absolute tracker-ambient-glow tracker-ambient-glow-2" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, transparent 70%); bottom: -50px; left: -100px; filter: blur(60px);"></div>
+    </div>
 
     @* ── Title ── *@
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center w-mb-xl">
         <div>
-            <h2 class="fw-bold mb-1">تتبع الطلب</h2>
-            <p class="text-muted mb-0">@Model.Request.Title</p>
+            <h2 class="w-h2 mb-1 w-aurora-text">تتبع الطلب</h2>
+            <p class="w-body-md w-text-muted mb-0">@Model.Request.Title</p>
         </div>
-        <span class="badge bg-primary fs-6">@Model.ProgressPercent%</span>
+        <div class="tracker-floating-badge w-chip w-chip-primary w-glass-premium shadow-sm">
+            <span class="w-body-sm fw-bold">@Model.ProgressPercent%</span>
+        </div>
     </div>
 
     @* ── Current Stage Alert ─────────────────────────────────────── *@
-    <div class="alert alert-info d-flex align-items-center gap-3 mb-4" role="alert">
-        <i class="bi bi-info-circle-fill fs-4"></i>
-        <div>
-            <div class="fw-bold">المرحلة الحالية: @Model.CurrentStageArabic</div>
-            <small class="text-muted">@Model.CurrentStageLabel</small>
+    @{
+        var alertClass = "w-chip-secondary";
+        var alertIcon = "info";
+        if (Model.ProgressPercent == 100) {
+            alertClass = "w-chip-success";
+            alertIcon = "check_circle";
+        }
+    }
+    <div class="w-glass-premium p-4 mb-5 d-flex align-items-center gap-3 tracker-info-card" style="border-radius: var(--w-radius-xl); background: rgba(var(--w-primary-rgb), 0.02); border: 1px solid rgba(255,255,255,0.05);">
+        <div class="w-avatar w-avatar-md @alertClass" style="animation: w-tracker-pulse 3s infinite cubic-bezier(0.66, 0, 0, 1);">
+            <span class="material-symbols-outlined fs-4">@alertIcon</span>
         </div>
-    </div>
-
-    @* ── Progress Bar ─────────────────────────────────────────────── *@
-    <div class="progress mb-4" style="height:12px;">
-        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
-             role="progressbar"
-             style="width: @Model.ProgressPercent%"
-             aria-valuenow="@Model.ProgressPercent"
-             aria-valuemin="0" aria-valuemax="100">
+        <div>
+            <div class="w-body-md fw-bold">المرحلة الحالية: @Model.CurrentStageArabic</div>
+            <small class="w-body-sm w-text-muted">@Model.CurrentStageLabel</small>
         </div>
     </div>
 
     @* ── Timeline (desktop: horizontal | mobile: vertical) ───────── *@
-    <div class="tracker-timeline d-none d-md-flex mb-4" id="timelineDesktop">
+    <div class="tracker-timeline d-none d-md-flex w-mb-xl" id="timelineDesktop">
         @foreach (var stage in Model.Stages)
         {
             <div class="tracker-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
@@ -57,7 +65,7 @@
     </div>
 
     @* ── Timeline vertical (mobile) ─────────────────────────────── *@
-    <div class="tracker-timeline-vertical d-md-none mb-4">
+    <div class="tracker-timeline-vertical d-md-none w-mb-xl">
         @foreach (var stage in Model.Stages)
         {
             <div class="v-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
@@ -77,24 +85,22 @@
     </div>
 
     @* ── Info Cards: Requester + Volunteer side by side ─────────── *@
-    <div class="row g-3 mb-4">
+    <div class="row g-4 w-mb-xl">
 
         @* Requester Card *@
         <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-person-lines-fill me-2"></i>صاحب الطلب
+            <div class="tracker-info-card w-glass-premium h-100 p-4" style="border-radius: var(--w-radius-xl);">
+                <div class="d-flex align-items-center mb-4">
+                    <span class="material-symbols-outlined w-text-primary me-2">person</span>
+                    <h5 class="w-h6 mb-0 fw-bold">صاحب الطلب</h5>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="avatar-placeholder bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white fs-4"
-                             style="width:56px;height:56px;">
-                            @(Model.Request.Requester?.FullName.FirstOrDefault())
-                        </div>
-                        <div>
-                            <div class="fw-bold">@Model.Request.Requester?.FullName</div>
-                            <div class="text-muted small">@Model.Request.Requester?.City</div>
-                        </div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="w-avatar w-avatar-lg" style="background: rgba(99, 102, 241, 0.1); color: var(--w-primary);">
+                        <span class="w-h4 mb-0">@(Model.Request.Requester?.FullName.FirstOrDefault())</span>
+                    </div>
+                    <div>
+                        <div class="w-body-md fw-bold">@Model.Request.Requester?.FullName</div>
+                        <div class="w-body-sm w-text-muted">@Model.Request.Requester?.City</div>
                     </div>
                 </div>
             </div>
@@ -102,45 +108,55 @@
 
         @* Volunteer Card *@
         <div class="col-md-6">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white fw-bold">
-                    <i class="bi bi-person-badge me-2"></i>المتطوع
+            <div class="tracker-info-card w-glass-premium h-100 p-4" style="border-radius: var(--w-radius-xl);">
+                <div class="d-flex align-items-center mb-4">
+                    <span class="material-symbols-outlined w-text-secondary me-2">volunteer_activism</span>
+                    <h5 class="w-h6 mb-0 fw-bold">المتطوع</h5>
                 </div>
-                <div class="card-body">
-                    @if (Model.ActiveAcceptance?.Volunteer != null)
-                    {
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="avatar-placeholder bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fs-4"
-                                 style="width:56px;height:56px;">
-                                @(Model.ActiveAcceptance.Volunteer.FullName.FirstOrDefault())
-                            </div>
-                            <div>
-                                <div class="fw-bold">@Model.ActiveAcceptance.Volunteer.FullName</div>
-                                <div class="text-muted small">
-                                    <i class="bi bi-star-fill text-warning"></i>
-                                    @Model.ActiveAcceptance.Volunteer.AverageRating.ToString("0.0")
-                                </div>
+                @if (Model.ActiveAcceptance?.Volunteer != null)
+                {
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="w-avatar w-avatar-lg" style="background: rgba(16, 185, 129, 0.1); color: var(--w-secondary);">
+                            <span class="w-h4 mb-0">@(Model.ActiveAcceptance.Volunteer.FullName.FirstOrDefault())</span>
+                        </div>
+                        <div>
+                            <div class="w-body-md fw-bold">@Model.ActiveAcceptance.Volunteer.FullName</div>
+                            <div class="w-body-sm w-text-muted d-flex align-items-center gap-1">
+                                <span class="material-symbols-outlined text-warning" style="font-size: 16px;">star</span>
+                                <span>@Model.ActiveAcceptance.Volunteer.AverageRating.ToString("0.0")</span>
                             </div>
                         </div>
-                    }
-                    else
-                    {
-                        <p class="text-muted">لم يتم قبول متطوع بعد</p>
-                    }
-                </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex align-items-center gap-3 opacity-50">
+                        <div class="w-avatar w-avatar-lg" style="background: var(--w-surface-hover); color: var(--w-text-muted);">
+                            <span class="material-symbols-outlined">hourglass_empty</span>
+                        </div>
+                        <div class="w-body-md w-text-muted">لم يتم قبول متطوع بعد</div>
+                    </div>
+                }
             </div>
         </div>
     </div>
 
     @* ── Conditional Action Buttons ─────────────────────────────── *@
-    <div class="d-flex gap-2 flex-wrap">
+    <div class="d-flex gap-3 flex-wrap justify-content-end w-animate-fadeInUp" style="animation-delay: 0.1s;">
+        <a asp-controller="ServiceRequests" asp-action="Details"
+           asp-route-id="@Model.Request.RequestId"
+           class="w-btn w-btn-outline w-glass-premium px-4">
+            <span class="material-symbols-outlined fs-5">arrow_forward</span>
+            <span>تفاصيل الطلب</span>
+        </a>
 
-        @if (Model.CanMarkComplete)
+        @if (Model.CanCancel)
         {
-            <a asp-controller="Volunteer" asp-action="MarkComplete"
-               asp-route-id="@Model.ActiveAcceptance!.AcceptanceId"
-               class="btn btn-success">
-                <i class="bi bi-check-lg me-1"></i>تأكيد الإتمام
+            <a asp-controller="ServiceRequests" asp-action="Cancel"
+               asp-route-id="@Model.Request.RequestId"
+               class="w-btn w-btn-outline-error px-4">
+                <span class="material-symbols-outlined fs-5">cancel</span>
+                <span>إلغاء الطلب</span>
             </a>
         }
 
@@ -148,39 +164,34 @@
         {
             <a asp-controller="Rating" asp-action="Create"
                asp-route-acceptanceId="@Model.ActiveAcceptance!.AcceptanceId"
-               class="btn btn-warning">
-                <i class="bi bi-star me-1"></i>تقييم المتطوع
+               class="w-btn w-btn-secondary px-4">
+                <span class="material-symbols-outlined fs-5">star</span>
+                <span>تقييم المتطوع</span>
             </a>
         }
 
-        @if (Model.CanCancel)
+        @if (Model.CanMarkComplete)
         {
-            <a asp-controller="ServiceRequests" asp-action="Cancel"
-               asp-route-id="@Model.Request.RequestId"
-               class="btn btn-outline-danger">
-                <i class="bi bi-x-circle me-1"></i>إلغاء الطلب
+            <a asp-controller="Volunteer" asp-action="MarkComplete"
+               asp-route-id="@Model.ActiveAcceptance!.AcceptanceId"
+               class="w-btn w-btn-success px-4">
+                <span class="material-symbols-outlined fs-5">check_circle</span>
+                <span>تأكيد الإتمام</span>
             </a>
         }
-
-        <a asp-controller="ServiceRequests" asp-action="Details"
-           asp-route-id="@Model.Request.RequestId"
-           class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-right me-1"></i>تفاصيل الطلب
-        </a>
-
     </div>
 
 </div>
 
 @* ── Toast Notification (auto-refresh) ─────────────────────────── *@
-<div class="toast-container position-fixed bottom-0 start-0 p-3" dir="rtl">
-    <div id="refreshToast" class="toast" role="alert">
-        <div class="toast-header">
-            <i class="bi bi-arrow-repeat text-primary me-2"></i>
-            <strong class="me-auto">تحديث</strong>
+<div class="toast-container position-fixed bottom-0 start-0 p-4" dir="rtl">
+    <div id="refreshToast" class="toast w-glass-premium border-0" role="alert" style="border-radius: var(--w-radius-lg);">
+        <div class="toast-header border-0 bg-transparent">
+            <span class="material-symbols-outlined w-text-primary me-2" style="animation: w-spin-slow 4s linear infinite;">refresh</span>
+            <strong class="me-auto w-body-md">تحديث</strong>
             <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
         </div>
-        <div class="toast-body">تم تحديث حالة الطلب</div>
+        <div class="toast-body w-text-muted">تم تحديث حالة الطلب</div>
     </div>
 </div>
 
@@ -208,4 +219,3 @@
         setInterval(checkProgress, 30000);
     </script>
 }
-

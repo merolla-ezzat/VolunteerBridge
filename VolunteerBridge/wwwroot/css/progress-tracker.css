@@ -1,5 +1,43 @@
-﻿/* wwwroot/css/progress-tracker.css */
-/* Bootstrap 5 RTL compatible — VolunteerBridge theme */
+/* wwwroot/css/progress-tracker.css */
+/* Modern glassmorphism progress tracker for Wessal */
+/* Enhanced with subtle, premium micro-interactions */
+
+/* ──────────────────────────────────────────────────────
+   AMBIENT BACKGROUND & GENERAL
+────────────────────────────────────────────────────── */
+.tracker-ambient-glow {
+    animation: w-ambient-drift 12s infinite alternate ease-in-out;
+    will-change: transform;
+}
+.tracker-ambient-glow-2 {
+    animation-duration: 15s;
+    animation-delay: -5s;
+}
+
+@keyframes w-ambient-drift {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-20px, 15px) scale(1.05); }
+}
+
+.tracker-floating-badge {
+    animation: w-float 4s ease-in-out infinite;
+    will-change: transform;
+}
+
+@keyframes w-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+.tracker-info-card {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.tracker-info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.04), 0 4px 8px rgba(0,0,0,0.02);
+}
 
 /* ──────────────────────────────────────────────────────
    DESKTOP HORIZONTAL TIMELINE
@@ -9,7 +47,7 @@
     align-items: flex-start;
     justify-content: space-between;
     position: relative;
-    padding: 16px 0;
+    padding: 24px 0;
 }
 
 .tracker-step {
@@ -18,24 +56,37 @@
     flex-direction: column;
     align-items: center;
     position: relative;
+    z-index: 1;
 }
 
-    /* Connector line between icons */
-    .tracker-step:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        top: 24px;
-        left: calc(-50% + 24px); /* RTL-safe: we flip via dir=rtl */
-        right: calc(50% + 24px);
-        height: 3px;
-        background: #dee2e6;
-        z-index: 0;
-    }
+/* Connector line between icons */
+.tracker-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 24px;
+    left: calc(-50% + 24px); /* RTL-safe: we flip via dir=rtl */
+    right: calc(50% + 24px);
+    height: 4px;
+    background: var(--w-surface-hover);
+    border-radius: 4px;
+    z-index: -1;
+    transition: background 0.4s ease;
+}
 
-    .tracker-step.step-done:not(:last-child)::after,
-    .tracker-step.step-active:not(:last-child)::after {
-        background: #0d6efd;
-    }
+.tracker-step.step-done:not(:last-child)::after {
+    background: var(--w-primary);
+}
+
+/* Active flowing gradient line */
+.tracker-step.step-active:not(:last-child)::after {
+    background: linear-gradient(270deg, var(--w-primary) 0%, var(--w-surface-hover) 100%);
+    animation: w-line-pulse 2s infinite alternate ease-in-out;
+}
+
+@keyframes w-line-pulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
+}
 
 /* Icons */
 .step-icon {
@@ -46,63 +97,67 @@
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    border: 3px solid #dee2e6;
-    background: #fff;
+    background: var(--w-surface-hover);
+    color: var(--w-text-muted);
     position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
+    z-index: 2;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .step-done .step-icon {
-    background: #198754;
-    border-color: #198754;
+    background: var(--w-secondary);
     color: #fff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
+/* Soft, organic breathing effect for active step */
 .step-active .step-icon {
-    background: #0d6efd;
-    border-color: #0d6efd;
+    background: var(--w-primary);
     color: #fff;
-    box-shadow: 0 0 0 6px rgba(13,110,253,.25);
-    animation: pulse-glow 1.8s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.3);
+    animation: w-tracker-pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+}
+
+@keyframes w-tracker-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(var(--w-primary-rgb), 0); }
+    100% { box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0); }
 }
 
 .step-pending .step-icon {
-    background: #f8f9fa;
-    border-color: #dee2e6;
-    color: #adb5bd;
-}
-
-@keyframes pulse-glow {
-    0%, 100% {
-        box-shadow: 0 0 0 4px rgba(13,110,253,.2);
-    }
-
-    50% {
-        box-shadow: 0 0 0 10px rgba(13,110,253,.05);
-    }
+    background: var(--w-surface-hover);
+    color: var(--w-text-muted);
+    opacity: 0.7;
 }
 
 /* Labels */
 .step-label {
     text-align: center;
-    margin-top: 10px;
+    margin-top: 16px;
+    padding: 0 8px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.step-active .step-label {
+    transform: translateY(-2px);
 }
 
 .label-ar {
-    font-size: .82rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #212529;
+    color: var(--w-text-primary);
+    margin-bottom: 2px;
 }
 
 .label-en {
-    font-size: .72rem;
-    color: #6c757d;
+    font-size: 0.75rem;
+    color: var(--w-text-muted);
 }
 
 .step-pending .label-ar,
 .step-pending .label-en {
-    color: #adb5bd;
+    color: var(--w-text-muted);
+    opacity: 0.7;
 }
 
 
@@ -110,89 +165,107 @@
    MOBILE VERTICAL TIMELINE
 ────────────────────────────────────────────────────── */
 .tracker-timeline-vertical {
-    padding: 8px 0;
+    padding: 16px 0;
 }
 
 .v-step {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 4px;
+    gap: 16px;
+    margin-bottom: 0;
 }
 
 .v-icon-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 44px;
+    min-width: 48px;
 }
 
 .v-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    border: 3px solid #dee2e6;
-    background: #fff;
-    transition: all 0.3s;
+    font-size: 1.25rem;
+    background: var(--w-surface-hover);
+    color: var(--w-text-muted);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 2;
 }
 
 .v-line {
-    width: 3px;
+    width: 4px;
     flex: 1;
-    min-height: 32px;
-    background: #dee2e6;
+    min-height: 40px;
+    background: var(--w-surface-hover);
+    border-radius: 4px;
     margin: 4px 0;
+    transition: background 0.4s ease;
 }
 
 .v-step.step-done .v-icon {
-    background: #198754;
-    border-color: #198754;
+    background: var(--w-secondary);
     color: #fff;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .v-step.step-done .v-line {
-    background: #198754;
+    background: var(--w-primary);
 }
 
+/* Soft, organic breathing effect for active mobile step */
 .v-step.step-active .v-icon {
-    background: #0d6efd;
-    border-color: #0d6efd;
+    background: var(--w-primary);
     color: #fff;
-    animation: pulse-glow 1.8s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.3);
+    animation: w-tracker-pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
 }
 
+/* Active vertical line flowing gradient */
 .v-step.step-active .v-line {
-    background: #0d6efd;
+    background: linear-gradient(180deg, var(--w-primary) 0%, var(--w-surface-hover) 100%);
+    animation: w-line-pulse 2s infinite alternate ease-in-out;
 }
 
 .v-step.step-pending .v-icon {
-    background: #f8f9fa;
-    border-color: #dee2e6;
-    color: #adb5bd;
+    background: var(--w-surface-hover);
+    color: var(--w-text-muted);
+    opacity: 0.7;
 }
 
 .v-label {
     display: flex;
     flex-direction: column;
-    padding-top: 8px;
+    padding-top: 12px;
+    padding-bottom: 24px;
+    transition: transform 0.4s ease;
 }
 
-    .v-label .label-ar {
-        font-size: .88rem;
-        font-weight: 600;
-        color: #212529;
-    }
+.v-step.step-active .v-label {
+    transform: translateX(-4px); /* RTL: shift slightly to left */
+}
 
-    .v-label .label-en {
-        font-size: .78rem;
-        color: #6c757d;
-    }
+.v-step:last-child .v-label {
+    padding-bottom: 0;
+}
+
+.v-label .label-ar {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--w-text-primary);
+    margin-bottom: 4px;
+}
+
+.v-label .label-en {
+    font-size: 0.8rem;
+    color: var(--w-text-muted);
+}
 
 .v-step.step-pending .v-label .label-ar,
 .v-step.step-pending .v-label .label-en {
-    color: #adb5bd;
+    color: var(--w-text-muted);
+    opacity: 0.7;
 }
