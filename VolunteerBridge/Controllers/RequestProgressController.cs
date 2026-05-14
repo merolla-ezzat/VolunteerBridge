@@ -125,7 +125,7 @@ namespace VolunteerBridge.Controllers
             vm.IsRequester = isRequester;
             vm.IsVolunteer = isVolunteer;
             vm.ViewerUserId = userId.Value;
-            vm.CanMarkComplete = isRequester && stage == 4;
+            vm.CanMarkComplete = isRequester && (stage == 4 || stage == 5);
             vm.CanRate = isRequester && stage == 6;
             vm.CanCancel = isRequester && stage <= 2;
             vm.Stages = stages;

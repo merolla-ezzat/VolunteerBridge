@@ -261,6 +261,14 @@ body {
     align-items: center;
 }
 
+.w-icon-xs {
+    font-size: 14px !important;
+}
+
+.w-icon-sm {
+    font-size: 18px !important;
+}
+
 /* ── Navbar ── */
 .w-navbar {
     position: fixed;

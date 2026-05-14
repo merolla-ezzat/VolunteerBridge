@@ -4,6 +4,7 @@ namespace VolunteerBridge.ViewModels
     {
         public int OtherUserId { get; set; }
         public string OtherUserName { get; set; } = string.Empty;
+        public string? OtherUserProfilePicture { get; set; }
         public DateTime LastMessageAt { get; set; }
         public string LastMessagePreview { get; set; } = string.Empty;
         public int UnreadCount { get; set; }
@@ -14,5 +15,6 @@ namespace VolunteerBridge.ViewModels
         public List<ChatInboxRowViewModel> Threads { get; set; } = new();
         public int? ActiveUserId { get; set; }
         public string ActiveUserName { get; set; } = string.Empty;
+        public string? ActiveUserProfilePicture { get; set; }
     }
 }

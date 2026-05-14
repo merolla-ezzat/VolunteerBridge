@@ -37,28 +37,29 @@
             alertIcon = "check_circle";
         }
     }
-    <div class="w-glass-premium p-4 mb-5 d-flex align-items-center gap-3 tracker-info-card" style="border-radius: var(--w-radius-xl); background: rgba(var(--w-primary-rgb), 0.02); border: 1px solid rgba(255,255,255,0.05);">
-        <div class="w-avatar w-avatar-md @alertClass" style="animation: w-tracker-pulse 3s infinite cubic-bezier(0.66, 0, 0, 1);">
+    <div class="w-glass-premium p-4 mb-5 d-flex align-items-center gap-3 tracker-info-card @(Model.ProgressPercent == 100 ? "tracker-completion-success" : "")" 
+         style="border-radius: var(--w-radius-xl); background: rgba(var(--w-primary-rgb), 0.02); border: 1px solid rgba(255,255,255,0.05);">
+        <div class="w-avatar w-avatar-md @alertClass" style="animation: w-tracker-pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);">
             <span class="material-symbols-outlined fs-4">@alertIcon</span>
         </div>
         <div>
             <div class="w-body-md fw-bold">المرحلة الحالية: @Model.CurrentStageArabic</div>
-            <small class="w-body-sm w-text-muted">@Model.CurrentStageLabel</small>
         </div>
     </div>
 
     @* ── Timeline (desktop: horizontal | mobile: vertical) ───────── *@
     <div class="tracker-timeline d-none d-md-flex w-mb-xl" id="timelineDesktop">
-        @foreach (var stage in Model.Stages)
+        @for (int i = 0; i < Model.Stages.Count; i++)
         {
-            <div class="tracker-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
+            var stage = Model.Stages[i];
+            <div class="tracker-step w-stagger-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")"
+                 style="animation-delay: @(i * 0.1)s">
                 <div class="step-icon">
                     <span class="material-symbols-outlined">@stage.Icon</span>
                 </div>
                 <div class="step-line"></div>
                 <div class="step-label">
                     <div class="label-ar">@stage.LabelAr</div>
-                    <div class="label-en">@stage.Label</div>
                 </div>
             </div>
         }
@@ -66,9 +67,11 @@
 
     @* ── Timeline vertical (mobile) ─────────────────────────────── *@
     <div class="tracker-timeline-vertical d-md-none w-mb-xl">
-        @foreach (var stage in Model.Stages)
+        @for (int i = 0; i < Model.Stages.Count; i++)
         {
-            <div class="v-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")">
+            var stage = Model.Stages[i];
+            <div class="v-step w-stagger-step @(stage.State == StageState.Completed ? "step-done" : stage.State == StageState.Current ? "step-active" : "step-pending")"
+                 style="animation-delay: @(i * 0.1)s">
                 <div class="v-icon-col">
                     <div class="v-icon"><span class="material-symbols-outlined">@stage.Icon</span></div>
                     @if (stage.Number < 7)
@@ -78,7 +81,6 @@
                 </div>
                 <div class="v-label">
                     <span class="label-ar">@stage.LabelAr</span>
-                    <span class="label-en">@stage.Label</span>
                 </div>
             </div>
         }
@@ -152,18 +154,22 @@
 
         @if (Model.CanCancel)
         {
-            <a asp-controller="ServiceRequests" asp-action="Cancel"
-               asp-route-id="@Model.Request.RequestId"
-               class="w-btn w-btn-outline-error px-4">
-                <span class="material-symbols-outlined fs-5">cancel</span>
-                <span>إلغاء الطلب</span>
-            </a>
+            <form asp-controller="ServiceRequests" asp-action="Cancel" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Request.RequestId" />
+                <button type="submit" class="w-btn w-btn-outline-error px-4" 
+                        onclick="return confirm('هل أنت متأكد من إلغاء هذا الطلب؟')">
+                    <span class="material-symbols-outlined fs-5">cancel</span>
+                    <span>إلغاء الطلب</span>
+                </button>
+            </form>
         }
 
         @if (Model.CanRate)
         {
-            <a asp-controller="Rating" asp-action="Create"
+            <a asp-controller="Acceptances" asp-action="Rate"
                asp-route-acceptanceId="@Model.ActiveAcceptance!.AcceptanceId"
+               asp-route-toUserId="@Model.ActiveAcceptance!.VolunteerId"
                class="w-btn w-btn-secondary px-4">
                 <span class="material-symbols-outlined fs-5">star</span>
                 <span>تقييم المتطوع</span>
@@ -172,12 +178,15 @@
 
         @if (Model.CanMarkComplete)
         {
-            <a asp-controller="Volunteer" asp-action="MarkComplete"
-               asp-route-id="@Model.ActiveAcceptance!.AcceptanceId"
-               class="w-btn w-btn-success px-4">
-                <span class="material-symbols-outlined fs-5">check_circle</span>
-                <span>تأكيد الإتمام</span>
-            </a>
+            <form asp-controller="Acceptances" asp-action="MarkComplete" method="post" 
+                  onsubmit="return confirm('هل تأكدت من إنجاز المهمة؟ سيتم منح المتطوع النقاط بعد التأكيد.')">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="acceptanceId" value="@Model.ActiveAcceptance!.AcceptanceId" />
+                <button type="submit" class="w-btn w-btn-success px-4">
+                    <span class="material-symbols-outlined fs-5">check_circle</span>
+                    <span>تأكيد الإتمام</span>
+                </button>
+            </form>
         }
     </div>
 

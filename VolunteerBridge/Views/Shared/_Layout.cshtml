@@ -282,7 +282,7 @@
         <script>
             window.addEventListener('DOMContentLoaded', () => {
                 if (window.WessalChat) {
-                    window.WessalChat.init('@sessionUserId');
+                    window.WessalChat.init('@sessionUserId', '@Context.Session.GetString("UserProfilePicture")');
                 }
             });
         </script>

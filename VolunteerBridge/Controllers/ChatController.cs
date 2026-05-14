@@ -33,9 +33,10 @@ namespace VolunteerBridge.Controllers
 
             if (partnerIds.Count == 0) return new List<ChatInboxRowViewModel>();
 
-            var names = await _db.Users.AsNoTracking()
+            var users = await _db.Users.AsNoTracking()
                 .Where(u => partnerIds.Contains(u.UserId))
-                .ToDictionaryAsync(u => u.UserId, u => u.FullName);
+                .Select(u => new { u.UserId, u.FullName, u.ProfilePictureUrl })
+                .ToDictionaryAsync(u => u.UserId, u => u);
 
             var rows = new List<ChatInboxRowViewModel>();
             foreach (var pid in partnerIds)
@@ -53,7 +54,8 @@ namespace VolunteerBridge.Controllers
                 rows.Add(new ChatInboxRowViewModel
                 {
                     OtherUserId = pid,
-                    OtherUserName = names.TryGetValue(pid, out var n) ? n : "مستخدم",
+                    OtherUserName = users.TryGetValue(pid, out var u) ? u.FullName : "مستخدم",
+                    OtherUserProfilePicture = users.TryGetValue(pid, out var uPic) ? uPic.ProfilePictureUrl : null,
                     LastMessageAt = last.SentAt,
                     LastMessagePreview = preview,
                     UnreadCount = unread
@@ -84,6 +86,7 @@ namespace VolunteerBridge.Controllers
                     await MarkConversationAsReadAsync(userId.Value, activeUserId.Value);
                     vm.ActiveUserId = other.UserId;
                     vm.ActiveUserName = other.FullName;
+                    vm.ActiveUserProfilePicture = other.ProfilePictureUrl;
                 }
             }
 

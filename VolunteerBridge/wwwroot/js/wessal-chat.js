@@ -12,8 +12,10 @@ window.WessalChat = (function() {
     let isOpen = false;
     let currentView = 'inbox'; // 'inbox' or 'thread'
     let activeThreadUserId = null;
+    let activeThreadUserPic = null;
     let connection = null;
     let currentUserId = null;
+    let currentUserPic = null;
     let hasLoadedInbox = false;
     let lastRenderedDate = null; // Track day boundaries in threads
 
@@ -88,6 +90,7 @@ window.WessalChat = (function() {
             isOpen,
             currentView,
             activeThreadUserId,
+            activeThreadUserPic,
             timestamp: Date.now()
         }));
     }
@@ -108,8 +111,9 @@ window.WessalChat = (function() {
         return null;
     }
 
-    async function init(userId) {
+    async function init(userId, userPic = null) {
         currentUserId = userId;
+        currentUserPic = userPic;
         container = document.getElementById('w-floating-chat-container');
         if (!container) return; // Not logged in or widget missing
 
@@ -163,7 +167,7 @@ window.WessalChat = (function() {
             openChat();
             if (state.currentView === 'thread' && state.activeThreadUserId) {
                 // Determine name from recent conversations or default
-                openThread(state.activeThreadUserId, 'مستخدم', ''); 
+                openThread(state.activeThreadUserId, 'مستخدم', '', '', state.activeThreadUserPic); 
             } else {
                 showInbox();
             }
@@ -190,6 +194,14 @@ window.WessalChat = (function() {
         windowEl.classList.add('d-none');
         btn.classList.remove('w-chat-open');
         saveState();
+    }
+
+    function renderAvatarHtml(name, url) {
+        if (url) {
+            return `<img src="${url}" alt="${name}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        }
+        const initial = (name || 'U').substring(0, 1).toUpperCase();
+        return `<span>${initial}</span>`;
     }
 
     async function showInbox() {
@@ -237,12 +249,10 @@ window.WessalChat = (function() {
             const el = document.createElement('div');
             el.className = `w-chat-inbox-row ${row.unreadCount > 0 ? 'unread' : ''} ${String(row.otherUserId) === String(activeThreadUserId) ? 'is-active' : ''}`;
             el.dataset.userId = row.otherUserId;
-            el.onclick = () => openThread(row.otherUserId, row.otherUserName, '');
-            
-            const initial = (row.otherUserName || 'U').substring(0, 1).toUpperCase();
+            el.onclick = () => openThread(row.otherUserId, row.otherUserName, '', '', row.otherUserProfilePicture);
             
             el.innerHTML = `
-                <div class="w-chat-avatar">${initial}</div>
+                <div class="w-chat-avatar">${renderAvatarHtml(row.otherUserName, row.otherUserProfilePicture)}</div>
                 <div class="w-chat-inbox-content">
                     <div class="w-chat-inbox-top">
                         <div class="w-chat-inbox-name">${row.otherUserName}</div>
@@ -260,12 +270,13 @@ window.WessalChat = (function() {
         });
     }
 
-    async function openThread(userId, userName, contextType = '', contextId = '') {
+    async function openThread(userId, userName, contextType = '', contextId = '', userProfilePicture = null) {
         // Fallbacks if userName is missing (e.g. restoring state)
         if (!userName) userName = 'مستخدم';
         
         currentView = 'thread';
         activeThreadUserId = userId;
+        activeThreadUserPic = userProfilePicture;
         isOpen = true;
 
         threadName.textContent = userName;
@@ -274,7 +285,7 @@ window.WessalChat = (function() {
         // Setup Avatar
         const avatarEl = document.getElementById('w-chat-thread-avatar');
         if (avatarEl) {
-            avatarEl.textContent = userName.substring(0, 1).toUpperCase();
+            avatarEl.innerHTML = renderAvatarHtml(userName, userProfilePicture);
         }
 
         // Update active class in inbox visually in case it's in DOM
@@ -349,14 +360,10 @@ window.WessalChat = (function() {
         
         // Grouping logic
         const lastRow = messagesArea.lastElementChild;
-        // Ensure we don't group with the separator
         if (lastRow && lastRow.classList.contains('w-chat-message-row')) {
             const wasSent = lastRow.classList.contains('is-sent');
-            
             if (isSent === wasSent) {
-                // Same sender
                 wrap.classList.add('group-last');
-                
                 if (lastRow.classList.contains('group-standalone')) {
                     lastRow.classList.remove('group-standalone');
                     lastRow.classList.add('group-first');
@@ -365,20 +372,17 @@ window.WessalChat = (function() {
                     lastRow.classList.add('group-middle');
                 }
             } else {
-                // Different sender
                 wrap.classList.add('group-standalone');
             }
         } else {
-            // First message in this day block or overall
             wrap.classList.add('group-standalone');
         }
 
+        // Message Content (No Avatar in Bubbles as per request)
         wrap.innerHTML = `
             <div class="w-chat-bubble ${isSent ? 'sent' : 'received'}">
                 <div class="w-chat-bubble-text">${msg.message}</div>
-                <div class="w-chat-bubble-time">
-                    ${formatTime(msg.sentAt)}
-                </div>
+                <div class="w-chat-bubble-time">${formatTime(msg.sentAt)}</div>
             </div>
         `;
         
@@ -433,6 +437,14 @@ window.WessalChat = (function() {
             } else if (currentView === 'thread') {
                 hasLoadedInbox = false; // invalidate cache
                 if (String(payload.senderId) === String(activeThreadUserId) || String(payload.receiverId) === String(activeThreadUserId)) {
+                    // Update activeThreadUserPic if we got it and it was null
+                    if (!activeThreadUserPic && payload.senderProfilePicture && String(payload.senderId) === String(activeThreadUserId)) {
+                        activeThreadUserPic = payload.senderProfilePicture;
+                        const avatarEl = document.getElementById('w-chat-thread-avatar');
+                        if (avatarEl) {
+                            avatarEl.innerHTML = renderAvatarHtml(threadName.textContent, activeThreadUserPic);
+                        }
+                    }
                     appendMessageUI(payload);
                     if (String(payload.senderId) === String(activeThreadUserId)) {
                         fetch(`/Chat/MarkAsRead?otherUserId=${activeThreadUserId}`, { method: 'POST' });

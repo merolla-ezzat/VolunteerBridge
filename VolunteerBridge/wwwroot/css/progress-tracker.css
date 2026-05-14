@@ -1,10 +1,10 @@
 /* wwwroot/css/progress-tracker.css */
 /* Modern glassmorphism progress tracker for Wessal */
-/* Enhanced with subtle, premium micro-interactions */
+/* High-end motion and visual feedback layer */
 
 /* ──────────────────────────────────────────────────────
    AMBIENT BACKGROUND & GENERAL
-────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────── */
 .tracker-ambient-glow {
     animation: w-ambient-drift 12s infinite alternate ease-in-out;
     will-change: transform;
@@ -41,13 +41,13 @@
 
 /* ──────────────────────────────────────────────────────
    DESKTOP HORIZONTAL TIMELINE
-────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────── */
 .tracker-timeline {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     position: relative;
-    padding: 24px 0;
+    padding: 32px 0;
 }
 
 .tracker-step {
@@ -59,36 +59,43 @@
     z-index: 1;
 }
 
-/* Connector line between icons */
+/* Connector line base */
 .tracker-step:not(:last-child)::after {
     content: '';
     position: absolute;
     top: 24px;
     left: calc(-50% + 24px); /* RTL-safe: we flip via dir=rtl */
     right: calc(50% + 24px);
-    height: 4px;
+    height: 3px;
     background: var(--w-surface-hover);
     border-radius: 4px;
     z-index: -1;
-    transition: background 0.4s ease;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Completed static line */
 .tracker-step.step-done:not(:last-child)::after {
     background: var(--w-primary);
 }
 
-/* Active flowing gradient line */
+/* Active flowing liquid line */
 .tracker-step.step-active:not(:last-child)::after {
-    background: linear-gradient(270deg, var(--w-primary) 0%, var(--w-surface-hover) 100%);
-    animation: w-line-pulse 2s infinite alternate ease-in-out;
+    background: linear-gradient(90deg, 
+        var(--w-primary) 0%, 
+        rgba(var(--w-primary-rgb), 0.4) 50%, 
+        var(--w-primary) 100%
+    );
+    background-size: 200% 100%;
+    animation: w-liquid-flow 3s infinite linear;
+    box-shadow: 0 0 15px rgba(var(--w-primary-rgb), 0.1);
 }
 
-@keyframes w-line-pulse {
-    0% { opacity: 0.4; }
-    100% { opacity: 1; }
+@keyframes w-liquid-flow {
+    0% { background-position: 200% 0; }
+    100% { background-position: 0% 0; }
 }
 
-/* Icons */
+/* Icons / Nodes */
 .step-icon {
     width: 48px;
     height: 48px;
@@ -96,74 +103,91 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     background: var(--w-surface-hover);
     color: var(--w-text-muted);
     position: relative;
     z-index: 2;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Completed Step: "Achieved" feeling */
 .step-done .step-icon {
     background: var(--w-secondary);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2), 0 0 0 2px rgba(16, 185, 129, 0.1);
+    animation: w-step-achieved 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Soft, organic breathing effect for active step */
+@keyframes w-step-achieved {
+    0% { transform: scale(0.8); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Active Step: Breathing and Alive */
 .step-active .step-icon {
     background: var(--w-primary);
     color: #fff;
-    box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.3);
-    animation: w-tracker-pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.4), 0 8px 25px rgba(var(--w-primary-rgb), 0.25);
+    animation: w-node-alive 3s infinite ease-in-out;
+    border: 2px solid rgba(255,255,255,0.2);
 }
 
+@keyframes w-node-alive {
+    0% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.4), 0 8px 25px rgba(var(--w-primary-rgb), 0.25); 
+    }
+    50% { 
+        transform: scale(1.08); 
+        box-shadow: 0 0 0 12px rgba(var(--w-primary-rgb), 0), 0 15px 35px rgba(var(--w-primary-rgb), 0.4); 
+    }
+    100% { 
+        transform: scale(1); 
+        box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0), 0 8px 25px rgba(var(--w-primary-rgb), 0.25); 
+    }
+}
+
+/* Stage Alert Pulse */
 @keyframes w-tracker-pulse {
     0% { box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.4); }
-    70% { box-shadow: 0 0 0 12px rgba(var(--w-primary-rgb), 0); }
+    70% { box-shadow: 0 0 0 10px rgba(var(--w-primary-rgb), 0); }
     100% { box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0); }
-}
-
-.step-pending .step-icon {
-    background: var(--w-surface-hover);
-    color: var(--w-text-muted);
-    opacity: 0.7;
 }
 
 /* Labels */
 .step-label {
     text-align: center;
-    margin-top: 16px;
+    margin-top: 20px;
     padding: 0 8px;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.step-active .step-label {
-    transform: translateY(-2px);
+    transition: all 0.4s ease;
 }
 
 .label-ar {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--w-text-muted);
+    opacity: 0.6;
+    transition: all 0.4s ease;
+}
+
+.step-active .label-ar {
+    font-weight: 700;
+    color: var(--w-primary);
+    opacity: 1;
+    transform: translateY(-2px);
+}
+
+.step-done .label-ar {
     font-weight: 600;
     color: var(--w-text-primary);
-    margin-bottom: 2px;
+    opacity: 0.9;
 }
-
-.label-en {
-    font-size: 0.75rem;
-    color: var(--w-text-muted);
-}
-
-.step-pending .label-ar,
-.step-pending .label-en {
-    color: var(--w-text-muted);
-    opacity: 0.7;
-}
-
 
 /* ──────────────────────────────────────────────────────
    MOBILE VERTICAL TIMELINE
-────────────────────────────────────────────────────── */
+   ────────────────────────────────────────────────────── */
 .tracker-timeline-vertical {
     padding: 16px 0;
 }
@@ -172,7 +196,6 @@
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    margin-bottom: 0;
 }
 
 .v-icon-col {
@@ -183,89 +206,114 @@
 }
 
 .v-icon {
-    width: 48px;
-    height: 48px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     background: var(--w-surface-hover);
     color: var(--w-text-muted);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
     z-index: 2;
 }
 
 .v-line {
-    width: 4px;
+    width: 3px;
     flex: 1;
     min-height: 40px;
     background: var(--w-surface-hover);
     border-radius: 4px;
     margin: 4px 0;
-    transition: background 0.4s ease;
+    transition: all 0.6s ease;
 }
 
 .v-step.step-done .v-icon {
     background: var(--w-secondary);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+    animation: w-step-achieved 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .v-step.step-done .v-line {
     background: var(--w-primary);
 }
 
-/* Soft, organic breathing effect for active mobile step */
 .v-step.step-active .v-icon {
     background: var(--w-primary);
     color: #fff;
-    box-shadow: 0 0 0 0 rgba(var(--w-primary-rgb), 0.3);
-    animation: w-tracker-pulse 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    animation: w-node-alive 3s infinite ease-in-out;
 }
 
-/* Active vertical line flowing gradient */
 .v-step.step-active .v-line {
-    background: linear-gradient(180deg, var(--w-primary) 0%, var(--w-surface-hover) 100%);
-    animation: w-line-pulse 2s infinite alternate ease-in-out;
+    background: linear-gradient(180deg, var(--w-primary) 0%, rgba(var(--w-primary-rgb), 0.3) 50%, var(--w-primary) 100%);
+    background-size: 100% 200%;
+    animation: w-liquid-flow-v 3s infinite linear;
 }
 
-.v-step.step-pending .v-icon {
-    background: var(--w-surface-hover);
-    color: var(--w-text-muted);
-    opacity: 0.7;
+@keyframes w-liquid-flow-v {
+    0% { background-position: 0 200%; }
+    100% { background-position: 0 0%; }
 }
 
 .v-label {
     display: flex;
     flex-direction: column;
-    padding-top: 12px;
-    padding-bottom: 24px;
-    transition: transform 0.4s ease;
+    padding-top: 10px;
+    padding-bottom: 32px;
 }
 
-.v-step.step-active .v-label {
-    transform: translateX(-4px); /* RTL: shift slightly to left */
+.v-step.step-active .v-label .label-ar {
+    font-weight: 700;
+    color: var(--w-primary);
+    opacity: 1;
+    transform: translateX(-4px); /* RTL specific */
 }
 
-.v-step:last-child .v-label {
-    padding-bottom: 0;
+/* ──────────────────────────────────────────────────────
+   HOVER INTERACTIONS
+   ────────────────────────────────────────────────────── */
+.tracker-step:hover .step-icon,
+.v-step:hover .v-icon {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    cursor: pointer;
 }
 
-.v-label .label-ar {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--w-text-primary);
-    margin-bottom: 4px;
+.tracker-step:hover .label-ar {
+    opacity: 1;
 }
 
-.v-label .label-en {
-    font-size: 0.8rem;
-    color: var(--w-text-muted);
+/* ── Entrance Animations ── */
+.w-stagger-step {
+    opacity: 0;
+    animation: w-fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.v-step.step-pending .v-label .label-ar,
-.v-step.step-pending .v-label .label-en {
-    color: var(--w-text-muted);
-    opacity: 0.7;
+@keyframes w-fade-up {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Success State: Celebration */
+.tracker-completion-success {
+    position: relative;
+    overflow: hidden;
+}
+
+.tracker-completion-success::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(var(--w-secondary-rgb), 0.1) 0%, transparent 70%);
+    animation: w-rotate-glow 10s linear infinite;
+    z-index: -1;
+}
+
+@keyframes w-rotate-glow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }

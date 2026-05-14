@@ -109,7 +109,8 @@ namespace VolunteerBridge.Hubs
             {
                 entity.Id,
                 entity.SenderId,
-                SenderName = currentUser.FullName, // Adding sender name for global notification context
+                SenderName = currentUser.FullName,
+                SenderProfilePicture = currentUser.ProfilePictureUrl,
                 entity.ReceiverId,
                 entity.Message,
                 sentAt = entity.SentAt.ToString("O")

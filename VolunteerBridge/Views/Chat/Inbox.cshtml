@@ -42,7 +42,14 @@
                                        style="background: @(isActive ? "rgba(99, 102, 241, 0.08)" : "transparent"); border: 1px solid @(isActive ? "rgba(99, 102, 241, 0.15)" : "transparent") !important;">
                                         <div class="d-flex align-items-start gap-3 min-w-0">
                                             <div class="w-avatar w-avatar-md flex-shrink-0" style="background: rgba(99, 102, 241, 0.12); color: var(--w-primary);">
-                                                <span class="material-symbols-outlined">person</span>
+                                                @if (!string.IsNullOrEmpty(t.OtherUserProfilePicture))
+                                                {
+                                                    <img src="@t.OtherUserProfilePicture" alt="@t.OtherUserName" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                                }
+                                                else
+                                                {
+                                                    <span class="material-symbols-outlined">person</span>
+                                                }
                                             </div>
                                             <div class="min-w-0 flex-grow-1">
                                                 <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
@@ -73,7 +80,14 @@
                         <div class="w-p-lg w-border-b d-flex align-items-center justify-content-between gap-3" style="border-color: rgba(0,0,0,0.05) !important;">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="w-avatar w-avatar-md" style="background: rgba(99, 102, 241, 0.15); color: var(--w-primary);">
-                                    <span class="material-symbols-outlined">chat</span>
+                                    @if (!string.IsNullOrEmpty(Model.ActiveUserProfilePicture))
+                                    {
+                                        <img src="@Model.ActiveUserProfilePicture" alt="@Model.ActiveUserName" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" />
+                                    }
+                                    else
+                                    {
+                                        <span class="material-symbols-outlined">person</span>
+                                    }
                                 </div>
                                 <div>
                                     <div class="w-caption w-text-muted">محادثة خاصة مع</div>
@@ -121,6 +135,9 @@
             (function () {
                 const otherUserId = @Model.ActiveUserId.Value;
                 const currentUserId = @Html.Raw(currentUserId.HasValue ? currentUserId.Value.ToString() : "null");
+                const otherUserProfilePicture = '@Html.Raw(Model.ActiveUserProfilePicture ?? "")';
+                const currentUserProfilePicture = '@Html.Raw(Context.Session.GetString("UserProfilePicture") ?? "")';
+                
                 const messagesEl = document.getElementById('chatMessages');
                 const loadingEl = document.getElementById('chatLoading');
                 const inputEl = document.getElementById('messageInput');
@@ -133,31 +150,48 @@
                 }
 
                 function appendBubble(item) {
+                    const isMe = item.senderId === currentUserId;
                     const wrap = document.createElement('div');
-                    wrap.className = 'd-flex mb-3 ' + (item.senderId === currentUserId ? 'justify-content-start' : 'justify-content-end');
+                    // In RTL: justify-content-start is right, justify-content-end is left
+                    wrap.className = 'd-flex mb-2 ' + (isMe ? 'justify-content-start' : 'justify-content-end');
+                    
+                    const contentWrap = document.createElement('div');
+                    contentWrap.style.maxWidth = '75%';
+                    contentWrap.className = 'd-flex flex-column ' + (isMe ? 'align-items-start' : 'align-items-end');
+
                     const bubble = document.createElement('div');
-                    bubble.className = 'px-3 py-2 rounded-3 w-body-sm';
-                    bubble.style.maxWidth = '78%';
-                    if (item.senderId === currentUserId) {
-                        bubble.style.background = 'rgba(99, 102, 241, 0.12)';
-                        bubble.style.border = '1px solid rgba(99, 102, 241, 0.2)';
-                        bubble.style.color = 'var(--w-primary-dark)';
+                    bubble.className = 'px-3 py-2 w-body-sm shadow-sm';
+                    if (isMe) {
+                        bubble.style.background = 'linear-gradient(135deg, var(--w-primary) 0%, var(--w-primary-dark) 100%)';
+                        bubble.style.color = 'white';
+                        bubble.style.borderRadius = '16px 16px 4px 16px';
+                        bubble.style.border = 'none';
                     } else {
-                        bubble.style.background = 'rgba(255, 255, 255, 0.8)';
+                        bubble.style.background = 'rgba(255, 255, 255, 0.9)';
+                        bubble.style.backdropFilter = 'blur(10px)';
                         bubble.style.border = '1px solid rgba(0, 0, 0, 0.05)';
                         bubble.style.color = 'var(--w-text-main)';
+                        bubble.style.borderRadius = '16px 16px 16px 4px';
                     }
-                    const meta = document.createElement('div');
-                    meta.className = 'small mb-1 w-text-muted';
-                    meta.style.opacity = '0.5';
-                    const d = new Date(item.sentAt);
-                    meta.textContent = isNaN(d.getTime()) ? '' : d.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    
                     const text = document.createElement('div');
                     text.style.whiteSpace = 'pre-wrap';
+                    text.style.wordBreak = 'break-word';
                     text.textContent = item.message;
-                    bubble.appendChild(meta);
                     bubble.appendChild(text);
-                    wrap.appendChild(bubble);
+
+                    const meta = document.createElement('div');
+                    meta.className = 'w-caption mt-1';
+                    meta.style.fontSize = '10px';
+                    meta.style.opacity = '0.6';
+                    meta.style.color = 'var(--w-text-muted)';
+                    const d = new Date(item.sentAt);
+                    meta.textContent = isNaN(d.getTime()) ? '' : d.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    
+                    contentWrap.appendChild(bubble);
+                    contentWrap.appendChild(meta);
+                    wrap.appendChild(contentWrap);
+
                     messagesEl.appendChild(wrap);
                     messagesEl.scrollTop = messagesEl.scrollHeight;
                 }

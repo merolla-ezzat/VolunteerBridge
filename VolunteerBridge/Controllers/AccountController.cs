@@ -97,6 +97,10 @@ namespace VolunteerBridge.Controllers
             _db.Users.Add(user);
             _db.SaveChanges();
 
+            // Auto-login after confirmation
+            HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("UserName", user.FullName);
+
             // delete session data
             HttpContext.Session.Remove("PendingUser_FullName");
             HttpContext.Session.Remove("PendingUser_Email");
@@ -129,6 +133,13 @@ namespace VolunteerBridge.Controllers
             user.Skills = skills;
             user.Experience = experience;
             _db.SaveChanges();
+
+            // Update session if name changed (though not changed here, good practice if we add name edit)
+            HttpContext.Session.SetString("UserName", user.FullName);
+            if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+            {
+                HttpContext.Session.SetString("UserProfilePicture", user.ProfilePictureUrl);
+            }
 
             return RedirectToAction("Index", "Home");
         }
