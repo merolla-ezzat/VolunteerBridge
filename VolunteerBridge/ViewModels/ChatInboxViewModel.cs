@@ -12,5 +12,7 @@ namespace VolunteerBridge.ViewModels
     public class ChatInboxViewModel
     {
         public List<ChatInboxRowViewModel> Threads { get; set; } = new();
+        public int? ActiveUserId { get; set; }
+        public string ActiveUserName { get; set; } = string.Empty;
     }
 }

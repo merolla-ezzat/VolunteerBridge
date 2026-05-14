@@ -25,6 +25,16 @@ namespace VolunteerBridge.Hubs
             return Context.GetHttpContext()?.Session.GetInt32("UserId");
         }
 
+        public override async Task OnConnectedAsync()
+        {
+            var userId = GetSessionUserId();
+            if (userId.HasValue)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{userId.Value}");
+            }
+            await base.OnConnectedAsync();
+        }
+
         public async Task JoinThread(int otherUserId)
         {
             var userId = GetSessionUserId();
@@ -76,8 +86,9 @@ namespace VolunteerBridge.Hubs
             using var scope = _scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
+            var currentUser = await db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == userId.Value);
             var peerExists = await db.Users.AnyAsync(u => u.UserId == otherUserId);
-            if (!peerExists)
+            if (!peerExists || currentUser == null)
             {
                 throw new HubException("المستخدم غير موجود.");
             }
@@ -94,15 +105,25 @@ namespace VolunteerBridge.Hubs
             db.ChatMessages.Add(entity);
             await db.SaveChangesAsync();
 
-            var group = ThreadGroupName(userId.Value, otherUserId);
-            await Clients.Group(group).SendAsync("ReceiveMessage", new
+            var payload = new
             {
                 entity.Id,
                 entity.SenderId,
+                SenderName = currentUser.FullName, // Adding sender name for global notification context
                 entity.ReceiverId,
                 entity.Message,
                 sentAt = entity.SentAt.ToString("O")
-            });
+            };
+
+            // Broadcast to the specific thread
+            var group = ThreadGroupName(userId.Value, otherUserId);
+            await Clients.Group(group).SendAsync("ReceiveMessage", payload);
+
+            // Broadcast globally to the receiver so their floating widget can update (badge, mini-inbox)
+            await Clients.Group($"user_{otherUserId}").SendAsync("ReceiveGlobalMessage", payload);
+            
+            // Also broadcast to the sender's global group to sync UI across multiple tabs
+            await Clients.Group($"user_{userId.Value}").SendAsync("ReceiveGlobalMessage", payload);
         }
     }
 }

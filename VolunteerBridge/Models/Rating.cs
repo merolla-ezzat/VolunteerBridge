@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace VolunteerBridge.Models
 {
@@ -19,7 +19,7 @@ namespace VolunteerBridge.Models
         [Range(1, 5, ErrorMessage = "التقييم يجب أن يكون بين 1 و 5")]
         public int Rate { get; set; }
         [Display(Name = "تعليق")]
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "التعليق يجب ألا يتجاوز 500 حرف")]
         public string? Comment { get; set; }
         [Display(Name = "تاريخ الإنشاء")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

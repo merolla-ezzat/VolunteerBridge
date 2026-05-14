@@ -2,53 +2,258 @@
 @{
     ViewBag.Title = "الرسائل";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentUserId = Context.Session.GetInt32("UserId");
 }
 
-<div class="w-py-xl">
-    <div class="w-container w-max-w-800">
+<div class="w-py-xl h-100">
+    <div class="w-container" style="max-width: 1200px;">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
             <h1 class="w-h2 w-mb-0 w-aurora-text">الرسائل</h1>
             <a asp-controller="ServiceRequests" asp-action="Browse" class="w-btn w-btn-ghost w-btn-sm">تصفح الطلبات</a>
         </div>
 
-        @if (Model.Threads.Count == 0)
-        {
-            <div class="w-glass-premium w-p-xl w-text-center w-rounded-xl">
-                <span class="material-symbols-outlined w-text-muted mb-3" style="font-size: 48px;">forum</span>
-                <p class="w-body-lg w-text-muted w-mb-0">لا توجد محادثات بعد. عند استلام رسالة ستظهر هنا.</p>
-            </div>
-        }
-        else
-        {
-            <div class="d-flex flex-column gap-3">
-                @foreach (var t in Model.Threads)
-                {
-                    <a asp-action="Thread" asp-route-otherUserId="@t.OtherUserId"
-                       class="w-glass-premium w-rounded-xl w-p-lg text-decoration-none d-block text-reset border-0"
-                       style="border: 1px solid rgba(255,255,255,0.08) !important;">
-                        <div class="d-flex align-items-start justify-content-between gap-3">
-                            <div class="d-flex align-items-start gap-3 min-w-0">
-                                <div class="w-avatar w-avatar-md flex-shrink-0" style="background: rgba(99, 102, 241, 0.12); color: var(--w-primary);">
-                                    <span class="material-symbols-outlined">person</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="d-flex align-items-center gap-2 flex-wrap">
-                                        <span class="w-font-bold w-body-lg">@t.OtherUserName</span>
-                                        @if (t.UnreadCount > 0)
-                                        {
-                                            <span class="w-chip w-chip-blue w-py-xs w-px-md" style="font-size: 12px;">@t.UnreadCount</span>
-                                        }
-                                    </div>
-                                    <p class="w-body-sm w-text-muted w-mb-0 text-truncate mt-1" style="max-width: 100%;">@t.LastMessagePreview</p>
-                                </div>
-                            </div>
-                            <div class="w-caption w-text-muted flex-shrink-0 text-nowrap">
-                                @t.LastMessageAt.ToLocalTime().ToString("dd/MM HH:mm")
-                            </div>
+        <div class="w-glass-premium w-rounded-xl overflow-hidden shadow-sm" style="min-height: 70vh;">
+            <div class="row g-0 h-100">
+                <!-- Sidebar -->
+                <div class="col-lg-4 w-border-l @(Model.ActiveUserId.HasValue ? "d-none d-lg-block" : "")" style="border-color: rgba(0,0,0,0.05) !important; background: rgba(255,255,255,0.4);">
+                    <div class="h-100 d-flex flex-column">
+                        <div class="w-p-lg w-border-b" style="border-color: rgba(0,0,0,0.05) !important;">
+                            <h4 class="w-h4 w-mb-0">المحادثات</h4>
                         </div>
-                    </a>
-                }
+                        <div class="w-flex-grow-1 overflow-auto w-p-md" style="max-height: 65vh;">
+                            @if (Model.Threads.Count == 0)
+                            {
+                                <div class="d-flex flex-column align-items-center justify-content-center h-100 text-center w-p-xl">
+                                    <div class="w-avatar w-avatar-xl mb-3" style="background: rgba(99, 102, 241, 0.05); color: var(--w-primary); width: 64px; height: 64px;">
+                                        <span class="material-symbols-outlined" style="font-size: 32px;">forum</span>
+                                    </div>
+                                    <h5 class="w-h5 w-mb-sm">لا توجد محادثات</h5>
+                                    <p class="w-body-sm w-text-muted w-mb-0">ستظهر هنا رسائلك مع المتطوعين والجمعيات.</p>
+                                </div>
+                            }
+                        else
+                        {
+                            <div class="d-flex flex-column gap-2">
+                                @foreach (var t in Model.Threads)
+                                {
+                                    var isActive = Model.ActiveUserId == t.OtherUserId;
+                                    <a asp-action="Inbox" asp-route-activeUserId="@t.OtherUserId"
+                                       class="w-rounded-lg w-p-md text-decoration-none d-block text-reset border-0 transition mb-1"
+                                       style="background: @(isActive ? "rgba(99, 102, 241, 0.08)" : "transparent"); border: 1px solid @(isActive ? "rgba(99, 102, 241, 0.15)" : "transparent") !important;">
+                                        <div class="d-flex align-items-start gap-3 min-w-0">
+                                            <div class="w-avatar w-avatar-md flex-shrink-0" style="background: rgba(99, 102, 241, 0.12); color: var(--w-primary);">
+                                                <span class="material-symbols-outlined">person</span>
+                                            </div>
+                                            <div class="min-w-0 flex-grow-1">
+                                                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                                    <span class="w-font-bold w-body-md text-truncate" style="@(isActive ? "color: var(--w-primary-dark);" : "")">@t.OtherUserName</span>
+                                                    <span class="w-caption w-text-muted flex-shrink-0 text-nowrap">@t.LastMessageAt.ToLocalTime().ToString("dd/MM")</span>
+                                                </div>
+                                                <div class="d-flex align-items-center justify-content-between gap-2 mt-1">
+                                                    <p class="w-body-sm w-text-muted w-mb-0 text-truncate">@t.LastMessagePreview</p>
+                                                    @if (t.UnreadCount > 0)
+                                                    {
+                                                        <span class="w-chip w-chip-blue w-py-xs w-px-sm" style="font-size: 10px; min-width: 20px; text-align: center;">@t.UnreadCount</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Main Chat Area -->
+                <div class="col-lg-8 @(!Model.ActiveUserId.HasValue ? "d-none d-lg-block" : "")">
+                    <div class="h-100 d-flex flex-column bg-white">
+                    @if (Model.ActiveUserId.HasValue)
+                    {
+                        <div class="w-p-lg w-border-b d-flex align-items-center justify-content-between gap-3" style="border-color: rgba(0,0,0,0.05) !important;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="w-avatar w-avatar-md" style="background: rgba(99, 102, 241, 0.15); color: var(--w-primary);">
+                                    <span class="material-symbols-outlined">chat</span>
+                                </div>
+                                <div>
+                                    <div class="w-caption w-text-muted">محادثة خاصة مع</div>
+                                    <div class="w-h4 w-mb-0 w-font-bold">@Model.ActiveUserName</div>
+                                </div>
+                            </div>
+                            <a asp-action="Inbox" class="w-btn w-btn-ghost w-btn-sm d-lg-none">عودة للقائمة</a>
+                        </div>
+
+                        <div id="chatMessages" class="w-p-lg w-flex-grow-1 w-chat-thread-scroll" style="min-height: 400px; max-height: 65vh; overflow-y: auto; background: rgba(15, 23, 42, 0.02);">
+                            <div id="chatLoading" class="w-text-muted w-body-sm text-center my-4">جاري تحميل الرسائل...</div>
+                        </div>
+
+                        <div class="w-p-lg w-border-t bg-white" style="border-color: rgba(0,0,0,0.05) !important;">
+                            <div class="d-flex gap-2 align-items-stretch">
+                                <input type="text" id="messageInput" class="form-control w-flex-grow-1" maxlength="2000" placeholder="اكتب رسالتك..." autocomplete="off" />
+                                <button type="button" id="sendBtn" class="w-btn w-btn-primary">
+                                    <span class="material-symbols-outlined">send</span>
+                                </button>
+                            </div>
+                            <div id="chatError" class="text-danger small mt-2 d-none"></div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column align-items-center justify-content-center h-100 w-p-xl text-center" style="min-height: 400px; background: rgba(15, 23, 42, 0.02);">
+                            <div class="w-avatar w-avatar-xl mb-4" style="background: rgba(99, 102, 241, 0.05); color: var(--w-primary); width: 80px; height: 80px;">
+                                <span class="material-symbols-outlined" style="font-size: 40px;">chat_bubble_outline</span>
+                            </div>
+                            <h3 class="w-h3 w-mb-md">اختر محادثة للبدء</h3>
+                            <p class="w-body-lg w-text-muted w-mb-0" style="max-width: 400px; margin: 0 auto;">الرسائل تتيح لك التواصل الفوري ومتابعة طلباتك بشكل أسرع.</p>
+                        </div>
+                    }
+                    </div>
+                </div>
             </div>
-        }
     </div>
 </div>
+
+@if (Model.ActiveUserId.HasValue)
+{
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js" crossorigin="anonymous"></script>
+        <script>
+            (function () {
+                const otherUserId = @Model.ActiveUserId.Value;
+                const currentUserId = @Html.Raw(currentUserId.HasValue ? currentUserId.Value.ToString() : "null");
+                const messagesEl = document.getElementById('chatMessages');
+                const loadingEl = document.getElementById('chatLoading');
+                const inputEl = document.getElementById('messageInput');
+                const sendBtn = document.getElementById('sendBtn');
+                const errorEl = document.getElementById('chatError');
+
+                function showError(msg) {
+                    errorEl.textContent = msg || '';
+                    errorEl.classList.toggle('d-none', !msg);
+                }
+
+                function appendBubble(item) {
+                    const wrap = document.createElement('div');
+                    wrap.className = 'd-flex mb-3 ' + (item.senderId === currentUserId ? 'justify-content-start' : 'justify-content-end');
+                    const bubble = document.createElement('div');
+                    bubble.className = 'px-3 py-2 rounded-3 w-body-sm';
+                    bubble.style.maxWidth = '78%';
+                    if (item.senderId === currentUserId) {
+                        bubble.style.background = 'rgba(99, 102, 241, 0.12)';
+                        bubble.style.border = '1px solid rgba(99, 102, 241, 0.2)';
+                        bubble.style.color = 'var(--w-primary-dark)';
+                    } else {
+                        bubble.style.background = 'rgba(255, 255, 255, 0.8)';
+                        bubble.style.border = '1px solid rgba(0, 0, 0, 0.05)';
+                        bubble.style.color = 'var(--w-text-main)';
+                    }
+                    const meta = document.createElement('div');
+                    meta.className = 'small mb-1 w-text-muted';
+                    meta.style.opacity = '0.5';
+                    const d = new Date(item.sentAt);
+                    meta.textContent = isNaN(d.getTime()) ? '' : d.toLocaleString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+                    const text = document.createElement('div');
+                    text.style.whiteSpace = 'pre-wrap';
+                    text.textContent = item.message;
+                    bubble.appendChild(meta);
+                    bubble.appendChild(text);
+                    wrap.appendChild(bubble);
+                    messagesEl.appendChild(wrap);
+                    messagesEl.scrollTop = messagesEl.scrollHeight;
+                }
+
+                async function loadHistory() {
+                    const res = await fetch('@Url.Action("History", "Chat")?otherUserId=' + encodeURIComponent(otherUserId), {
+                        credentials: 'same-origin',
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    if (!res.ok) throw new Error('تعذر تحميل الرسائل');
+                    const data = await res.json();
+                    if (loadingEl && loadingEl.parentNode) loadingEl.remove();
+                    (data || []).forEach(function (row) {
+                        appendBubble({
+                            id: row.id,
+                            senderId: row.senderId,
+                            message: row.message,
+                            sentAt: row.sentAt
+                        });
+                    });
+                }
+
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl('@Url.Content("~/hubs/chat")')
+                    .withAutomaticReconnect()
+                    .build();
+
+                connection.on('ReceiveMessage', function (payload) {
+                    // Only append if it's relevant to the current thread
+                    if (payload.senderId === otherUserId || payload.senderId === currentUserId) {
+                        appendBubble({
+                            id: payload.id,
+                            senderId: payload.senderId,
+                            message: payload.message,
+                            sentAt: payload.sentAt
+                        });
+                    }
+                });
+
+                connection.onreconnected(async function () {
+                    try {
+                        await connection.invoke('JoinThread', otherUserId);
+                    } catch (e) { /* ignore */ }
+                    showError('');
+                });
+
+                connection.onclose(function () {
+                    showError('انقطع الاتصال بالمحادثة. جاري إعادة المحاولة...');
+                });
+
+                async function start() {
+                    showError('');
+                    try {
+                        await loadHistory();
+                    } catch (e) {
+                        console.error(e);
+                        if (loadingEl && loadingEl.parentNode) {
+                            loadingEl.textContent = 'تعذر تحميل الرسائل. تأكد أنك مسجّل الدخول ثم حدّث الصفحة.';
+                        }
+                    }
+                    try {
+                        await connection.start();
+                        await connection.invoke('JoinThread', otherUserId);
+                    } catch (e) {
+                        console.error(e);
+                        showError('التنبيه الفوري غير متاح حالياً. يمكنك قراءة الرسائل أعلاه وتحديث الصفحة لرؤية الجديد.');
+                    }
+                }
+
+                async function send() {
+                    const text = (inputEl.value || '').trim();
+                    if (!text) return;
+                    showError('');
+                    sendBtn.disabled = true;
+                    try {
+                        await connection.invoke('SendMessage', otherUserId, text);
+                        inputEl.value = '';
+                        inputEl.focus();
+                    } catch (e) {
+                        const msg = (e && e.message) ? e.message : 'تعذر إرسال الرسالة.';
+                        showError(msg);
+                    } finally {
+                        sendBtn.disabled = false;
+                    }
+                }
+
+                sendBtn.addEventListener('click', send);
+                inputEl.addEventListener('keydown', function (ev) {
+                    if (ev.key === 'Enter' && !ev.shiftKey) {
+                        ev.preventDefault();
+                        send();
+                    }
+                });
+
+                start();
+            })();
+        </script>
+    }
+}

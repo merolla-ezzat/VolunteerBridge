@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace VolunteerBridge.Models
 {
@@ -13,7 +13,7 @@ namespace VolunteerBridge.Models
         [Range(1, int.MaxValue, ErrorMessage = "النقاط يجب أن تكون أكبر من صفر")]
         public int Points { get; set; }
         [Display(Name = "السبب")]
-        [StringLength(200)]
+        [StringLength(200, ErrorMessage = "الوصف يجب ألا يتجاوز 200 حرف")]
         public string? Reason { get; set; }
         [Display(Name = "عملية القبول")]
         public int? AcceptanceId { get; set; }

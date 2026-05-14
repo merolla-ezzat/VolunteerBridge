@@ -280,7 +280,7 @@ namespace VolunteerBridge.Controllers
             {
                 if (request.Acceptances != null && request.Acceptances.Any())
                 {
-                    TempData["Error"] = "Cannot remove a request that already has volunteer participation.";
+                    TempData["Error"] = "لا يمكن إزالة طلب يحتوي على مشاركات من المتطوعين.";
                     return RedirectToAction("Requests");
                 }
 

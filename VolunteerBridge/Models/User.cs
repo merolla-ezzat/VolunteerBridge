@@ -17,7 +17,7 @@ namespace VolunteerBridge.Models
         public string Email { get; set; } = string.Empty;
         [Display(Name = "كلمة المرور")]
         [Required(ErrorMessage = "كلمة المرور مطلوبة")]
-        [StringLength(255)]
+        [StringLength(255, ErrorMessage = "الرقم السري مشفر ولا يجب أن يتجاوز 255 حرف")]
         public string PasswordHash { get; set; } = string.Empty;
         [Display(Name = "رقم الهاتف")]
         [Required(ErrorMessage = "رقم الهاتف مطلوب")]
@@ -25,13 +25,13 @@ namespace VolunteerBridge.Models
 
         public string PhoneNumber { get; set; } = string.Empty;
         [Display(Name = "المدينة")]
-        [StringLength(100)]
+        [StringLength(100, ErrorMessage = "المدينة يجب ألا تتجاوز 100 حرف")]
         public string? City { get; set; }
         [Display(Name = "المهارات")]
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "النبذة يجب ألا تتجاوز 500 حرف")]
         public string? Skills { get; set; }
         [Display(Name = "نبذة شخصية")]
-        [StringLength(1000)]
+        [StringLength(1000, ErrorMessage = "المهارات يجب ألا تتجاوز 1000 حرف")]
         public string? Bio { get; set; }
         [Display(Name = "الخبرات")]
         public string? Experience { get; set; }
@@ -54,7 +54,7 @@ namespace VolunteerBridge.Models
         public bool IsBanned { get; set; } = false;
         
         [Display(Name = "سبب الحظر")]
-        [StringLength(500)]
+        [StringLength(500, ErrorMessage = "السبب يجب ألا يتجاوز 500 حرف")]
         public string? BanReason { get; set; }
 
         public bool IsEmailConfirmed { get; set; } = false;

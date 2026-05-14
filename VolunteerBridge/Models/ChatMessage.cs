@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace VolunteerBridge.Models
 {
@@ -9,8 +9,8 @@ namespace VolunteerBridge.Models
         public int SenderId { get; set; }
         public int ReceiverId { get; set; }
 
-        [Required]
-        [StringLength(2000)]
+        [Required(ErrorMessage = "الرسالة مطلوبة")]
+        [StringLength(2000, ErrorMessage = "يجب ألا تتجاوز الرسالة 2000 حرف")]
         public string Message { get; set; } = string.Empty;
 
         public DateTime SentAt { get; set; } = DateTime.UtcNow;

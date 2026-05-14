@@ -126,9 +126,9 @@
 
                                 <div class="w-input-group">
                                     <label asp-for="Location" class="w-input-label">مكان تقديم المساعدة <span class="w-text-error">*</span></label>
-                                    <div class="w-relative">
-                                        <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">location_on</span>
-                                        <input asp-for="Location" class="w-input w-ps-xl" placeholder="مثال: حي الرياض، شارع التخصصي" />
+                                    <div class="w-input-icon-wrapper">
+                                        <span class="material-symbols-outlined w-input-icon">location_on</span>
+                                        <input asp-for="Location" class="w-input w-input-with-icon" placeholder="مثال: حي الرياض، شارع التخصصي" />
                                     </div>
                                     <span asp-validation-for="Location" class="w-input-error-text"></span>
                                 </div>
@@ -137,19 +137,20 @@
                                     <div class="col-md-6">
                                         <div class="w-input-group mb-0">
                                             <label asp-for="ScheduledDate" class="w-input-label">التاريخ المقترح <span class="w-text-error">*</span></label>
-                                            <div class="w-relative">
-                                                <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">calendar_today</span>
-                                                <input asp-for="ScheduledDate" type="date" class="w-input w-ps-xl" />
+                                            <div class="w-input-icon-wrapper">
+                                                <span class="material-symbols-outlined w-input-icon">calendar_today</span>
+                                                <input asp-for="ScheduledDate" type="date" class="w-input w-input-with-icon" />
                                             </div>
                                             <span asp-validation-for="ScheduledDate" class="w-input-error-text"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="w-input-group mb-0">
-                                            <label asp-for="EstimatedHours" class="w-input-label">الوقت المتوقع (ساعات) <span class="w-text-error">*</span></label>
-                                            <div class="w-relative">
-                                                <span class="material-symbols-outlined w-absolute w-right-0 w-top-50 w-translate-y-center w-px-md w-text-faint" style="pointer-events: none;">schedule</span>
-                                                <input asp-for="EstimatedHours" id="hoursInput" type="number" step="0.5" min="0.5" max="24" class="w-input w-ps-xl" placeholder="2" />
+                                            <label asp-for="EstimatedHours" class="w-input-label">الوقت المتوقع <span class="w-text-error">*</span></label>
+                                            <div class="w-input-icon-wrapper">
+                                                <span class="material-symbols-outlined w-input-icon">schedule</span>
+                                                <input asp-for="EstimatedHours" id="hoursInput" type="number" step="0.5" min="0.5" max="24" class="w-input w-input-with-icon w-input-with-suffix" placeholder="2" />
+                                                <span class="w-input-suffix">ساعة</span>
                                             </div>
                                             <span asp-validation-for="EstimatedHours" class="w-input-error-text"></span>
                                         </div>
@@ -230,6 +231,77 @@
 </div>
 
 <style>
+    /* Input Alignment & Icon Polish */
+    .w-input-icon-wrapper { 
+        position: relative; 
+        display: flex; 
+        align-items: center;
+        width: 100%;
+    }
+    .w-input-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        color: var(--w-text-muted);
+        font-size: 20px;
+        line-height: 1;
+        opacity: 0.7;
+        z-index: 2;
+    }
+    .w-input-suffix {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        left: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        color: var(--w-text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+        line-height: 1;
+        opacity: 0.8;
+        z-index: 2;
+    }
+    .w-input-with-icon { padding-right: 48px !important; }
+    .w-input-with-suffix { padding-left: 60px !important; }
+    
+    /* Hide native decorators to prevent visual collision */
+    .w-input[type="date"]::-webkit-calendar-picker-indicator {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+    .w-input[type="number"]::-webkit-outer-spin-button,
+    .w-input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    .w-input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Normalize input heights and padding */
+    .w-input {
+        min-height: 52px;
+        line-height: 1.6;
+        padding: 13px 18px;
+        display: flex;
+        align-items: center;
+    }
+
     .w-ps-xl { padding-right: 48px !important; }
     .w-inset-0 { top: 0; left: 0; right: 0; bottom: 0; }
     .w-z-10 { z-index: 10; }

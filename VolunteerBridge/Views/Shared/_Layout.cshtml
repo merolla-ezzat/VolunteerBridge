@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.rtl.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/wessal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/wessal-chat.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/VolunteerBridge.styles.css" asp-append-version="true" />
     <link rel="icon" type="image/png" href="~/images/MainLogo.png" />
@@ -132,9 +133,6 @@
                                 <span class="w-user-name">@sessionUserName</span>
                             </div>
                         </a>
-                        <a class="w-btn w-btn-ghost w-btn-sm d-none d-md-inline-flex" asp-controller="Chat" asp-action="Inbox" title="الرسائل">
-                            <span class="material-symbols-outlined">chat</span>
-                        </a>
                         <a class="w-btn w-btn-primary w-btn-sm" asp-controller="ServiceRequests" asp-action="Create">
                             <span class="material-symbols-outlined">add</span>
                             إنشاء طلب
@@ -192,8 +190,8 @@
         </a>
         @if (sessionUserId != null)
         {
-            <a asp-controller="Chat" asp-action="Inbox" class="w-bottom-nav-item @(controller == "Chat" ? "active" : "")">
-                <span class="material-symbols-outlined">chat</span>
+            <a asp-controller="Chat" asp-action="Inbox" class="w-bottom-nav-item @(controller == "Chat" && action == "Inbox" ? "active" : "")">
+                <span class="material-symbols-outlined">forum</span>
                 الرسائل
             </a>
         }
@@ -255,10 +253,25 @@
             </div>
         </div>
     </footer>
+    <partial name="_FloatingChat" />
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/wessal-chat.js" asp-append-version="true"></script>
+    
+    @if (sessionUserId != null)
+    {
+        <script>
+            window.addEventListener('DOMContentLoaded', () => {
+                if (window.WessalChat) {
+                    window.WessalChat.init('@sessionUserId');
+                }
+            });
+        </script>
+    }
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
 using VolunteerBridge.Models;
 
@@ -7,14 +7,14 @@ namespace VolunteerBridge.ViewModels
     public class CreateRequestViewModel
     {
         [Required(ErrorMessage = "العنوان مطلوب")]
-        [StringLength(150)]
+        [StringLength(150, ErrorMessage = "العنوان يجب ألا يتجاوز 150 حرف")]
         public string Title { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "الوصف مطلوب")]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "الموقع مطلوب")]
-        [StringLength(200)]
+        [StringLength(200, ErrorMessage = "الموقع يجب ألا يتجاوز 200 حرف")]
         public string Location { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "الفئة مطلوبة")]

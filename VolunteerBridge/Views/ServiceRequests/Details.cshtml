@@ -229,21 +229,21 @@
                                     @* صاحب الطلب: مراسلة المتطوع المعيّن *@
                                     @if (isOwner && userId != null && acceptance != null)
                                     {
-                                        <a asp-controller="Chat" asp-action="Thread" asp-route-otherUserId="@acceptance.VolunteerId"
+                                        <button type="button" onclick="window.WessalChat && window.WessalChat.openThread(@acceptance.VolunteerId, '@Html.Raw(acceptance.Volunteer?.FullName)', 'بخصوص طلب: @Html.Raw(Model.Title)')"
                                            class="w-btn w-btn-secondary w-btn-lg w-px-xl w-glass-premium w-flex w-items-center w-gap-sm">
                                             <span class="material-symbols-outlined">chat</span>
                                             مراسلة المتطوع
-                                        </a>
+                                        </button>
                                     }
 
                                     @* محادثة خاصة مع صاحب الطلب (للمستخدمين المسجلين فقط، وليس لصاحب الطلب) *@
                                     @if (userId != null && !isOwner)
                                     {
-                                        <a asp-controller="Chat" asp-action="Thread" asp-route-otherUserId="@Model.RequesterId"
+                                        <button type="button" onclick="window.WessalChat && window.WessalChat.openThread(@Model.RequesterId, '@Html.Raw(Model.Requester?.FullName)', 'بخصوص طلب: @Html.Raw(Model.Title)')"
                                            class="w-btn w-btn-secondary w-btn-lg w-px-xl w-glass-premium w-flex w-items-center w-gap-sm">
                                             <span class="material-symbols-outlined">chat</span>
                                             مراسلة صاحب الطلب
-                                        </a>
+                                        </button>
                                     }
 
                                     @* زر القبول *@

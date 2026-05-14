@@ -14,7 +14,7 @@ namespace VolunteerBridge.Models
         
         [Display(Name = "العنوان")]
         [Required(ErrorMessage = "العنوان مطلوب")]
-        [StringLength(150)]
+        [StringLength(150, ErrorMessage = "العنوان يجب ألا يتجاوز 150 حرف")]
         public string Title { get; set; } = string.Empty;
         [Display(Name = "التصنيف")]
         [Required(ErrorMessage = "اختر التصنيف")]
@@ -24,7 +24,7 @@ namespace VolunteerBridge.Models
         public string Description { get; set; } = string.Empty;
         [Display(Name = "الموقع")]
         [Required(ErrorMessage = "الموقع مطلوب")]
-        [StringLength(200)]
+        [StringLength(200, ErrorMessage = "الموقع يجب ألا يتجاوز 200 حرف")]
         public string Location { get; set; } = string.Empty;
         [Display(Name = "التاريخ والوقت")]
         public DateTime ScheduledDate { get; set; }

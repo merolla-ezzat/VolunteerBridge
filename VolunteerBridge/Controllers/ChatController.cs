@@ -17,31 +17,21 @@ namespace VolunteerBridge.Controllers
 
         private int? GetUserId() => HttpContext.Session.GetInt32("UserId");
 
-        // GET: /Chat/Inbox
-        public async Task<IActionResult> Inbox()
+        private async Task<List<ChatInboxRowViewModel>> GetInboxRowsAsync(int userId)
         {
-            var userId = GetUserId();
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             const int take = 2000;
             var messages = await _db.ChatMessages.AsNoTracking()
-                .Where(m => m.SenderId == userId.Value || m.ReceiverId == userId.Value)
+                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
                 .OrderByDescending(m => m.SentAt)
                 .Take(take)
                 .ToListAsync();
 
             var partnerIds = messages
-                .Select(m => m.SenderId == userId.Value ? m.ReceiverId : m.SenderId)
+                .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
                 .Distinct()
                 .ToList();
 
-            if (partnerIds.Count == 0)
-            {
-                return View(new ChatInboxViewModel());
-            }
+            if (partnerIds.Count == 0) return new List<ChatInboxRowViewModel>();
 
             var names = await _db.Users.AsNoTracking()
                 .Where(u => partnerIds.Contains(u.UserId))
@@ -51,16 +41,13 @@ namespace VolunteerBridge.Controllers
             foreach (var pid in partnerIds)
             {
                 var conv = messages
-                    .Where(m => (m.SenderId == userId.Value && m.ReceiverId == pid) || (m.SenderId == pid && m.ReceiverId == userId.Value))
+                    .Where(m => (m.SenderId == userId && m.ReceiverId == pid) || (m.SenderId == pid && m.ReceiverId == userId))
                     .OrderByDescending(m => m.SentAt)
                     .ToList();
-                if (conv.Count == 0)
-                {
-                    continue;
-                }
+                if (conv.Count == 0) continue;
 
                 var last = conv[0];
-                var unread = conv.Count(m => m.SenderId == pid && m.ReceiverId == userId.Value && !m.IsRead);
+                var unread = conv.Count(m => m.SenderId == pid && m.ReceiverId == userId && !m.IsRead);
                 var preview = last.Message.Length > 120 ? last.Message[..120] + "…" : last.Message;
 
                 rows.Add(new ChatInboxRowViewModel
@@ -73,39 +60,41 @@ namespace VolunteerBridge.Controllers
                 });
             }
 
-            rows = rows.OrderByDescending(r => r.LastMessageAt).ToList();
-            return View(new ChatInboxViewModel { Threads = rows });
+            return rows.OrderByDescending(r => r.LastMessageAt).ToList();
+        }
+
+
+
+        // GET: /Chat/Inbox
+        public async Task<IActionResult> Inbox(int? activeUserId = null)
+        {
+            var userId = GetUserId();
+            if (userId == null) return RedirectToAction("Login", "Account");
+
+            var vm = new ChatInboxViewModel
+            {
+                Threads = await GetInboxRowsAsync(userId.Value)
+            };
+
+            if (activeUserId.HasValue && activeUserId.Value != userId.Value)
+            {
+                var other = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == activeUserId.Value);
+                if (other != null)
+                {
+                    await MarkConversationAsReadAsync(userId.Value, activeUserId.Value);
+                    vm.ActiveUserId = other.UserId;
+                    vm.ActiveUserName = other.FullName;
+                }
+            }
+
+            return View(vm);
         }
 
         // GET: /Chat/Thread?otherUserId=5
-        public async Task<IActionResult> Thread(int otherUserId)
+        public IActionResult Thread(int otherUserId)
         {
-            var userId = GetUserId();
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            if (otherUserId == userId.Value)
-            {
-                return BadRequest("لا يمكن بدء محادثة مع نفسك.");
-            }
-
-            var other = await _db.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserId == otherUserId);
-            if (other == null)
-            {
-                return NotFound();
-            }
-
-            await MarkConversationAsReadAsync(userId.Value, otherUserId);
-
-            var vm = new ChatThreadViewModel
-            {
-                OtherUserId = other.UserId,
-                OtherUserName = other.FullName
-            };
-
-            return View(vm);
+            // Redirect to Inbox with activeUserId to use the unified view
+            return RedirectToAction("Inbox", new { activeUserId = otherUserId });
         }
 
         // GET: /Chat/History?otherUserId=5
@@ -152,6 +141,38 @@ namespace VolunteerBridge.Controllers
             await _db.ChatMessages
                 .Where(m => m.SenderId == otherUserId && m.ReceiverId == userId && !m.IsRead)
                 .ExecuteUpdateAsync(s => s.SetProperty(m => m.IsRead, true));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRecentConversations()
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            var rows = await GetInboxRowsAsync(userId.Value);
+            return new JsonResult(rows, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUnreadCount()
+        {
+            var userId = GetUserId();
+            if (userId == null) return Json(new { unreadCount = 0 });
+
+            var count = await _db.ChatMessages
+                .CountAsync(m => m.ReceiverId == userId.Value && !m.IsRead);
+
+            return Json(new { unreadCount = count });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkAsRead(int otherUserId)
+        {
+            var userId = GetUserId();
+            if (userId == null) return Unauthorized();
+
+            await MarkConversationAsReadAsync(userId.Value, otherUserId);
+            return Ok();
         }
     }
 }
